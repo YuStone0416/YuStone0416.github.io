@@ -1,0 +1,215 @@
+favicon: /favicon1.ico
+banner:
+  enable: true
+  title: 跟着梦走过时光
+  border: true
+  cloud:
+    enable: true
+    color: white
+  go_down:
+    enable: true
+    icon: ri:arrow-down-s-line
+notice:
+  enable: true
+  content: 欢迎光临我的世界
+bg_image:
+  enable: true
+  url: /images/background.png
+  # dark:
+  blur: 10px # 设置背景模糊程度
+  opacity: 0.6
+# _config.yun.yml
+medium_zoom: true
+avatar:
+  enable: true
+  url: /images/avatar.jpg
+  
+  rounded: true
+  opacity: 1
+  mickey_mouse: false
+  status:
+    enable: true
+    emoji: ☺️
+    message: 四季花开
+sidebar:
+  bg_image: ### 
+  bg_position: bottom 3rem center
+  tagcloud:
+    enable: false
+    amount: 20
+pages:
+  - name: 我的小伙伴们
+    url: /links/
+    icon: ri:genderless-line
+    color: dodgerblue
+social:
+  - name: RSS
+    # set rss in your root config
+    # https://github.com/hexojs/hexo-generator-feed
+    link: /atom.xml # config.feed.path
+    icon: ri:rss-line
+    color: orange
+  - name: GitHub
+    link: https://github.com/YuStone0416
+    icon: ri:github-line
+    color: '#181717'
+  - name: E-Mail
+    link: mailto:2754523646@qq.com
+    icon: ri:mail-line
+    color: '#8E71C1'
+  # - name: 微博
+  #   link: #
+  #   icon: ri:weibo-line
+  #   color: '#E6162D'
+  # - name: 豆瓣
+  #   link: #
+  #   icon: ri:douban-line
+  #   color: '#007722'
+  # - name: 网易云音乐
+  #   link: https://music.163.com/#/user/home?id=1485292158
+  #   icon: ri:netease-cloud-music-line
+  #   color: '#C10D0C'
+  # - name: 知乎
+  #   link: https://www.zhihu.com/people/yemengstar
+  #   icon: ri:zhihu-line
+  #   color: '#0084FF'
+  - name: 哔哩哔哩
+    link: https://space.bilibili.com/436681227?spm_id_from=333.1387.0.0
+    icon: ri:bilibili-line
+    color: '#FF8EB3'
+  # - name: 微信公众号
+  #   link: #
+  #   icon: ri:wechat-2-line
+  #   color: '#1AAD19'
+menu:
+  home:
+    path: /
+    icon: ri:home-4-line
+  list:
+    - type: archives
+      path: /archives/
+      icon: ri:archive-line
+    - type: categories
+      path: /categories/
+      icon: ri:folder-2-line
+    - type: tags
+      path: /tags/
+      icon: ri:price-tag-3-line
+  # 自定义内容你可以看云游君提供的文档
+  # custom:
+  #   title: 文档
+  #   path: https://yun.yunyoujun.cn
+  #   icon: ri:settings-line
+  #对于目录编号问题没有解决
+toc:
+  list_number: true
+  max_depth: 6
+  min_depth: 1
+  placeholder: 很遗憾，咱没写啥目录
+  collapse: true
+# 代码一键复制按钮
+# codeblock:
+#   copy_btn: true
+
+reward:
+  enable: true
+  icon: ri:hand-coin-line
+  comment: 能白嫖就白嫖
+  methods:
+    # - name: 爱发电
+    #   path: https://cn-sy1.rains3.com/yemenghexo/afdian-yemenghexo.jpg
+    #   color: '#00A3EE'
+    #   icon: https://cn-sy1.rains3.com/yemenghexo/afdianlogo.png
+    #   link: https://afdian.tv/a/YuStone
+    # - name: 支付宝
+    #   path: https://cdn.yunyoujun.cn/img/donate/alipay-qrcode.jpg
+    #   color: '#00A3EE'
+    #   icon: ri:alipay-line
+    #   link: https://xxxx
+    # - name: QQ 支付
+    #   path: 你的QQ收款码
+    #   color: '#12B7F5'
+    #   icon: ri:qq-line
+    - name: 微信支付
+      path: /images/wechatpay.png
+      color: '#2DC100'
+      icon: ri:wechat-pay-line
+
+footer:
+  since: 2025 # 起始年份
+  icon:
+    name: ri:cloud-line
+    animated: true
+    color: '#0078E7'
+    url: http://yustonerain.top
+    title: YuStone Blog
+  powered:
+    enable: true # 是否显示主题名称
+  # beian:
+  #   enable: true # 是否显示备案
+  #   # ICP备案
+  #   icp: 苏ICP备xxxxxxxxxx号
+  #   # 公安备案
+  #   gongan:
+  #     enable: true
+  #     text: 苏公网安备XXXXXXXX号
+  #     id: XXXXXXXX
+ 
+  live_time: # 运行时间
+    enable: true
+    prefix: 感谢陪伴
+    suffix: (●'◡'●)
+    start_time: '2025-06-02T00:00:00' # 开始时间
+ 
+  # support: # 支持，例如又拍云联盟之类的
+  #   enable: true
+  #   title: 雨云
+  #   link: https://www.rainyun.com/YeMeng_
+  #   logo: https://cn-sy1.rains3.com/yemenghexo/rainyunlogo.png
+  #   prefix: 本站由
+  #   suffix: 提供 对象存储 服务
+ 
+#下面是自定义文本，你可以自由填写
+  custom_text: YuStoneblog Description
+
+
+#开启代码一键复制
+codeblock:
+  copy_btn: true
+#关闭烟花特效
+fireworks:
+  enable: false
+
+#tags 词云
+wordcloud:
+  enable: true
+
+#引擎搜索
+engine_search:
+  enable: false
+  href: 'https://www.google.com/search?q=site:'
+  # href: "https://www.baidu.com/s?wd=site:"
+  # href: "https://www.bing.com/search?q=site:"
+  domain: yustonerain.top
+
+
+#本地搜索
+# search
+# https://github.com/next-theme/hexo-generator-searchdb
+local_search:
+  enable: true
+
+#评论系统
+comment:
+  enable: true
+  tips:
+    - 若您想及时得到回复提醒，建议跳转 GitHub Issues 评论。
+    - 若没有本文 Issue，您可以使用 Comment 模版新建。
+  candidates:
+    - github_issues  # GitHub Issues 评论系统
+
+github_issues:
+  enable: true
+  username: YuStone0416
+  repository: YuStone0416.github.io
+  filters: is:issue
