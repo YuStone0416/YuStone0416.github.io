@@ -83,6 +83,13 @@
 
   
   <url>
+    <loc>http://yustonerain.top/tags/C/</loc>
+    <lastmod>2025-06-23</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
     <loc>http://yustonerain.top/tags/data-structure/</loc>
     <lastmod>2025-06-23</lastmod>
     <changefreq>weekly</changefreq>
@@ -91,13 +98,6 @@
   
   <url>
     <loc>http://yustonerain.top/tags/Linux/</loc>
-    <lastmod>2025-06-23</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>http://yustonerain.top/tags/C/</loc>
     <lastmod>2025-06-23</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
