@@ -1,0 +1,3257 @@
+<!DOCTYPE html><html lang="zh-CN"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="theme-color" content="#0078E7"><meta name="author" content="YuStone"><meta name="copyright" content="YuStone"><meta name="generator" content="Hexo 7.3.0"><meta name="theme" content="hexo-theme-yun"><title>c++实现集群聊天服务器 | YuStone Blogs</title><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@900&amp;display=swap" media="print" onload="this.media='all'"><link rel="stylesheet" href="https://fastly.jsdelivr.net/npm/star-markdown-css@0.4.1/dist/yun/yun-markdown.min.css"><link rel="stylesheet" href="https://fastly.jsdelivr.net/npm/prism-theme-vars/base.css"><script src="https://fastly.jsdelivr.net/npm/scrollreveal/dist/scrollreveal.min.js" defer></script><script>function initScrollReveal() {
+  [".post-card",".markdown-body img"].forEach((target)=> {
+    ScrollReveal().reveal(target);
+  })
+}
+document.addEventListener("DOMContentLoaded", initScrollReveal);
+document.addEventListener("pjax:success", initScrollReveal);
+</script><link rel="icon" type="image/png" href="/favicon1.ico"><link rel="mask-icon" href="/favicon1.ico" color="#0078E7"><link rel="preload" href="/css/hexo-theme-yun.css" as="style"><link rel="prefetch" href="/js/sidebar.js" as="script"><link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin><link rel="preconnect" href="https://fastly.jsdelivr.net/npm/" crossorigin><script id="yun-config">
+    window.Yun = {}
+    window.CONFIG = {"hostname":"yustonerain.top","root":"/","title":"跟着梦走过时光","version":"1.10.11","mode":"auto","copycode":true,"page":{"isPost":true},"i18n":{"placeholder":"搜索...","empty":"找不到您查询的内容: ${query}","hits":"找到 ${hits} 条结果","hits_time":"找到 ${hits} 条结果（用时 ${time} 毫秒）"},"anonymous_image":"https://cdn.yunyoujun.cn/img/avatar/none.jpg","say":{"api":"https://el-bot-api.vercel.app/api/words/young"},"local_search":{"path":"/search.json"},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"vendors":{"host":"https://fastly.jsdelivr.net/npm/","darken":"https://fastly.jsdelivr.net/npm/darken@1.5.0"}};
+  </script><link rel="stylesheet" href="/css/hexo-theme-yun.css"><script src="/js/hexo-theme-yun.js" type="module"></script><link rel="alternate" href="/atom.xml" title="YuStone Blogs" type="application/atom+xml"><meta name="description" content="json学习#include &quot;json.hpp&quot; using json&#x3D;nlohmann::json;  使用json,要包含json的头文件 ，方便使用可以重命名nlohmann::json为json。 &#x2F;&#x2F;json序列化示例1 std::string func1()&#123;     json js;     js[&quot;msg_type&quot;]&#x3D;2;     js[&quot;from&quot;]&#x3D;&quot;zhang">
+<meta property="og:type" content="article">
+<meta property="og:title" content="c++实现集群聊天服务器">
+<meta property="og:url" content="http://yustonerain.top/2025/06/02/C++-chatserver.html">
+<meta property="og:site_name" content="YuStone Blogs">
+<meta property="og:description" content="json学习#include &quot;json.hpp&quot; using json&#x3D;nlohmann::json;  使用json,要包含json的头文件 ，方便使用可以重命名nlohmann::json为json。 &#x2F;&#x2F;json序列化示例1 std::string func1()&#123;     json js;     js[&quot;msg_type&quot;]&#x3D;2;     js[&quot;from&quot;]&#x3D;&quot;zhang">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://yustonerain.top/2025/06/02/C++-chatserver/1.png">
+<meta property="og:image" content="http://yustonerain.top/2025/06/02/C++-chatserver/2.png">
+<meta property="og:image" content="http://yustonerain.top/2025/06/02/C++-chatserver/3.png">
+<meta property="article:published_time" content="2025-06-02T15:57:52.000Z">
+<meta property="article:modified_time" content="2025-06-23T08:34:18.002Z">
+<meta property="article:author" content="YuStone">
+<meta property="article:tag" content="C++">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://yustonerain.top/2025/06/02/C++-chatserver/1.png"><script>(function() {
+  if (CONFIG.mode !== 'auto') return
+  const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches
+  const setting = localStorage.getItem('darken-mode') || 'auto'
+  if (setting === 'dark' || (prefersDark && setting !== 'light'))
+    document.documentElement.classList.toggle('dark', true)
+})()</script></head><body><script src="https://code.iconify.design/2/2.1.1/iconify.min.js"></script><script>// Define global variable
+IconifyProviders = {
+  // Empty prefix: overwrite default API provider configuration
+  '': {
+    // Use custom API first, use Iconify public API as backup
+    resources: [
+        'https://api.iconify.design',
+    ],
+    // Wait for 1 second before switching API hosts
+    rotate: 1000,
+  },
+};</script><div class="container"><a class="sidebar-toggle hty-icon-button" id="menu-btn"><div class="hamburger hamburger--spin" type="button"><span class="hamburger-box"><span class="hamburger-inner"></span></span></div></a><div class="sidebar-toggle sidebar-overlay"></div><aside class="sidebar"><script src="/js/sidebar.js" type="module"></script><ul class="sidebar-nav"><li class="sidebar-nav-item sidebar-nav-toc hty-icon-button sidebar-nav-active" data-target="post-toc-wrap" title="文章目录"><span class="icon iconify" data-icon="ri:list-ordered"></span></li><li class="sidebar-nav-item sidebar-nav-overview hty-icon-button" data-target="site-overview-wrap" title="站点概览"><span class="icon iconify" data-icon="ri:passport-line"></span></li></ul><div class="sidebar-panel" id="site-overview-wrap"><div class="site-info fix-top"><a class="site-author-avatar" href="/about/" title="YuStone"><img width="96" loading="lazy" src="/images/avatar.jpg" alt="YuStone"><span class="site-author-status" title="四季花开">☺️</span></a><div class="site-author-name"><a href="/about/">YuStone</a></div><span class="site-name">YuStone Blogs</span><sub class="site-subtitle">the world</sub><div class="site-description">圭璋学习总结</div></div><nav class="site-state"><a class="site-state-item hty-icon-button icon-home" href="/" title="首页"><span class="site-state-item-icon"><span class="icon iconify" data-icon="ri:home-4-line"></span></span></a><div class="site-state-item"><a href="/archives/" title="归档"><span class="site-state-item-icon"><span class="icon iconify" data-icon="ri:archive-line"></span></span><span class="site-state-item-count">3</span></a></div><div class="site-state-item"><a href="/categories/" title="分类"><span class="site-state-item-icon"><span class="icon iconify" data-icon="ri:folder-2-line"></span></span><span class="site-state-item-count">1</span></a></div><div class="site-state-item"><a href="/tags/" title="标签"><span class="site-state-item-icon"><span class="icon iconify" data-icon="ri:price-tag-3-line"></span></span><span class="site-state-item-count">3</span></a></div><a class="site-state-item hty-icon-button" target="_blank" rel="noopener" href="https://yun.yunyoujun.cn" title="文档"><span class="site-state-item-icon"><span class="icon iconify" data-icon="ri:settings-line"></span></span></a></nav><hr style="margin-bottom:0.5rem"><div class="links-of-author"><a class="links-of-author-item hty-icon-button" rel="noopener" href="/atom.xml" title="RSS" target="_blank" style="color:orange"><span class="icon iconify" data-icon="ri:rss-line"></span></a><a class="links-of-author-item hty-icon-button" rel="noopener" href="https://github.com/YuStone0416" title="GitHub" target="_blank" style="color:#181717"><span class="icon iconify" data-icon="ri:github-line"></span></a><a class="links-of-author-item hty-icon-button" rel="noopener" href="mailto:2754523646@qq.com" title="E-Mail" target="_blank" style="color:#8E71C1"><span class="icon iconify" data-icon="ri:mail-line"></span></a><a class="links-of-author-item hty-icon-button" rel="noopener" href="https://space.bilibili.com/436681227?spm_id_from=333.1387.0.0" title="哔哩哔哩" target="_blank" style="color:#FF8EB3"><span class="icon iconify" data-icon="ri:bilibili-line"></span></a></div><hr style="margin:0.5rem 1rem"><div class="links"><a class="links-item hty-icon-button" href="/links/" title="我的小伙伴们" style="color:dodgerblue"><span class="icon iconify" data-icon="ri:genderless-line"></span></a></div><br><a class="links-item hty-icon-button" id="toggle-mode-btn" href="javascript:;" title="Mode" style="color: #f1cb64"><span class="icon iconify" data-icon="ri:contrast-2-line"></span></a></div><div class="sidebar-panel sidebar-panel-active" id="post-toc-wrap"><div class="post-toc"><div class="post-toc-content"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#json%E5%AD%A6%E4%B9%A0"><span class="toc-number">1.</span> <span class="toc-text">json学习</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#muduo%E7%BD%91%E7%BB%9C%E5%BA%93%E5%AD%A6%E4%B9%A0"><span class="toc-number">2.</span> <span class="toc-text">muduo网络库学习</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#CMakeList-txt%E5%AD%A6%E4%B9%A0"><span class="toc-number">3.</span> <span class="toc-text">CMakeList.txt学习</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%A1%B9%E7%9B%AE%E5%B8%B8%E8%A7%81%E7%9A%84cmake%E6%8C%87%E4%BB%A4%E4%BD%BF%E7%94%A8%E6%AD%A5%E9%AA%A4"><span class="toc-number">3.1.</span> <span class="toc-text">项目常见的cmake指令使用步骤</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%9B%86%E7%BE%A4%E8%81%8A%E5%A4%A9%E6%9C%8D%E5%8A%A1%E5%99%A8"><span class="toc-number">4.</span> <span class="toc-text">集群聊天服务器</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%A1%B9%E7%9B%AE%E7%9B%AE%E5%BD%95"><span class="toc-number">4.1.</span> <span class="toc-text">项目目录</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#CMakeLists-txt%E6%96%87%E4%BB%B6%E5%AD%98%E6%94%BE%E5%92%8C%E4%BD%BF%E7%94%A8"><span class="toc-number">4.2.</span> <span class="toc-text">CMakeLists.txt文件存放和使用</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#thirdparty%E6%96%87%E4%BB%B6%E5%A4%B9%EF%BC%88%E7%AC%AC%E4%B8%89%E6%96%B9%E5%BA%93%EF%BC%89json-hpp"><span class="toc-number">4.3.</span> <span class="toc-text">thirdparty文件夹（第三方库）json.hpp</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#include-server-chatserver-hpp-%E8%81%8A%E5%A4%A9%E6%9C%8D%E5%8A%A1%E5%99%A8%E7%9A%84%E4%B8%BB%E7%B1%BB"><span class="toc-number">4.4.</span> <span class="toc-text">include&#x2F;server&#x2F;chatserver.hpp 聊天服务器的主类</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#src-server-chatserver-cpp"><span class="toc-number">4.5.</span> <span class="toc-text">src&#x2F;server&#x2F;chatserver.cpp</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#include-server-chatservice-hpp-%E8%81%8A%E5%A4%A9%E6%9C%8D%E5%8A%A1%E5%99%A8%E4%B8%9A%E5%8A%A1%E7%B1%BB"><span class="toc-number">4.6.</span> <span class="toc-text">include&#x2F;server&#x2F;chatservice.hpp 聊天服务器业务类</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#src-server-chatservice-cpp"><span class="toc-number">4.7.</span> <span class="toc-text">src&#x2F;server&#x2F;chatservice.cpp</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#include-public-hpp"><span class="toc-number">4.8.</span> <span class="toc-text">include&#x2F;public.hpp</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#src-server-main-cpp"><span class="toc-number">4.9.</span> <span class="toc-text">src&#x2F;server&#x2F;main.cpp</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#include-server-db-db-h-%E6%95%B0%E6%8D%AE%E5%BA%93%E6%93%8D%E4%BD%9C%E7%B1%BB"><span class="toc-number">4.10.</span> <span class="toc-text">include&#x2F;server&#x2F;db&#x2F;db.h 数据库操作类</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#src-server-db-db-cpp"><span class="toc-number">4.11.</span> <span class="toc-text">src&#x2F;server&#x2F;db&#x2F;db.cpp</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#include-server-user-hpp-%E6%95%B0%E6%8D%AE%E5%BA%93%E4%B8%ADuser%E8%A1%A8%E5%AF%B9%E5%BA%94%E7%9A%84%E7%B1%BB"><span class="toc-number">4.12.</span> <span class="toc-text">include&#x2F;server&#x2F;user.hpp 数据库中user表对应的类</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#include-server-usermodel-hpp-user%E8%A1%A8%E7%9A%84%E6%95%B0%E6%8D%AE%E6%93%8D%E4%BD%9C%E7%B1%BB"><span class="toc-number">4.13.</span> <span class="toc-text">include&#x2F;server&#x2F;usermodel.hpp  user表的数据操作类</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#src-server-usermodel-cpp"><span class="toc-number">4.14.</span> <span class="toc-text">src&#x2F;server&#x2F;usermodel.cpp</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%B3%A8%E5%86%8C%E4%B8%9A%E5%8A%A1%E5%AE%9E%E7%8E%B0"><span class="toc-number">4.15.</span> <span class="toc-text">注册业务实现</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%AE%9E%E7%8E%B0%E6%AD%A5%E9%AA%A4"><span class="toc-number">4.15.1.</span> <span class="toc-text">实现步骤</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#conn%E6%98%AFTcpConnectionPtr%E7%B1%BB%E5%9E%8B"><span class="toc-number">4.15.2.</span> <span class="toc-text">conn是TcpConnectionPtr类型</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%AE%9E%E7%8E%B0%E6%B3%A8%E5%86%8C%E4%B8%9A%E5%8A%A1%E6%97%B6%E5%87%BA%E7%8E%B0%E7%9A%84%E9%97%AE%E9%A2%98"><span class="toc-number">4.15.3.</span> <span class="toc-text">实现注册业务时出现的问题</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%99%BB%E5%BD%95%E4%B8%9A%E5%8A%A1%E5%AE%9E%E7%8E%B0"><span class="toc-number">4.16.</span> <span class="toc-text">登录业务实现</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%AE%9E%E7%8E%B0%E6%AD%A5%E9%AA%A4%EF%BC%9A"><span class="toc-number">4.16.1.</span> <span class="toc-text">实现步骤：</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%AE%B0%E5%BD%95%E7%94%A8%E6%88%B7%E7%9A%84%E8%BF%9E%E6%8E%A5%E4%BF%A1%E6%81%AF%E5%8F%8A%E7%BA%BF%E7%A8%8B%E5%AE%89%E5%85%A8%E6%80%A7"><span class="toc-number">4.17.</span> <span class="toc-text">记录用户的连接信息及线程安全性</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%AE%A2%E6%88%B7%E7%AB%AF%E5%BC%82%E5%B8%B8%E9%80%80%E5%87%BA%E4%B8%9A%E5%8A%A1"><span class="toc-number">4.18.</span> <span class="toc-text">客户端异常退出业务</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%B8%80%E5%AF%B9%E4%B8%80%E8%81%8A%E5%A4%A9%E4%B8%9A%E5%8A%A1%EF%BC%9A%E5%9C%A8%E7%BA%BF%E8%81%8A%E5%A4%A9%E5%AE%9E%E7%8E%B0"><span class="toc-number">4.19.</span> <span class="toc-text">一对一聊天业务：在线聊天实现</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%B8%80%E5%AF%B9%E4%B8%80%E8%81%8A%E5%A4%A9%E4%B8%9A%E5%8A%A1%EF%BC%9A%E7%A6%BB%E7%BA%BF%E6%B6%88%E6%81%AF"><span class="toc-number">4.20.</span> <span class="toc-text">一对一聊天业务：离线消息</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%9C%8D%E5%8A%A1%E5%99%A8%E5%BC%82%E5%B8%B8%E9%80%80%E5%87%BA%E9%97%AE%E9%A2%98%E8%A7%A3%E5%86%B3%EF%BC%88ctrl-c%E9%80%80%E5%87%BA%EF%BC%89"><span class="toc-number">4.21.</span> <span class="toc-text">服务器异常退出问题解决（ctrl+c退出）</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%B7%BB%E5%8A%A0%E5%A5%BD%E5%8F%8B%E4%B8%9A%E5%8A%A1%E4%BB%A3%E7%A0%81"><span class="toc-number">4.22.</span> <span class="toc-text">添加好友业务代码</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%BE%A4%E7%BB%84%E4%B8%9A%E5%8A%A1"><span class="toc-number">4.23.</span> <span class="toc-text">群组业务</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%AE%A2%E6%88%B7%E7%AB%AF%E5%BC%80%E5%8F%91-%E9%A6%96%E9%A1%B5%E9%9D%A2%E5%BC%80%E5%8F%91"><span class="toc-number">4.24.</span> <span class="toc-text">客户端开发-首页面开发</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%AE%A2%E6%88%B7%E7%AB%AF%E5%92%8C%E6%9C%8D%E5%8A%A1%E7%AB%AF%E7%9A%84%E8%BF%9E%E6%8E%A5"><span class="toc-number">4.24.1.</span> <span class="toc-text">客户端和服务端的连接</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%AE%A2%E6%88%B7%E7%AB%AF%E4%B8%9A%E5%8A%A1%E5%AE%9E%E7%8E%B0"><span class="toc-number">4.24.2.</span> <span class="toc-text">客户端业务实现</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#%E9%A6%96%E5%85%88%E7%99%BB%E5%BD%95%E4%B8%9A%E5%8A%A1%EF%BC%9A"><span class="toc-number">4.24.2.1.</span> <span class="toc-text">首先登录业务：</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#%E6%B3%A8%E5%86%8C%E4%B8%9A%E5%8A%A1%EF%BC%9A"><span class="toc-number">4.24.2.2.</span> <span class="toc-text">注册业务：</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#%E9%80%80%E5%87%BA%E4%B8%9A%E5%8A%A1%EF%BC%9A"><span class="toc-number">4.24.2.3.</span> <span class="toc-text">退出业务：</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#%E8%81%8A%E5%A4%A9%E4%B8%BB%E7%95%8C%E9%9D%A2%E4%B8%9A%E5%8A%A1%EF%BC%9A"><span class="toc-number">4.24.2.4.</span> <span class="toc-text">聊天主界面业务：</span></a><ol class="toc-child"><li class="toc-item toc-level-6"><a class="toc-link" href="#chat%E5%8A%9F%E8%83%BD%E5%AE%9E%E7%8E%B0%EF%BC%9A"><span class="toc-number">4.24.2.4.1.</span> <span class="toc-text">chat功能实现：</span></a></li><li class="toc-item toc-level-6"><a class="toc-link" href="#addfriend%E5%8A%9F%E8%83%BD%E5%AE%9E%E7%8E%B0%EF%BC%9A"><span class="toc-number">4.24.2.4.2.</span> <span class="toc-text">addfriend功能实现：</span></a></li><li class="toc-item toc-level-6"><a class="toc-link" href="#creategroup%E5%8A%9F%E8%83%BD%E5%AE%9E%E7%8E%B0%EF%BC%9A"><span class="toc-number">4.24.2.4.3.</span> <span class="toc-text">creategroup功能实现：</span></a></li><li class="toc-item toc-level-6"><a class="toc-link" href="#addgroup%E5%8A%9F%E8%83%BD%E5%AE%9E%E7%8E%B0%EF%BC%9A"><span class="toc-number">4.24.2.4.4.</span> <span class="toc-text">addgroup功能实现：</span></a></li><li class="toc-item toc-level-6"><a class="toc-link" href="#groupchat%E5%8A%9F%E8%83%BD%E5%AE%9E%E7%8E%B0%EF%BC%9A"><span class="toc-number">4.24.2.4.5.</span> <span class="toc-text">groupchat功能实现：</span></a></li><li class="toc-item toc-level-6"><a class="toc-link" href="#loginout%E5%8A%9F%E8%83%BD%E5%AE%9E%E7%8E%B0%EF%BC%9A"><span class="toc-number">4.24.2.4.6.</span> <span class="toc-text">loginout功能实现：</span></a></li></ol></li></ol></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%BC%95%E5%85%A5%E8%B4%9F%E8%BD%BD%E5%9D%87%E8%A1%A1%E5%99%A8%EF%BC%9A"><span class="toc-number">4.25.</span> <span class="toc-text">引入负载均衡器：</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F%E7%9A%84%E9%99%90%E5%88%B6"><span class="toc-number">4.25.1.</span> <span class="toc-text">操作系统的限制</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%AE%9E%E9%99%85%E5%8F%AF%E6%94%AF%E6%8C%81%E7%9A%84%E5%B9%B6%E5%8F%91%E8%BF%9E%E6%8E%A5%E6%95%B0%EF%BC%88%E4%BC%B0%E7%AE%97%EF%BC%89%EF%BC%9A"><span class="toc-number">4.25.2.</span> <span class="toc-text">实际可支持的并发连接数（估算）：</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E4%BB%80%E4%B9%88%E6%98%AF-Idle%E8%BF%9E%E6%8E%A5%EF%BC%88%E4%B8%8D%E6%B4%BB%E8%B7%83%E8%BF%9E%E6%8E%A5%EF%BC%89%EF%BC%9F"><span class="toc-number">4.25.3.</span> <span class="toc-text">什么是 Idle连接（不活跃连接）？</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E4%B8%BA%E4%BB%80%E4%B9%88%E8%A6%81%E5%8C%BA%E5%88%86-Idle-%E4%B8%8E-%E6%B4%BB%E8%B7%83%E8%BF%9E%E6%8E%A5%EF%BC%9F"><span class="toc-number">4.25.4.</span> <span class="toc-text">为什么要区分 Idle 与 活跃连接？</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E8%B4%9F%E8%BD%BD%E5%9D%87%E8%A1%A1%E5%99%A8"><span class="toc-number">4.25.5.</span> <span class="toc-text">负载均衡器</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#%E4%B8%BA%E4%BB%80%E4%B9%88%E9%9C%80%E8%A6%81%E5%AE%83%EF%BC%9F"><span class="toc-number">4.25.5.1.</span> <span class="toc-text">为什么需要它？</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#%E6%8C%89%E5%8D%8F%E8%AE%AE%E5%B1%82%E5%88%92%E5%88%86%EF%BC%88TCP-HTTP%EF%BC%89"><span class="toc-number">4.25.5.2.</span> <span class="toc-text">按协议层划分（TCP&#x2F;HTTP）</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#%E5%B8%B8%E8%A7%81%E8%BD%AF%E4%BB%B6%E8%B4%9F%E8%BD%BD%E5%9D%87%E8%A1%A1%E5%99%A8%E5%AF%B9%E6%AF%94"><span class="toc-number">4.25.5.3.</span> <span class="toc-text">常见软件负载均衡器对比</span></a></li></ol></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%BC%95%E5%85%A5%E6%9C%8D%E5%8A%A1%E5%99%A8%E4%B8%AD%E9%97%B4%E4%BB%B6%EF%BC%88redis%EF%BC%89"><span class="toc-number">4.26.</span> <span class="toc-text">引入服务器中间件（redis）</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#nginx%E9%A1%B9%E7%9B%AE%E9%85%8D%E7%BD%AE"><span class="toc-number">4.27.</span> <span class="toc-text">nginx项目配置</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Redis%E9%A1%B9%E7%9B%AE%E9%85%8D%E7%BD%AE"><span class="toc-number">4.28.</span> <span class="toc-text">Redis项目配置</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%A7%A3%E5%86%B3%E8%B7%A8%E6%9C%8D%E5%8A%A1%E5%99%A8%E9%80%9A%E4%BF%A1%E9%97%AE%E9%A2%98"><span class="toc-number">4.29.</span> <span class="toc-text">解决跨服务器通信问题</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%A7%A3%E5%86%B3%E7%99%BB%E5%BD%95%E6%B3%A8%E9%94%80%E5%90%8E%E5%86%8D%E6%AC%A1%E7%99%BB%E5%BD%95%E4%BC%9A%E9%98%BB%E5%A1%9E%E7%9A%84%E9%97%AE%E9%A2%98"><span class="toc-number">4.30.</span> <span class="toc-text">解决登录注销后再次登录会阻塞的问题</span></a></li></ol></li></ol></div></div></div></aside><main class="sidebar-translate" id="content"><div id="post"><article class="hty-card post-block" itemscope itemtype="https://schema.org/Article" style="--smc-primary:#0078E7;"><link itemprop="mainEntityOfPage" href="http://yustonerain.top/2025/06/02/C++-chatserver.html"><span hidden itemprop="author" itemscope itemtype="https://schema.org/Person"><meta itemprop="name" content="YuStone"><meta itemprop="description"></span><span hidden itemprop="publisher" itemscope itemtype="https://schema.org/Organization"><meta itemprop="name" content="YuStone Blogs"></span><header class="post-header"><h1 class="post-title" itemprop="name headline">c++实现集群聊天服务器</h1><div class="post-meta"><div class="post-time"><span class="post-meta-item-icon"><span class="icon iconify" data-icon="ri:calendar-line"></span></span> <time title="创建时间：2025-06-02 23:57:52" itemprop="dateCreated datePublished" datetime="2025-06-02T23:57:52+08:00">2025-06-02</time><span class="post-meta-divider">-</span><span class="post-meta-item-icon"><span class="icon iconify" data-icon="ri:calendar-2-line"></span></span> <time title="修改时间：2025-06-23 16:34:18" itemprop="dateModified" datetime="2025-06-23T16:34:18+08:00">2025-06-23</time></div><div class="post-classify"><span class="post-category"> <span class="post-meta-item-icon" style="margin-right:3px;"><span class="icon iconify" data-icon="ri:folder-line"></span></span><span itemprop="about" itemscope itemtype="https://schema.org/Thing"><a class="category-item" href="/categories/%E9%A1%B9%E7%9B%AE/" style="--text-color:var(--hty-text-color)" itemprop="url" rel="index"><span itemprop="text">项目</span></a></span></span><span class="post-tag"><span class="post-meta-divider">-</span><a class="tag-item" href="/tags/C/" style="--text-color:var(--hty-text-color)"><span class="post-meta-item-icon"><span class="icon iconify" data-icon="ri:price-tag-3-line"></span></span><span class="tag-name">C++</span></a></span></div></div></header><section class="post-body" itemprop="articleBody"><div class="post-content markdown-body"><h2 id="json学习"><a href="#json学习" class="headerlink" title="json学习"></a>json学习</h2><pre class="language-cpp" data-language="cpp"><code class="language-cpp"><span class="token macro property"><span class="token directive-hash">#</span><span class="token directive keyword">include</span> <span class="token string">"json.hpp"</span></span>
+<span class="token keyword">using</span> json<span class="token operator">=</span>nlohmann<span class="token double-colon punctuation">::</span>json<span class="token punctuation">;</span></code></pre>
+
+<p>使用json,要包含json的头文件 ，方便使用可以重命名nlohmann::json为json。</p>
+<pre class="language-cpp" data-language="cpp"><code class="language-cpp"><span class="token comment">//json序列化示例1</span>
+std<span class="token double-colon punctuation">::</span>string <span class="token function">func1</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">&#123;</span>
+    json js<span class="token punctuation">;</span>
+    js<span class="token punctuation">[</span><span class="token string">"msg_type"</span><span class="token punctuation">]</span><span class="token operator">=</span><span class="token number">2</span><span class="token punctuation">;</span>
+    js<span class="token punctuation">[</span><span class="token string">"from"</span><span class="token punctuation">]</span><span class="token operator">=</span><span class="token string">"zhang san"</span><span class="token punctuation">;</span>
+    js<span class="token punctuation">[</span><span class="token string">"to"</span><span class="token punctuation">]</span> <span class="token operator">=</span> <span class="token string">"li si"</span><span class="token punctuation">;</span>
+    js<span class="token punctuation">[</span><span class="token string">"msg"</span><span class="token punctuation">]</span><span class="token operator">=</span><span class="token string">"hello,what are you doing now"</span><span class="token punctuation">;</span>
+    std<span class="token double-colon punctuation">::</span>string sendBuf<span class="token operator">=</span>js<span class="token punctuation">.</span><span class="token function">dump</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    std<span class="token double-colon punctuation">::</span>cout<span class="token operator">&lt;&lt;</span>sendBuf<span class="token punctuation">.</span><span class="token function">c_str</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">&lt;&lt;</span>std<span class="token double-colon punctuation">::</span>endl<span class="token punctuation">;</span>
+    <span class="token keyword">return</span> sendBuf<span class="token punctuation">;</span>
+<span class="token punctuation">&#125;</span></code></pre>
+
+<p>js使用很像键值对。js.dump()是 nlohmann::json库中用于将 JSON 对象序列化（转为字符串）的方法，它会把一个 json类型的变量转换成 JSON 格式的字符串。</p>
+<pre class="language-cpp" data-language="cpp"><code class="language-cpp">std<span class="token double-colon punctuation">::</span>string recvBuf<span class="token operator">=</span> <span class="token function">func1</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+   <span class="token comment">//数据的反序列化 json字符串-》反序列化数据对象（看作容器，方便访问）</span>
+   json jsbuf<span class="token operator">=</span>json<span class="token double-colon punctuation">::</span><span class="token function">parse</span><span class="token punctuation">(</span>recvBuf<span class="token punctuation">)</span><span class="token punctuation">;</span>
+   std<span class="token double-colon punctuation">::</span>cout<span class="token operator">&lt;&lt;</span>jsbuf<span class="token punctuation">[</span><span class="token string">"msg_type"</span><span class="token punctuation">]</span><span class="token operator">&lt;&lt;</span>std<span class="token double-colon punctuation">::</span>endl<span class="token punctuation">;</span>
+   std<span class="token double-colon punctuation">::</span>cout<span class="token operator">&lt;&lt;</span>jsbuf<span class="token punctuation">[</span><span class="token string">"from"</span><span class="token punctuation">]</span><span class="token operator">&lt;&lt;</span>std<span class="token double-colon punctuation">::</span>endl<span class="token punctuation">;</span>
+   std<span class="token double-colon punctuation">::</span>cout<span class="token operator">&lt;&lt;</span>jsbuf<span class="token punctuation">[</span><span class="token string">"to"</span><span class="token punctuation">]</span><span class="token operator">&lt;&lt;</span>std<span class="token double-colon punctuation">::</span>endl<span class="token punctuation">;</span>
+   std<span class="token double-colon punctuation">::</span>cout<span class="token operator">&lt;&lt;</span>jsbuf<span class="token punctuation">[</span><span class="token string">"msg"</span><span class="token punctuation">]</span><span class="token operator">&lt;&lt;</span>std<span class="token double-colon punctuation">::</span>endl<span class="token punctuation">;</span></code></pre>
+
+<p>这是main函数中执行。<code>json::parse()</code> 是 <code>nlohmann::json</code> 库中用来将 <strong>JSON 字符串 → JSON 对象</strong> 的函数，也就是实现<strong>反序列化</strong>。</p>
+<p>转化为json对象后使用对应的键可以把对应的值取出来。结果：</p>
+<pre class="language-none"><code class="language-none">&#123;&quot;from&quot;:&quot;zhang san&quot;,&quot;msg&quot;:&quot;hello,what are you doing now&quot;,&quot;msg_type&quot;:2,&quot;to&quot;:&quot;li si&quot;&#125;
+2
+&quot;zhang san&quot;
+&quot;li si&quot;
+&quot;hello,what are you doing now&quot;</code></pre>
+
+<pre class="language-cpp" data-language="cpp"><code class="language-cpp"><span class="token comment">//json序列化示例2</span>
+std<span class="token double-colon punctuation">::</span>string <span class="token function">func2</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">&#123;</span>
+    json js<span class="token punctuation">;</span>
+    <span class="token comment">//添加数组</span>
+    js<span class="token punctuation">[</span><span class="token string">"id"</span><span class="token punctuation">]</span><span class="token operator">=</span><span class="token punctuation">&#123;</span><span class="token number">1</span><span class="token punctuation">,</span><span class="token number">2</span><span class="token punctuation">,</span><span class="token number">3</span><span class="token punctuation">,</span><span class="token number">4</span><span class="token punctuation">,</span><span class="token number">5</span><span class="token punctuation">&#125;</span><span class="token punctuation">;</span>
+    <span class="token comment">//添加key-value</span>
+    js<span class="token punctuation">[</span><span class="token string">"name"</span><span class="token punctuation">]</span><span class="token operator">=</span><span class="token string">"zhang san"</span><span class="token punctuation">;</span>
+    <span class="token comment">//添加对象</span>
+    js<span class="token punctuation">[</span><span class="token string">"msg"</span><span class="token punctuation">]</span><span class="token punctuation">[</span><span class="token string">"zhang san"</span><span class="token punctuation">]</span><span class="token operator">=</span> <span class="token string">"hello world"</span><span class="token punctuation">;</span>
+    js<span class="token punctuation">[</span><span class="token string">"msg"</span><span class="token punctuation">]</span><span class="token punctuation">[</span><span class="token string">"liu shuo"</span><span class="token punctuation">]</span> <span class="token operator">=</span><span class="token string">"hello china"</span><span class="token punctuation">;</span>
+    <span class="token comment">//上面等同下面这句一次性添加数组对象</span>
+    js<span class="token punctuation">[</span><span class="token string">"msg"</span><span class="token punctuation">]</span><span class="token operator">=</span><span class="token punctuation">&#123;</span><span class="token punctuation">&#123;</span><span class="token string">"zhang san"</span><span class="token punctuation">,</span><span class="token string">"hello world"</span><span class="token punctuation">&#125;</span><span class="token punctuation">,</span><span class="token punctuation">&#123;</span><span class="token string">"liu shuo"</span><span class="token punctuation">,</span><span class="token string">"hello china"</span><span class="token punctuation">&#125;</span><span class="token punctuation">&#125;</span><span class="token punctuation">;</span>
+    std<span class="token double-colon punctuation">::</span>cout<span class="token operator">&lt;&lt;</span>js<span class="token operator">&lt;&lt;</span>std<span class="token double-colon punctuation">::</span>endl<span class="token punctuation">;</span>
+    <span class="token keyword">return</span> js<span class="token punctuation">.</span><span class="token function">dump</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">&#125;</span></code></pre>
+
+<p>json还可以放数组，还可以嵌套json语句。</p>
+<pre class="language-cpp" data-language="cpp"><code class="language-cpp">std<span class="token double-colon punctuation">::</span>string recvBuf<span class="token operator">=</span> <span class="token function">func2</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token comment">//数据的反序列化 json字符串-》反序列化数据对象（看作容器，方便访问）</span>
+    json jsbuf<span class="token operator">=</span>json<span class="token double-colon punctuation">::</span><span class="token function">parse</span><span class="token punctuation">(</span>recvBuf<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    std<span class="token double-colon punctuation">::</span>cout<span class="token operator">&lt;&lt;</span>jsbuf<span class="token punctuation">[</span><span class="token string">"id"</span><span class="token punctuation">]</span><span class="token operator">&lt;&lt;</span>std<span class="token double-colon punctuation">::</span>endl<span class="token punctuation">;</span>
+    <span class="token keyword">auto</span> arr<span class="token operator">=</span>jsbuf<span class="token punctuation">[</span><span class="token string">"id"</span><span class="token punctuation">]</span><span class="token punctuation">;</span>
+    std<span class="token double-colon punctuation">::</span>cout<span class="token operator">&lt;&lt;</span>arr<span class="token punctuation">[</span><span class="token number">2</span><span class="token punctuation">]</span><span class="token operator">&lt;&lt;</span>std<span class="token double-colon punctuation">::</span>endl<span class="token punctuation">;</span>
+    <span class="token keyword">auto</span> msgjs<span class="token operator">=</span>jsbuf<span class="token punctuation">[</span><span class="token string">"msg"</span><span class="token punctuation">]</span><span class="token punctuation">;</span>
+    std<span class="token double-colon punctuation">::</span>cout<span class="token operator">&lt;&lt;</span>msgjs<span class="token punctuation">[</span><span class="token string">"zhang san"</span><span class="token punctuation">]</span><span class="token operator">&lt;&lt;</span>std<span class="token double-colon punctuation">::</span>endl<span class="token punctuation">;</span>
+    std<span class="token double-colon punctuation">::</span>cout<span class="token operator">&lt;&lt;</span>msgjs<span class="token punctuation">[</span><span class="token string">"liu shuo"</span><span class="token punctuation">]</span><span class="token operator">&lt;&lt;</span>std<span class="token double-colon punctuation">::</span>endl<span class="token punctuation">;</span></code></pre>
+
+<p>“id”存储的是一个数组，取出来还可以作为数组使用。“msg”存储的值还可以是json语句，并且可以进入再取里面的值。</p>
+<p>结果：</p>
+<pre class="language-none"><code class="language-none">&#123;&quot;id&quot;:[1,2,3,4,5],&quot;msg&quot;:&#123;&quot;liu shuo&quot;:&quot;hello china&quot;,&quot;zhang san&quot;:&quot;hello world&quot;&#125;,&quot;name&quot;:&quot;zhang san&quot;&#125;
+[1,2,3,4,5]
+3
+&quot;hello world&quot;
+&quot;hello china&quot;</code></pre>
+
+<pre class="language-cpp" data-language="cpp"><code class="language-cpp"><span class="token comment">//json序列化示例3</span>
+std<span class="token double-colon punctuation">::</span>string <span class="token function">func3</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">&#123;</span>
+    json js<span class="token punctuation">;</span>
+    <span class="token comment">//直接序列化一个vector容器</span>
+    std<span class="token double-colon punctuation">::</span>vector<span class="token operator">&lt;</span><span class="token keyword">int</span><span class="token operator">></span> vec<span class="token punctuation">;</span>
+    vec<span class="token punctuation">.</span><span class="token function">push_back</span><span class="token punctuation">(</span><span class="token number">1</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    vec<span class="token punctuation">.</span><span class="token function">push_back</span><span class="token punctuation">(</span><span class="token number">2</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    vec<span class="token punctuation">.</span><span class="token function">push_back</span><span class="token punctuation">(</span><span class="token number">5</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    js<span class="token punctuation">[</span><span class="token string">"list"</span><span class="token punctuation">]</span><span class="token operator">=</span>vec<span class="token punctuation">;</span>
+    <span class="token comment">//直接序列化一个map容器</span>
+    std<span class="token double-colon punctuation">::</span>map<span class="token operator">&lt;</span><span class="token keyword">int</span><span class="token punctuation">,</span>std<span class="token double-colon punctuation">::</span>string<span class="token operator">></span> m<span class="token punctuation">;</span>
+    m<span class="token punctuation">.</span><span class="token function">insert</span><span class="token punctuation">(</span><span class="token punctuation">&#123;</span><span class="token number">1</span><span class="token punctuation">,</span><span class="token string">"黄山"</span><span class="token punctuation">&#125;</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    m<span class="token punctuation">.</span><span class="token function">insert</span><span class="token punctuation">(</span><span class="token punctuation">&#123;</span><span class="token number">2</span><span class="token punctuation">,</span><span class="token string">"华山"</span><span class="token punctuation">&#125;</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    m<span class="token punctuation">.</span><span class="token function">insert</span><span class="token punctuation">(</span><span class="token punctuation">&#123;</span><span class="token number">3</span><span class="token punctuation">,</span><span class="token string">"泰山"</span><span class="token punctuation">&#125;</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    js<span class="token punctuation">[</span><span class="token string">"path"</span><span class="token punctuation">]</span> <span class="token operator">=</span>m<span class="token punctuation">;</span>
+    std<span class="token double-colon punctuation">::</span>string sendBuf <span class="token operator">=</span>js<span class="token punctuation">.</span><span class="token function">dump</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span><span class="token comment">//json数据对象->序列化json字符串</span>
+    std<span class="token double-colon punctuation">::</span>cout<span class="token operator">&lt;&lt;</span>sendBuf<span class="token operator">&lt;&lt;</span>std<span class="token double-colon punctuation">::</span>endl<span class="token punctuation">;</span>
+    <span class="token keyword">return</span> sendBuf<span class="token punctuation">;</span>
+
+<span class="token punctuation">&#125;</span></code></pre>
+
+<p>还可以序列化容器。</p>
+<pre class="language-cpp" data-language="cpp"><code class="language-cpp">std<span class="token double-colon punctuation">::</span>string recvBuf<span class="token operator">=</span> <span class="token function">func3</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token comment">//数据的反序列化 json字符串-》反序列化数据对象（看作容器，方便访问）</span>
+    json jsbuf<span class="token operator">=</span>json<span class="token double-colon punctuation">::</span><span class="token function">parse</span><span class="token punctuation">(</span>recvBuf<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    std<span class="token double-colon punctuation">::</span>vector<span class="token operator">&lt;</span><span class="token keyword">int</span><span class="token operator">></span> vec <span class="token operator">=</span>jsbuf<span class="token punctuation">[</span><span class="token string">"list"</span><span class="token punctuation">]</span><span class="token punctuation">;</span><span class="token comment">//js对象里面的数组类型，直接放入vector容器当中</span>
+    <span class="token keyword">for</span><span class="token punctuation">(</span><span class="token keyword">int</span> <span class="token operator">&amp;</span>v<span class="token operator">:</span>vec<span class="token punctuation">)</span><span class="token punctuation">&#123;</span>
+        std<span class="token double-colon punctuation">::</span>cout<span class="token operator">&lt;&lt;</span>v<span class="token operator">&lt;&lt;</span><span class="token string">" "</span><span class="token punctuation">;</span>
+    <span class="token punctuation">&#125;</span>
+    std<span class="token double-colon punctuation">::</span>cout<span class="token operator">&lt;&lt;</span>std<span class="token double-colon punctuation">::</span>endl<span class="token punctuation">;</span>
+    std<span class="token double-colon punctuation">::</span>map<span class="token operator">&lt;</span><span class="token keyword">int</span><span class="token punctuation">,</span>std<span class="token double-colon punctuation">::</span>string<span class="token operator">></span> mymap<span class="token operator">=</span>jsbuf<span class="token punctuation">[</span><span class="token string">"path"</span><span class="token punctuation">]</span><span class="token punctuation">;</span>
+    <span class="token keyword">for</span><span class="token punctuation">(</span><span class="token keyword">auto</span> <span class="token operator">&amp;</span>p<span class="token operator">:</span>mymap<span class="token punctuation">)</span><span class="token punctuation">&#123;</span>
+        std<span class="token double-colon punctuation">::</span>cout<span class="token operator">&lt;&lt;</span>p<span class="token punctuation">.</span>first<span class="token operator">&lt;&lt;</span><span class="token string">" "</span><span class="token operator">&lt;&lt;</span>p<span class="token punctuation">.</span>second<span class="token operator">&lt;&lt;</span>std<span class="token double-colon punctuation">::</span>endl<span class="token punctuation">;</span>
+    <span class="token punctuation">&#125;</span>
+    std<span class="token double-colon punctuation">::</span>cout<span class="token operator">&lt;&lt;</span>std<span class="token double-colon punctuation">::</span>endl<span class="token punctuation">;</span>
+    <span class="token keyword">return</span> <span class="token number">0</span><span class="token punctuation">;</span></code></pre>
+
+<p>结果：</p>
+<pre class="language-none"><code class="language-none">&#123;&quot;list&quot;:[1,2,5],&quot;path&quot;:[[1,&quot;黄山&quot;],[2,&quot;华山&quot;],[3,&quot;泰山&quot;]]&#125;
+1 2 5 
+1 黄山
+2 华山
+3 泰山</code></pre>
+
+<h2 id="muduo网络库学习"><a href="#muduo网络库学习" class="headerlink" title="muduo网络库学习"></a>muduo网络库学习</h2><p><strong>muduo</strong> 是一个现代 C++ 的非阻塞 I&#x2F;O 网络库，采用 <strong>Reactor 模式 + 多线程 + epoll + 定时器 + 高效缓冲区 + 智能指针设计</strong>，在性能和工程性方面都表现非常优秀。</p>
+<pre class="language-cpp" data-language="cpp"><code class="language-cpp"><span class="token comment">/*
+muduo网络库给用户提供了两个主要的类
+TcpServer :用于编写服务器程序的
+TcpClient :用于编写客户端程序的
+
+epoll+线程池
+好处：能够把网络I/O的代码和业务代码区分开了
+业务代码 :用户的连接和断开 用户的可读写事件
+*/</span>
+<span class="token macro property"><span class="token directive-hash">#</span><span class="token directive keyword">include</span><span class="token string">&lt;muduo/net/TcpServer.h></span></span>
+<span class="token macro property"><span class="token directive-hash">#</span><span class="token directive keyword">include</span><span class="token string">&lt;muduo/net/EventLoop.h></span></span>
+<span class="token macro property"><span class="token directive-hash">#</span><span class="token directive keyword">include</span> <span class="token string">&lt;functional></span></span>
+<span class="token macro property"><span class="token directive-hash">#</span><span class="token directive keyword">include</span> <span class="token string">&lt;iostream></span></span>
+<span class="token macro property"><span class="token directive-hash">#</span><span class="token directive keyword">include</span> <span class="token string">&lt;string></span></span>
+<span class="token keyword">using</span> <span class="token keyword">namespace</span> std<span class="token punctuation">;</span>
+<span class="token keyword">using</span> <span class="token keyword">namespace</span> muduo<span class="token punctuation">;</span>
+<span class="token keyword">using</span> <span class="token keyword">namespace</span> muduo<span class="token double-colon punctuation">::</span>net<span class="token punctuation">;</span>
+<span class="token keyword">using</span> <span class="token keyword">namespace</span> placeholders<span class="token punctuation">;</span>
+<span class="token comment">/*基于muduo网络库开发服务器程序
+1.组合TcpServer对象
+2.创建EventLoop事件循环对象的指针
+3.明确TcpServer构造函数需要什么参数，输出ChatServer的构造函数
+4.在当前服务器类的构造函数当中，注册处理连接的回调函数和处理读写事件的回调函数
+5.设置合适的服务端线程数量，muduo库会自己分配I/O线程和worker线程
+*/</span>
+<span class="token keyword">class</span> <span class="token class-name">ChatServer</span><span class="token punctuation">&#123;</span>
+<span class="token keyword">public</span><span class="token operator">:</span>
+    <span class="token function">ChatServer</span><span class="token punctuation">(</span>EventLoop<span class="token operator">*</span> loop<span class="token punctuation">,</span><span class="token comment">//事件循环</span>
+            <span class="token keyword">const</span> InetAddress<span class="token operator">&amp;</span> listenAddr<span class="token punctuation">,</span><span class="token comment">//ip+port</span>
+            <span class="token keyword">const</span> string<span class="token operator">&amp;</span> nameArg<span class="token punctuation">)</span><span class="token comment">//服务器的名字</span>
+        <span class="token operator">:</span><span class="token function">_server</span><span class="token punctuation">(</span>loop<span class="token punctuation">,</span>listenAddr<span class="token punctuation">,</span>nameArg<span class="token punctuation">)</span><span class="token punctuation">,</span><span class="token function">_loop</span><span class="token punctuation">(</span>loop<span class="token punctuation">)</span>
+        <span class="token punctuation">&#123;</span>
+            <span class="token comment">//给服务器注册用户连接的创建和断开回调</span>
+            _server<span class="token punctuation">.</span><span class="token function">setConnectionCallback</span><span class="token punctuation">(</span>std<span class="token double-colon punctuation">::</span><span class="token function">bind</span><span class="token punctuation">(</span><span class="token operator">&amp;</span>ChatServer<span class="token double-colon punctuation">::</span>onConnection<span class="token punctuation">,</span><span class="token keyword">this</span><span class="token punctuation">,</span>_1<span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>            
+            <span class="token comment">//给服务器注册用户读写事件回调</span>
+            _server<span class="token punctuation">.</span><span class="token function">setMessageCallback</span><span class="token punctuation">(</span>std<span class="token double-colon punctuation">::</span><span class="token function">bind</span><span class="token punctuation">(</span><span class="token operator">&amp;</span>ChatServer<span class="token double-colon punctuation">::</span>onMessage<span class="token punctuation">,</span><span class="token keyword">this</span><span class="token punctuation">,</span>_1<span class="token punctuation">,</span>_2<span class="token punctuation">,</span>_3<span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+            <span class="token comment">//设置服务器端的线程数量 1个I/o线程 3个worker线程</span>
+            _server<span class="token punctuation">.</span><span class="token function">setThreadNum</span><span class="token punctuation">(</span><span class="token number">4</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token punctuation">&#125;</span>
+        <span class="token comment">//开启事件循环</span>
+        <span class="token keyword">void</span> <span class="token function">start</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">&#123;</span>
+            _server<span class="token punctuation">.</span><span class="token function">start</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token punctuation">&#125;</span>
+<span class="token keyword">private</span><span class="token operator">:</span>
+    <span class="token comment">//专门处理用户的连接创建和断开</span>
+    <span class="token keyword">void</span> <span class="token function">onConnection</span><span class="token punctuation">(</span><span class="token keyword">const</span> TcpConnectionPtr<span class="token operator">&amp;</span>conn<span class="token punctuation">)</span><span class="token punctuation">&#123;</span>
+        
+        <span class="token keyword">if</span><span class="token punctuation">(</span>conn<span class="token operator">-></span><span class="token function">connected</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">&#123;</span>
+            cout<span class="token operator">&lt;&lt;</span>conn<span class="token operator">-></span><span class="token function">peerAddress</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">toIpPort</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">&lt;&lt;</span><span class="token string">"->"</span><span class="token operator">&lt;&lt;</span>
+            conn<span class="token operator">-></span><span class="token function">localAddress</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">toIpPort</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">&lt;&lt;</span><span class="token string">"state:online"</span><span class="token operator">&lt;&lt;</span>endl<span class="token punctuation">;</span>
+        <span class="token punctuation">&#125;</span><span class="token keyword">else</span><span class="token punctuation">&#123;</span><span class="token comment">//对方关闭连接或断开</span>
+            cout<span class="token operator">&lt;&lt;</span>conn<span class="token operator">-></span><span class="token function">peerAddress</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">toIpPort</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">&lt;&lt;</span><span class="token string">"->"</span><span class="token operator">&lt;&lt;</span>
+            conn<span class="token operator">-></span><span class="token function">localAddress</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">toIpPort</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">&lt;&lt;</span><span class="token string">"state:offline"</span><span class="token operator">&lt;&lt;</span>endl<span class="token punctuation">;</span>
+            conn<span class="token operator">-></span><span class="token function">shutdown</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span> <span class="token comment">//close(fd)//关闭连接</span>
+            <span class="token comment">// _loop->quit();通常用于程序结束或手动控制关闭 Muduo</span>
+            <span class="token comment">//loop->quit() 使loop.loop()不再阻塞。</span>
+        <span class="token punctuation">&#125;</span>
+    <span class="token punctuation">&#125;</span>
+    <span class="token comment">//专门处理用户的读写事件</span>
+    <span class="token keyword">void</span> <span class="token function">onMessage</span><span class="token punctuation">(</span><span class="token keyword">const</span> TcpConnectionPtr<span class="token operator">&amp;</span>conn<span class="token punctuation">,</span><span class="token comment">//连接</span>
+                            Buffer<span class="token operator">*</span> buffer<span class="token punctuation">,</span><span class="token comment">//缓冲区</span>
+                            Timestamp time<span class="token punctuation">)</span><span class="token comment">//接受数据的时间信息</span>
+    <span class="token punctuation">&#123;</span>
+        <span class="token comment">//是一个指向 muduo::net::Buffer 对象的指针，用于暂存客户端发送的数据。</span>
+		<span class="token comment">//Muduo 采用 非阻塞、事件驱动的方式，当客户端发送数据时，数据先被读入 Buffer 中，之后由用户注册的回调函数（例如 			onMessage）来处理。</span>
+        <span class="token comment">//retrieveAllAsString()把缓冲区中的所有可读数据提取为一个 std::string，然后清空缓冲区。</span>
+        string buf<span class="token operator">=</span>buffer<span class="token operator">-></span><span class="token function">retrieveAllAsString</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        cout<span class="token operator">&lt;&lt;</span><span class="token string">"recv data:"</span> <span class="token operator">&lt;&lt;</span>buf<span class="token operator">&lt;&lt;</span><span class="token string">"time:"</span><span class="token operator">&lt;&lt;</span>time<span class="token punctuation">.</span><span class="token function">toString</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">&lt;&lt;</span>endl<span class="token punctuation">;</span>
+        conn<span class="token operator">-></span><span class="token function">send</span><span class="token punctuation">(</span>buf<span class="token punctuation">)</span><span class="token punctuation">;</span><span class="token comment">//原封不动发回去                        </span>
+    <span class="token punctuation">&#125;</span>
+    muduo<span class="token double-colon punctuation">::</span>net<span class="token double-colon punctuation">::</span>TcpServer _server<span class="token punctuation">;</span>
+    muduo<span class="token double-colon punctuation">::</span>net<span class="token double-colon punctuation">::</span>EventLoop <span class="token operator">*</span>_loop<span class="token punctuation">;</span>
+<span class="token punctuation">&#125;</span><span class="token punctuation">;</span>
+<span class="token keyword">int</span> <span class="token function">main</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">&#123;</span>
+    EventLoop loop<span class="token punctuation">;</span><span class="token comment">//epoll</span>
+    InetAddress <span class="token function">addr</span><span class="token punctuation">(</span><span class="token string">"127.0.0.1"</span><span class="token punctuation">,</span><span class="token number">6000</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    ChatServer <span class="token function">server</span><span class="token punctuation">(</span><span class="token operator">&amp;</span>loop<span class="token punctuation">,</span>addr<span class="token punctuation">,</span><span class="token string">"ChatServer"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    server<span class="token punctuation">.</span><span class="token function">start</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span><span class="token comment">//listenfd epoll_ctl->epoll</span>
+    loop<span class="token punctuation">.</span><span class="token function">loop</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span> <span class="token comment">//epoll wait以阻塞方式等待新用户连接，已连接用户的读写事件等</span>
+    <span class="token keyword">return</span> <span class="token number">0</span><span class="token punctuation">;</span>
+<span class="token punctuation">&#125;</span></code></pre>
+
+<p>先将bind函数讲清楚，</p>
+<p>基本格式</p>
+<pre class="language-none"><code class="language-none">std::bind(&amp;类名::成员函数, 对象指针, 占位符参数...)</code></pre>
+
+<p>所以：</p>
+<pre class="language-none"><code class="language-none">std::bind(&amp;ChatServer::onConnection, this, _1)</code></pre>
+
+<p>意思是：</p>
+<p>把当前对象（<code>this</code>）的 <code>onConnection</code> 成员函数绑定起来，形成一个可调用对象，并接受一个参数 <code>_1</code>。</p>
+<p>分解解释</p>
+<table>
+<thead>
+<tr>
+<th>组件</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>&amp;ChatServer::onConnection</code></td>
+<td>指向 <code>ChatServer</code> 类的成员函数 <code>onConnection</code> 的指针</td>
+</tr>
+<tr>
+<td><code>this</code></td>
+<td>当前对象的指针，告诉 <code>bind</code> 这个函数是哪个对象的方法（即调用 this-&gt;onConnection）</td>
+</tr>
+<tr>
+<td><code>_1</code></td>
+<td>占位符，代表回调传入的第一个参数，实际调用时会被替换</td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+</tr>
+</tbody></table>
+<p>最终生成一个 <code>std::function&lt;void(const TcpConnectionPtr&amp;)&gt;</code> 类型的函数对象。</p>
+<h2 id="CMakeList-txt学习"><a href="#CMakeList-txt学习" class="headerlink" title="CMakeList.txt学习"></a>CMakeList.txt学习</h2><p>主CMakeList.txt</p>
+<pre class="language-none"><code class="language-none">cmake_minimum_required(VERSION 3.10)
+
+project(chat)
+
+#配置编译选项
+set(CMAKE_CXX_FLAGS $&#123;CMAKE_CXX_FLAGS&#125; -g)
+#配置最终的可执行文件输出的路径
+set(EXECUTABLE_OUTPUT_PATH $&#123;PROJECT_SOURCE_DIR&#125;&#x2F;bin)
+#配置头文件搜索路径
+include_directories($&#123;PROJECT_SOURCE_DIR&#125;&#x2F;include)
+include_directories($&#123;PROJECT_SOURCE_DIR&#125;&#x2F;include&#x2F;server)
+
+#加载子目录
+add_subdirectory(src)</code></pre>
+
+<p>src文件夹下的CMakeList.txt</p>
+<pre class="language-none"><code class="language-none">add_subdirectory(server)</code></pre>
+
+<p>src文件夹下的server文件夹下的CMakeList.txt</p>
+<pre class="language-none"><code class="language-none">#定义了SRC_LIST变量，包含了当前目录下的所有源文件
+aux_source_directory(. SRC_LIST) #获取当前目录下所有源文件
+#指定生成可执行文件
+add_executable(ChatServer $&#123;SRC_LIST&#125;)
+#指定可执行文件需要链接的库
+target_link_libraries(ChatServer muduo_net muduo_base pthread) #链接muduo库和pthread库</code></pre>
+
+<h3 id="项目常见的cmake指令使用步骤"><a href="#项目常见的cmake指令使用步骤" class="headerlink" title="项目常见的cmake指令使用步骤"></a>项目常见的cmake指令使用步骤</h3><pre class="language-none"><code class="language-none">mkdir build
+cd build
+cmake ..
+make         # 如果你使用的是 Unix&#x2F;Linux&#x2F;macOS，或者是 MinGW</code></pre>
+
+<p>解释：</p>
+<ul>
+<li><code>mkdir build</code>：创建构建目录（推荐 out-of-source build）</li>
+<li><code>cd build</code>：进入构建目录</li>
+<li><code>cmake ..</code>：执行 CMake，读取上一级目录的 <code>CMakeLists.txt</code>，生成构建系统（默认是 Makefile）</li>
+<li><code>make</code>：使用生成的 Makefile 编译项目</li>
+</ul>
+<h2 id="集群聊天服务器"><a href="#集群聊天服务器" class="headerlink" title="集群聊天服务器"></a>集群聊天服务器</h2><h3 id="项目目录"><a href="#项目目录" class="headerlink" title="项目目录"></a>项目目录</h3><p><img src="/2025/06/02/C++-chatserver/1.png" alt="1" loading="lazy"></p>
+<p>bin文件夹编译完成后的 <code>.exe</code>（Windows）或无扩展的可执行文件。</p>
+<p>build文件夹通常用于存放 <strong>构建过程中产生的所有中间文件</strong>，它是整个编译流程的“临时工作区”。</p>
+<p>include文件夹存放头文件（Header Files），src文件夹是 C++ 项目中最常见也最核心的目录之一，用于存放 <strong>源代码实现文件（source files）</strong>，主要是 <code>.cpp</code> 文件（也包括 <code>.c</code>, <code>.cc</code>, <code>.cxx</code> 等）。</p>
+<p>test文件夹在 C++ 项目中用于存放<strong>测试代码</strong>，主要用于验证项目功能是否正确，确保每个模块在修改后仍然可以正常工作。</p>
+<p>thirdparty文件夹在 C++ 项目中用于存放<strong>第三方依赖库的源码或接口文件</strong>。在这里存储了json.hpp文件。</p>
+<h3 id="CMakeLists-txt文件存放和使用"><a href="#CMakeLists-txt文件存放和使用" class="headerlink" title="CMakeLists.txt文件存放和使用"></a>CMakeLists.txt文件存放和使用</h3><p>CMakeLists.txt文件放在了主目录，src文件夹里，src&#x2F;server文件夹里，接下来分别说明对应文件夹中CMakeLists.txt的作用。</p>
+<p>主目录文件夹</p>
+<pre class="language-none"><code class="language-none">cmake_minimum_required(VERSION 3.10)
+
+project(chat)
+
+#配置编译选项
+set(CMAKE_CXX_FLAGS $&#123;CMAKE_CXX_FLAGS&#125; -g)
+#配置最终的可执行文件输出的路径
+set(EXECUTABLE_OUTPUT_PATH $&#123;PROJECT_SOURCE_DIR&#125;&#x2F;bin)
+#配置头文件搜索路径
+include_directories($&#123;PROJECT_SOURCE_DIR&#125;&#x2F;include)
+include_directories($&#123;PROJECT_SOURCE_DIR&#125;&#x2F;include&#x2F;server)
+include_directories($&#123;PROJECT_SOURCE_DIR&#125;&#x2F;include&#x2F;server&#x2F;db)
+include_directories($&#123;PROJECT_SOURCE_DIR&#125;&#x2F;thirdparty)
+
+#加载子目录
+add_subdirectory(src)</code></pre>
+
+<p>主目录 <code>CMakeLists.txt</code> 的作用概括：</p>
+<ol>
+<li><strong>设置项目基本信息</strong>：指定 CMake 最低版本和项目名称。</li>
+<li><strong>配置全局编译选项</strong>：例如添加调试信息（<code>-g</code>）以便调试。</li>
+<li><strong>设置可执行文件输出路径</strong>：统一将程序输出到 <code>bin/</code> 目录。</li>
+<li><strong>配置头文件搜索路径</strong>：包括项目头文件目录和第三方库目录，便于代码引用。</li>
+<li><strong>组织子目录构建</strong>：通过 <code>add_subdirectory(src)</code> 加载 <code>src</code> 子目录，交由其继续组织源码编译。</li>
+</ol>
+<p>src文件夹</p>
+<pre class="language-none"><code class="language-none">add_subdirectory(server)</code></pre>
+
+<p><code>add_subdirectory(server)</code> 把 <code>server</code> 子目录纳入构建流程，交由其内部的 <code>CMakeLists.txt</code> 具体定义编译规则，是模块化项目管理的关键步骤。</p>
+<p>src&#x2F;server文件夹</p>
+<pre class="language-none"><code class="language-none">#定义了SRC_LIST变量，包含了当前目录下的所有源文件
+aux_source_directory(. SRC_LIST) #获取当前目录下所有源文件
+aux_source_directory(.&#x2F;db DB_LIST)#获取db文件下的所有源文件
+#指定生成可执行文件
+add_executable(ChatServer $&#123;SRC_LIST&#125; $&#123;DB_LIST&#125;)
+#指定可执行文件需要链接的库
+target_link_libraries(ChatServer muduo_net muduo_base mysqlclient pthread) #链接muduo库和pthread库</code></pre>
+
+<p><code>src/server/CMakeLists.txt</code> 的作用概括：</p>
+<ol>
+<li><strong>收集源文件</strong>：自动获取当前目录和 <code>db</code> 子目录下的所有 <code>.cpp</code> 文件。</li>
+<li><strong>生成可执行程序</strong>：将源文件编译为 <code>ChatServer</code> 可执行文件。</li>
+<li><strong>链接依赖库</strong>：链接 Muduo 网络库、MySQL 客户端库和 pthread 线程库。</li>
+</ol>
+<h3 id="thirdparty文件夹（第三方库）json-hpp"><a href="#thirdparty文件夹（第三方库）json-hpp" class="headerlink" title="thirdparty文件夹（第三方库）json.hpp"></a>thirdparty文件夹（第三方库）json.hpp</h3><p>聊天服务器项目中，<code>json.hpp</code> 负责处理客户端与服务端之间的 JSON 数据格式，承担消息的 <strong>解析、构建与传输格式化</strong>，是通信协议的关键组件。</p>
+<h3 id="include-server-chatserver-hpp-聊天服务器的主类"><a href="#include-server-chatserver-hpp-聊天服务器的主类" class="headerlink" title="include&#x2F;server&#x2F;chatserver.hpp 聊天服务器的主类"></a>include&#x2F;server&#x2F;chatserver.hpp 聊天服务器的主类</h3><pre class="language-cpp" data-language="cpp"><code class="language-cpp"><span class="token macro property"><span class="token directive-hash">#</span><span class="token directive keyword">ifndef</span> <span class="token expression">CHATSERVER_H</span></span>
+<span class="token macro property"><span class="token directive-hash">#</span><span class="token directive keyword">define</span> <span class="token macro-name">CHATSERVER_H</span></span>
+
+<span class="token macro property"><span class="token directive-hash">#</span><span class="token directive keyword">include</span> <span class="token string">&lt;muduo/net/TcpServer.h></span></span>
+<span class="token macro property"><span class="token directive-hash">#</span><span class="token directive keyword">include</span> <span class="token string">&lt;muduo/net/EventLoop.h></span></span>
+<span class="token macro property"><span class="token directive-hash">#</span><span class="token directive keyword">include</span> <span class="token string">&lt;functional></span></span>
+<span class="token keyword">using</span> <span class="token keyword">namespace</span> std<span class="token double-colon punctuation">::</span>placeholders<span class="token punctuation">;</span>
+<span class="token keyword">using</span> <span class="token keyword">namespace</span> std<span class="token punctuation">;</span>
+<span class="token keyword">using</span> <span class="token keyword">namespace</span> muduo<span class="token punctuation">;</span>
+<span class="token keyword">using</span> <span class="token keyword">namespace</span> muduo<span class="token double-colon punctuation">::</span>net<span class="token punctuation">;</span>
+<span class="token comment">//聊天服务器的主类</span>
+<span class="token keyword">class</span> <span class="token class-name">ChatServer</span>
+<span class="token punctuation">&#123;</span>
+<span class="token keyword">public</span><span class="token operator">:</span>
+    <span class="token comment">//初始化聊天服务器队对象</span>
+    <span class="token function">ChatServer</span><span class="token punctuation">(</span>EventLoop<span class="token operator">*</span> loop<span class="token punctuation">,</span>
+            <span class="token keyword">const</span> InetAddress<span class="token operator">&amp;</span> listenAddr<span class="token punctuation">,</span>
+            <span class="token keyword">const</span> string<span class="token operator">&amp;</span> nameArg<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token comment">//启动服务</span>
+    <span class="token keyword">void</span> <span class="token function">start</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token keyword">private</span><span class="token operator">:</span>
+    <span class="token comment">//上报连接相关信息的回调函数</span>
+    <span class="token keyword">void</span> <span class="token function">onConnection</span><span class="token punctuation">(</span><span class="token keyword">const</span> TcpConnectionPtr<span class="token operator">&amp;</span> conn<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token comment">//上报读写事件的回调函数</span>
+    <span class="token keyword">void</span> <span class="token function">onMessage</span><span class="token punctuation">(</span><span class="token keyword">const</span> TcpConnectionPtr<span class="token operator">&amp;</span> conn<span class="token punctuation">,</span>
+            Buffer<span class="token operator">*</span> buffer<span class="token punctuation">,</span>
+            Timestamp time<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    TcpServer _server<span class="token punctuation">;</span><span class="token comment">//组合的muduo库，实现服务器功能的类对象</span>
+    EventLoop <span class="token operator">*</span>_loop<span class="token punctuation">;</span><span class="token comment">//指向事件循环的指针</span>
+<span class="token punctuation">&#125;</span><span class="token punctuation">;</span>
+
+<span class="token macro property"><span class="token directive-hash">#</span><span class="token directive keyword">endif</span></span></code></pre>
+
+<p><code>ChatServer.h</code> 作用及结构概括</p>
+<ol>
+<li><strong>类功能</strong></li>
+</ol>
+<p>定义了聊天服务器的主类 <code>ChatServer</code>，负责网络服务的初始化、启动和事件处理。</p>
+<ol start="2">
+<li><strong>成员变量</strong></li>
+</ol>
+<ul>
+<li><code>_server</code>：<code>muduo::net::TcpServer</code> 对象，负责网络连接管理和服务端监听。</li>
+<li><code>_loop</code>：<code>muduo::net::EventLoop</code> 指针，负责事件循环和调度。</li>
+</ul>
+<ol start="3">
+<li><strong>核心接口</strong></li>
+</ol>
+<ul>
+<li>构造函数 <code>ChatServer(EventLoop*, const InetAddress&amp;, const string&amp;)</code>：初始化服务器监听地址、名称和事件循环。</li>
+<li><code>start()</code>：启动服务器监听，进入事件循环。</li>
+</ul>
+<ol start="4">
+<li><strong>回调函数</strong>（私有）</li>
+</ol>
+<ul>
+<li><code>onConnection()</code>：处理客户端连接和断开事件。</li>
+<li><code>onMessage()</code>：处理客户端消息接收事件，进行消息读写。</li>
+</ul>
+<p><code>ChatServer</code> 类是整个聊天项目的网络核心，利用 Muduo 库提供的 TCP 服务器功能，封装了网络事件的注册与处理，负责服务器端的网络通信逻辑。</p>
+<h3 id="src-server-chatserver-cpp"><a href="#src-server-chatserver-cpp" class="headerlink" title="src&#x2F;server&#x2F;chatserver.cpp"></a>src&#x2F;server&#x2F;chatserver.cpp</h3><pre class="language-c++" data-language="c++"><code class="language-c++">#include &quot;chatserver.hpp&quot;
+#include &lt;string&gt;
+#include &quot;chatservice.hpp&quot;
+#include &lt;functional&gt;
+#include &quot;json.hpp&quot;
+using json &#x3D;nlohmann::json;
+&#x2F;&#x2F;初始化聊天服务器队对象
+ChatServer::ChatServer(EventLoop* loop,
+            const InetAddress&amp; listenAddr,
+            const string&amp; nameArg)
+    : _server(loop, listenAddr, nameArg),
+      _loop(loop)
+&#123;
+    &#x2F;&#x2F;注册连接回调
+    _server.setConnectionCallback(
+        std::bind(&amp;ChatServer::onConnection, this, std::placeholders::_1));
+    &#x2F;&#x2F;注册消息回调
+    _server.setMessageCallback(
+        std::bind(&amp;ChatServer::onMessage, this, std::placeholders::_1,
+                  std::placeholders::_2, std::placeholders::_3));
+    &#x2F;&#x2F;设置线程数量
+    _server.setThreadNum(4);
+&#125;
+&#x2F;&#x2F;启动服务
+void ChatServer::start()&#123;
+    _server.start();
+&#125;
+
+&#x2F;&#x2F;上报连接相关信息的回调函数
+void ChatServer::onConnection(const TcpConnectionPtr&amp; conn)&#123;
+    &#x2F;&#x2F;客户端断开连接
+    if(!conn-&gt;connected())&#123;
+        conn-&gt;shutdown();
+    &#125;
+&#125;
+    &#x2F;&#x2F;上报读写事件的回调函数
+void ChatServer::onMessage(const TcpConnectionPtr&amp; conn,
+            Buffer* buffer,
+            Timestamp time)
+&#123;
+    string buf&#x3D;buffer-&gt;retrieveAllAsString();
+    &#x2F;&#x2F;数据的反序列化
+    json js&#x3D;json::parse(buf);
+    &#x2F;&#x2F;达到的目的:完全解耦网络模块的代码和业务模块的代码
+    &#x2F;&#x2F;通过js[&quot;msgid&quot;] 获取&#x3D;》业务handler&#x3D;&gt;conn js time
+    auto msgHandler&#x3D;ChatService::instance()-&gt;getHandler(js[&quot;msgid&quot;].get&lt;int&gt;());
+    &#x2F;&#x2F;回调消息绑定好的事件处理器，来执行相应的业务处理
+    msgHandler(conn,js,time);
+    
+&#125;</code></pre>
+
+<p>ChatServer.cpp 作用与关键点概括</p>
+<ol>
+<li><strong>构造函数初始化</strong></li>
+</ol>
+<ul>
+<li>初始化 Muduo 的 TCP 服务器对象 <code>_server</code> 和事件循环 <code>_loop</code>。</li>
+<li>注册回调函数：<ul>
+<li><code>onConnection</code> 处理连接建立与断开；</li>
+<li><code>onMessage</code> 处理客户端消息。</li>
+</ul>
+</li>
+<li>设置线程数为4，支持多线程处理网络事件。</li>
+</ul>
+<ol start="2">
+<li><strong>启动服务</strong></li>
+</ol>
+<ul>
+<li><code>start()</code> 调用 Muduo 的 <code>_server.start()</code> 启动监听和事件循环。</li>
+</ul>
+<ol start="3">
+<li><strong>连接回调 <code>onConnection</code></strong></li>
+</ol>
+<ul>
+<li>判断客户端是否断开连接，断开时调用 <code>conn-&gt;shutdown()</code> 关闭连接。</li>
+</ul>
+<ol start="4">
+<li><strong>消息回调 <code>onMessage</code></strong></li>
+</ol>
+<ul>
+<li>将网络缓冲区中的数据读取为字符串。</li>
+<li>使用 <code>json.hpp</code> 将字符串反序列化成 JSON 对象。</li>
+<li>通过消息中的 <code>&quot;msgid&quot;</code> 字段，调用业务层 <code>ChatService</code> 获取对应的消息处理函数（回调）。</li>
+<li>执行该消息处理函数，完成具体的业务逻辑处理。</li>
+</ul>
+<hr>
+<p>作用总结</p>
+<p>这段代码实现了聊天服务器的核心网络处理逻辑，做到：</p>
+<ul>
+<li><strong>网络层与业务层解耦</strong>：网络部分只负责收发和解析数据，业务处理由 <code>ChatService</code> 中注册的处理器完成。</li>
+<li><strong>灵活消息分发</strong>：根据 JSON 中的 <code>msgid</code> 动态调用对应业务处理函数，实现消息驱动机制。</li>
+<li><strong>高效异步处理</strong>：基于 Muduo 多线程事件循环模型，支持高并发网络请求。</li>
+</ul>
+<h3 id="include-server-chatservice-hpp-聊天服务器业务类"><a href="#include-server-chatservice-hpp-聊天服务器业务类" class="headerlink" title="include&#x2F;server&#x2F;chatservice.hpp 聊天服务器业务类"></a>include&#x2F;server&#x2F;chatservice.hpp 聊天服务器业务类</h3><pre class="language-c++" data-language="c++"><code class="language-c++">#ifndef CHATSERVICE_H
+#define CHATSERVICE_H
+#include &lt;muduo&#x2F;net&#x2F;TcpConnection.h&gt;
+#include &lt;unordered_map&gt;
+#include &lt;functional&gt;
+#include &quot;json.hpp&quot;
+using namespace std;
+using namespace muduo;
+using namespace muduo::net;
+using json &#x3D;nlohmann::json;
+&#x2F;&#x2F;表示处理消息的事件回调方法类型
+using MsgHandler &#x3D; std::function&lt;void(const TcpConnectionPtr &amp;conn,json &amp;js,Timestamp)&gt;;
+&#x2F;&#x2F;聊天服务器业务类
+class ChatService&#123;
+public:
+    &#x2F;&#x2F;获取单例对象的接口函数
+    static ChatService * instance();
+    &#x2F;&#x2F;处理登录业务
+    void login(const TcpConnectionPtr &amp;conn,json &amp;js,Timestamp);
+    &#x2F;&#x2F;处理注册业务
+    void reg(const TcpConnectionPtr &amp;conn,json &amp;js,Timestamp);
+    &#x2F;&#x2F;获取消息对应的处理器
+    MsgHandler getHandler(int msgid);
+private:
+    ChatService();
+    &#x2F;&#x2F;存储消息id和其对应的业务处理方法
+    unordered_map&lt;int,MsgHandler&gt; _msgHandlerMap;
+&#125;;
+
+
+#endif</code></pre>
+
+<p>ChatService.h 作用与结构概括</p>
+<ol>
+<li><strong>类功能</strong></li>
+</ol>
+<ul>
+<li>负责处理聊天服务器的核心业务逻辑，如登录、注册等。</li>
+<li>管理消息 ID 与对应的处理函数的映射，实现消息的动态分发。</li>
+</ul>
+<ol start="2">
+<li><strong>核心类型</strong></li>
+</ol>
+<ul>
+<li><code>MsgHandler</code>：消息处理函数类型，参数包括 TCP 连接指针、JSON 消息对象和时间戳。</li>
+</ul>
+<ol start="3">
+<li><strong>接口函数</strong></li>
+</ol>
+<ul>
+<li><code>static ChatService* instance()</code>：单例模式，获取业务服务唯一实例。</li>
+<li><code>void login(...)</code>：处理登录业务逻辑。</li>
+<li><code>void reg(...)</code>：处理注册业务逻辑。</li>
+<li><code>MsgHandler getHandler(int msgid)</code>：根据消息 ID 获取对应的消息处理函数。</li>
+</ul>
+<ol start="4">
+<li><strong>成员变量</strong></li>
+</ol>
+<ul>
+<li><code>_msgHandlerMap</code>：存储消息 ID 与处理函数的映射，支持根据消息类型快速调用相应业务处理器。</li>
+</ul>
+<h3 id="src-server-chatservice-cpp"><a href="#src-server-chatservice-cpp" class="headerlink" title="src&#x2F;server&#x2F;chatservice.cpp"></a>src&#x2F;server&#x2F;chatservice.cpp</h3><pre class="language-c++" data-language="c++"><code class="language-c++">#include &quot;chatservice.hpp&quot;
+#include &quot;public.hpp&quot;
+#include &lt;string&gt;
+#include &lt;muduo&#x2F;base&#x2F;Logging.h&gt;
+using namespace muduo;
+using namespace std;
+&#x2F;&#x2F;获取单例对象的接口函数
+&#x2F;&#x2F;在cpp文件就不需要写static了
+ChatService * ChatService::instance()&#123;
+    static ChatService service;
+    return &service;
+&#125;
+&#x2F;&#x2F;注册消息以及对应的Handler回调操作
+ ChatService::ChatService()&#123;
+    &#x2F;&#x2F;注册业务
+    _msgHandlerMap.insert(&#123;LOGIN_MSG,std::bind(&amp;ChatService::login,this,_1,_2,_3)&#125;);
+    _msgHandlerMap.insert(&#123;REG_MSG,std::bind(&amp;ChatService::reg,this,_1,_2,_3)&#125;);
+ &#125;
+&#x2F;&#x2F;获取消息对应的处理器
+ MsgHandler ChatService::getHandler(int msgid)&#123;
+    &#x2F;&#x2F;记录错误日志，msgid没有对应的事件处理回调
+    auto it &#x3D;_msgHandlerMap.find(msgid);
+    if(it &#x3D;&#x3D;_msgHandlerMap.end())&#123;
+        &#x2F;&#x2F;返回一个默认的处理器，空操作
+        return [&#x3D;](const TcpConnectionPtr &amp;conn,json &amp;js,Timestamp)&#123;
+            LOG_ERROR&lt;&lt;&quot;msgid:&quot;&lt;&lt; msgid &lt;&lt;&quot;can not find handler!&quot;;
+        &#125;;
+    &#125;
+    else&#123;
+        return _msgHandlerMap[msgid];
+    &#125;
+&#125;
+&#x2F;&#x2F;处理登录业务
+void ChatService::login(const TcpConnectionPtr &amp;conn,json &amp;js,Timestamp)&#123;
+    LOG_INFO &lt;&lt;&quot;do login service!!!!&quot;;
+&#125;
+&#x2F;&#x2F;处理注册业务
+void ChatService::reg(const TcpConnectionPtr &amp;conn,json &amp;js,Timestamp)&#123;
+    LOG_INFO&lt;&lt;&quot;do reg service!!!&quot;;
+&#125;</code></pre>
+
+<p>ChatService.cpp 作用和关键点</p>
+<ol>
+<li><strong>单例模式实现</strong></li>
+</ol>
+<ul>
+<li><code>instance()</code> 函数内部静态变量实现线程安全的单例模式，保证 <code>ChatService</code> 只有一个实例。</li>
+</ul>
+<ol start="2">
+<li><strong>构造函数注册消息处理函数</strong></li>
+</ol>
+<ul>
+<li>在构造函数中通过 <code>_msgHandlerMap.insert</code> 将消息 ID（<code>LOGIN_MSG</code>、<code>REG_MSG</code>）绑定到成员函数 <code>login</code> 和 <code>reg</code> 的回调。</li>
+<li>使用 <code>std::bind</code> 绑定成员函数和 <code>this</code> 指针，方便后续调用。</li>
+</ul>
+<ol start="3">
+<li><strong>动态消息处理函数获取</strong></li>
+</ol>
+<ul>
+<li><code>getHandler(int msgid)</code> 根据传入的消息 ID 返回对应的处理函数。</li>
+<li>如果消息 ID 未注册，返回一个默认空操作的 lambda，同时写错误日志，保证系统健壮性。</li>
+</ul>
+<ol start="4">
+<li><strong>业务处理函数示例</strong></li>
+</ol>
+<ul>
+<li><code>login()</code> 和 <code>reg()</code> 目前仅打印日志，代表登录和注册的业务处理接口，后续可以扩展具体业务逻辑。</li>
+</ul>
+<h3 id="include-public-hpp"><a href="#include-public-hpp" class="headerlink" title="include&#x2F;public.hpp"></a>include&#x2F;public.hpp</h3><pre class="language-c++" data-language="c++"><code class="language-c++">#ifndef PUBLIC_H
+#define PUBLIC_H
+
+&#x2F;*
+server和client的公共文件
+*&#x2F;
+enum EnMsgType&#123;
+    LOGIN_MSG &#x3D; 1,&#x2F;&#x2F;登录消息
+    REG_MSG&#x2F;&#x2F;注册消息
+&#125;;
+#endif</code></pre>
+
+<p>public.h 作用简述</p>
+<ul>
+<li><strong>共享消息类型定义</strong><ul>
+<li>定义了枚举类型 <code>EnMsgType</code>，用于区分不同的消息类型。</li>
+<li>目前包含两种消息：<ul>
+<li><code>LOGIN_MSG = 1</code>：登录消息</li>
+<li><code>REG_MSG</code>：注册消息</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><strong>作用</strong><ul>
+<li>服务端和客户端都包含这个头文件，保证双方对消息类型有统一的理解和对应关系，方便通信协议的设计与实现。</li>
+</ul>
+</li>
+</ul>
+<h3 id="src-server-main-cpp"><a href="#src-server-main-cpp" class="headerlink" title="src&#x2F;server&#x2F;main.cpp"></a>src&#x2F;server&#x2F;main.cpp</h3><pre class="language-c++" data-language="c++"><code class="language-c++">#include &quot;chatserver.hpp&quot;
+#include &lt;iostream&gt;
+using namespace std;
+
+int main()&#123;
+    EventLoop loop;
+    InetAddress addr(&quot;127.0.0.1&quot;,6000);
+    ChatServer server(&amp;loop, addr, &quot;ChatServer&quot;);
+    server.start();
+    &#x2F;&#x2F;开启事件循环
+    loop.loop();
+    return 0;
+&#125;</code></pre>
+
+<p><strong>启动聊天服务器</strong>：<br> 创建事件循环和服务器监听地址，初始化 <code>ChatServer</code> 对象，启动服务器后进入事件循环，开始接受和处理客户端连接与消息。</p>
+<h3 id="include-server-db-db-h-数据库操作类"><a href="#include-server-db-db-h-数据库操作类" class="headerlink" title="include&#x2F;server&#x2F;db&#x2F;db.h 数据库操作类"></a>include&#x2F;server&#x2F;db&#x2F;db.h 数据库操作类</h3><pre class="language-c++" data-language="c++"><code class="language-c++">#ifndef DB_H
+#define DB_H
+#include&lt;mysql&#x2F;mysql.h&gt;
+#include&lt;string&gt;
+using namespace std;
+&#x2F;&#x2F; 数据库操作类
+class MySQL
+ &#123;
+ public:
+ &#x2F;&#x2F; 初始化数据库连接
+MySQL();
+&#x2F;&#x2F; 释放数据库连接资源
+~MySQL();
+&#x2F;&#x2F; 连接数据库
+bool connect();
+&#x2F;&#x2F; 更新操作
+bool update(string sql);
+&#x2F;&#x2F; 查询操作
+MYSQL_RES* query(string sql);
+&#x2F;&#x2F;获取连接
+MYSQL * getConnection();
+private:
+    MYSQL *_conn;
+&#125;;
+#endif</code></pre>
+
+<p><strong>MySQL 数据库操作类说明</strong></p>
+<p><strong>类功能</strong></p>
+<p>封装对 MySQL 数据库的连接、查询和更新操作，方便上层业务调用。</p>
+<p><strong>主要成员函数</strong></p>
+<ul>
+<li>**构造函数 <code>MySQL()</code>**：初始化数据库连接相关资源。</li>
+<li>**析构函数 <code>~MySQL()</code>**：释放数据库连接资源。</li>
+<li>**<code>bool connect()</code>**：连接数据库，返回连接是否成功。</li>
+<li>**<code>bool update(string sql)</code>**：执行更新类 SQL 语句（如 INSERT、UPDATE、DELETE）。</li>
+<li>**<code>MYSQL_RES* query(string sql)</code>**：执行查询类 SQL 语句，返回结果集指针。</li>
+<li>**<code>MYSQL* getConnection()</code>**：获取底层 MySQL 连接对象，便于其他操作。</li>
+</ul>
+<p><strong>成员变量</strong></p>
+<ul>
+<li>**<code>MYSQL *_conn</code>**：指向 MySQL 连接句柄的指针。</li>
+</ul>
+<h3 id="src-server-db-db-cpp"><a href="#src-server-db-db-cpp" class="headerlink" title="src&#x2F;server&#x2F;db&#x2F;db.cpp"></a>src&#x2F;server&#x2F;db&#x2F;db.cpp</h3><pre class="language-c++" data-language="c++"><code class="language-c++">#include &quot;db.h&quot;
+#include &lt;muduo&#x2F;base&#x2F;Logging.h&gt;
+&#x2F;&#x2F; 数据库配置信息
+static string server &#x3D; &quot;127.0.0.1&quot;;
+static string user &#x3D; &quot;root&quot;;
+static string password &#x3D; &quot;123456&quot;;
+static string dbname &#x3D; &quot;chat&quot;;
+&#x2F;&#x2F; 初始化数据库连接
+MySQL::MySQL()
+&#123;
+    _conn &#x3D; mysql_init(nullptr);
+&#125;
+&#x2F;&#x2F; 释放数据库连接资源
+MySQL::~MySQL()
+&#123;
+    if (_conn !&#x3D; nullptr)
+    mysql_close(_conn);
+&#125;
+&#x2F;&#x2F; 连接数据库
+bool MySQL::connect()
+&#123;
+    MYSQL *p &#x3D; mysql_real_connect(_conn, server.c_str(), user.c_str(),password.c_str(), dbname.c_str(), 3306, nullptr, 0);
+    if (p !&#x3D; nullptr)
+    &#123;
+        &#x2F;&#x2F;C和C++代码默认的编码字符是ASCII,如果不设置，从MySQL上拉下来的中文显示？
+        mysql_query(_conn, &quot;set names gbk&quot;);
+        LOG_INFO &lt;&lt; &quot;connect mysql success!&quot;;
+    &#125;else&#123;
+        LOG_INFO &lt;&lt; &quot;connect mysql failed!&quot;;
+    &#125;
+    return p;
+&#125;
+&#x2F;&#x2F; 更新操作
+bool MySQL::update(string sql)
+&#123;
+    if (mysql_query(_conn, sql.c_str()))
+    &#123;
+        LOG_INFO &lt;&lt; __FILE__ &lt;&lt; &quot;:&quot; &lt;&lt; __LINE__ &lt;&lt; &quot;:&quot;
+                &lt;&lt; sql &lt;&lt; &quot;更新失败!&quot;;
+            return false;
+    &#125;
+    return true;
+&#125;
+&#x2F;&#x2F; 查询操作
+MYSQL_RES* MySQL::query(string sql)
+&#123;
+    if (mysql_query(_conn, sql.c_str()))
+        &#123;
+            LOG_INFO &lt;&lt; __FILE__ &lt;&lt; &quot;:&quot; &lt;&lt; __LINE__ &lt;&lt; &quot;:&quot;
+                &lt;&lt; sql &lt;&lt; &quot;查询失败!&quot;;
+            return nullptr;
+        &#125;
+    return mysql_use_result(_conn);
+&#125;
+&#x2F;&#x2F;获取连接
+MYSQL * MySQL::getConnection()&#123;
+    return _conn;
+&#125;</code></pre>
+
+<p><strong>MySQL 类实现功能简述</strong></p>
+<ol>
+<li><strong>初始化连接</strong><ul>
+<li>构造函数 <code>MySQL()</code> 调用 <code>mysql_init</code> 初始化 MySQL 连接对象。</li>
+</ul>
+</li>
+<li><strong>释放连接资源</strong><ul>
+<li>析构函数 <code>~MySQL()</code> 关闭数据库连接，释放资源。</li>
+</ul>
+</li>
+<li><strong>连接数据库</strong><ul>
+<li><code>connect()</code> 使用 <code>mysql_real_connect</code> 连接到数据库。</li>
+<li>成功连接后设置字符集为 <code>gbk</code>，防止中文乱码。</li>
+<li>通过日志打印连接成功或失败信息。</li>
+</ul>
+</li>
+<li><strong>执行更新操作</strong><ul>
+<li><code>update(string sql)</code> 执行 SQL 更新语句（如 INSERT、UPDATE、DELETE）。</li>
+<li>失败时打印错误日志，返回 <code>false</code>。</li>
+</ul>
+</li>
+<li><strong>执行查询操作</strong><ul>
+<li><code>query(string sql)</code> 执行 SQL 查询语句。</li>
+<li>返回查询结果指针，失败时返回 <code>nullptr</code>。</li>
+</ul>
+</li>
+<li><strong>获取底层连接</strong><ul>
+<li><code>getConnection()</code> 返回当前的 MySQL 连接指针，方便其他数据库操作调用。</li>
+</ul>
+</li>
+</ol>
+<h3 id="include-server-user-hpp-数据库中user表对应的类"><a href="#include-server-user-hpp-数据库中user表对应的类" class="headerlink" title="include&#x2F;server&#x2F;user.hpp 数据库中user表对应的类"></a>include&#x2F;server&#x2F;user.hpp 数据库中user表对应的类</h3><pre class="language-c++" data-language="c++"><code class="language-c++">#ifndef USER_H
+#define USER_H
+#include&lt;string&gt;
+using namespace std;
+&#x2F;&#x2F;User表的ORM类
+class User&#123;
+    public:
+        User(int id&#x3D;1,string name&#x3D;&quot;&quot;,string pwd&#x3D;&quot;&quot;,string state&#x3D;&quot;offline&quot;)&#123;
+            this-&gt;id&#x3D;id;
+            this-&gt;name&#x3D;name;
+            this-&gt;password&#x3D;pwd;
+            this-&gt;state&#x3D;state;
+        &#125;
+        void setId(int id)&#123;this-&gt;id&#x3D;id;&#125;
+        void setName(string name)&#123;this-&gt;name&#x3D;name;&#125;
+        void setPwd(string pwd)&#123;this-&gt;password&#x3D;pwd;&#125;
+        void setState(string state)&#123;this-&gt;state&#x3D;state;&#125;
+
+        int getId()&#123;return this-&gt;id;&#125;
+        string getName()&#123;return this-&gt;name;&#125;
+        string getPwd()&#123;return this-&gt;password;&#125;
+        string getState()&#123;return this-&gt;state;&#125;
+    private:
+        int id;
+        string name;
+        string password;
+        string state;
+&#125;;
+#endif</code></pre>
+
+<p><strong><code>User</code> 类作用概括：</strong></p>
+<ol>
+<li><strong>ORM 映射作用</strong></li>
+</ol>
+<ul>
+<li>该类是对数据库 <code>User</code> 表的一个对象化表示（Object-Relational Mapping）。</li>
+<li>将数据库中的一条用户记录封装成一个 C++ 对象，便于在程序中操作。</li>
+</ul>
+<ol start="2">
+<li><strong>属性封装</strong></li>
+</ol>
+<p>类中包含如下用户信息字段：</p>
+<ul>
+<li><code>id</code>: 用户编号</li>
+<li><code>name</code>: 用户名</li>
+<li><code>password</code>: 用户密码</li>
+<li><code>state</code>: 用户状态（如 <code>&quot;online&quot;</code> &#x2F; <code>&quot;offline&quot;</code>）</li>
+</ul>
+<ol start="3">
+<li><strong>基本接口功能</strong></li>
+</ol>
+<p>提供了以下功能函数：</p>
+<ul>
+<li>构造函数（支持默认值）</li>
+<li><code>setXXX()</code> 设置各字段值</li>
+<li><code>getXXX()</code> 获取各字段值</li>
+</ul>
+<p><strong>项目中的实际用途</strong></p>
+<p>基于 Muduo 的聊天服务器项目中：</p>
+<ul>
+<li>用户数据从数据库中查询出来后，可以封装成 <code>User</code> 类对象；</li>
+<li>在业务逻辑中传递用户信息时，使用 <code>User</code> 类便于管理；</li>
+<li>与数据库交互模块（如 DAO 类）进行数据传递、封装与解封装；</li>
+<li>便于将用户信息序列化为 JSON 数据发送到客户端。</li>
+</ul>
+<h3 id="include-server-usermodel-hpp-user表的数据操作类"><a href="#include-server-usermodel-hpp-user表的数据操作类" class="headerlink" title="include&#x2F;server&#x2F;usermodel.hpp  user表的数据操作类"></a>include&#x2F;server&#x2F;usermodel.hpp  user表的数据操作类</h3><pre class="language-c++" data-language="c++"><code class="language-c++">#ifndef USERMODEL_H
+#define USERMODEL_H
+
+
+
+#include &quot;user.hpp&quot;
+&#x2F;&#x2F;user表的数据操作类
+class UserModel&#123;
+public:
+    &#x2F;&#x2F;User表的增加方法
+    bool insert(User &amp;user);
+&#125;;
+
+
+#endif</code></pre>
+
+<p><code>#ifndef/#define/#endif</code>：防止头文件重复包含（include guard）；</p>
+<p><code>#include &quot;user.hpp&quot;</code>：引入用户实体类定义；</p>
+<p><code>class UserModel</code>：封装了对 <code>User</code> 表的数据库操作；</p>
+<p><code>bool insert(User &amp;user)</code>：定义了插入用户的方法，返回是否成功。</p>
+<h3 id="src-server-usermodel-cpp"><a href="#src-server-usermodel-cpp" class="headerlink" title="src&#x2F;server&#x2F;usermodel.cpp"></a>src&#x2F;server&#x2F;usermodel.cpp</h3><pre class="language-c++" data-language="c++"><code class="language-c++">#include &quot;usermodel.hpp&quot;
+#include &quot;db.h&quot;
+#include &lt;iostream&gt;
+using namespace std;
+&#x2F;&#x2F;User表的增加方法
+bool UserModel::insert(User &amp;user)&#123;
+    &#x2F;&#x2F;1 组装sql语句
+    char sql[1024] &#x3D;&#123;0&#125;;
+    sprintf(sql,&quot;insert into User(name,password,state) values(&#39;%s&#39;,&#39;%s&#39;,&#39;%s&#39;)&quot;,
+        user.getName().c_str(),user.getPwd().c_str(),user.getState().c_str());
+    MySQL mysql;
+    if(mysql.connect())&#123;
+        if(mysql.update(sql))&#123;
+            &#x2F;&#x2F;获取插入成功的用户数据生成的主键id
+            user.setId(mysql_insert_id(mysql.getConnection()));
+            return true;
+        &#125;
+    &#125;
+    return false;
+&#125;</code></pre>
+
+<p><code>sprintf</code> 组装 SQL；</p>
+<p><code>MySQL</code> 是你自定义的数据库操作类，封装了 <code>connect()</code> 和 <code>update()</code>；</p>
+<p>插入成功后，用 <code>mysql_insert_id()</code> 获取刚插入的记录主键 ID。</p>
+<h3 id="注册业务实现"><a href="#注册业务实现" class="headerlink" title="注册业务实现"></a>注册业务实现</h3><h4 id="实现步骤"><a href="#实现步骤" class="headerlink" title="实现步骤"></a>实现步骤</h4><p>public.hpp</p>
+<pre class="language-c++" data-language="c++"><code class="language-c++">enum EnMsgType&#123;
+    LOGIN_MSG &#x3D; 1,&#x2F;&#x2F;登录消息
+    REG_MSG,&#x2F;&#x2F;注册消息
+    REG_MSG_ACK &#x2F;&#x2F;注册响应消息
+&#125;;</code></pre>
+
+<p>再加上REG_MSG_ACK 注册响应消息，告诉客户端已经收到消息。</p>
+<p>chatservice.hpp</p>
+<pre class="language-c++" data-language="c++"><code class="language-c++">private:
+    ChatService();
+    &#x2F;&#x2F;存储消息id和其对应的业务处理方法
+    unordered_map&lt;int,MsgHandler&gt; _msgHandlerMap;
+    &#x2F;&#x2F;数据操作类对象
+    UserModel _userModel;</code></pre>
+
+<p>在private中加入数据操作类对象UserModel _userModel，这个是自定义的对象在usermodel.hpp</p>
+<p>chatservice.cpp</p>
+<pre class="language-c++" data-language="c++"><code class="language-c++">void ChatService::reg(const TcpConnectionPtr &amp;conn,json &amp;js,Timestamp)&#123;
+    string name&#x3D;js[&quot;name&quot;];
+    string pwd&#x3D;js[&quot;password&quot;];
+    User user;
+    user.setName(name);
+    user.setPwd(pwd);
+    bool state&#x3D;_userModel.insert(user);
+    if(state)&#123;
+        &#x2F;&#x2F;注册成功
+        json response;
+        response[&quot;msgid&quot;]&#x3D; REG_MSG_ACK;
+        response[&quot;errno&quot;]&#x3D;0;
+        response[&quot;id&quot;]&#x3D;user.getId();
+        conn-&gt;send(response.dump());
+    &#125;else&#123;
+        &#x2F;&#x2F;注册失败
+        json response;
+        response[&quot;msgid&quot;]&#x3D; REG_MSG_ACK;
+        response[&quot;errno&quot;]&#x3D;1;
+        conn-&gt;send(response.dump());
+    &#125;
+&#125;</code></pre>
+
+<p>在ChatService类的reg函数，负责处理注册业务的。js中存储的是我们的消息以json存储的。这里面的字段例如msgid,name,password都是服务端和客户端约定好的。首先将消息中的name,和password拿出来赋值给User类对象user,注册业务，把对应的值存入数据库chat中的User表中。当数据操作类对象_userModel插入成功时，返回消息给客户端，msgid是客户端和服务端规定的消息类型，消息REG_MSG_ACK注册后的回应消息。返回的消息有消息类型和是否注册成功的标志errno(0表示成功，1表示失败)，注册失败id也不会产生，所以不用发了。最后使用json的dump()函数转换为字符串通过conn的send函数再发出去。</p>
+<h4 id="conn是TcpConnectionPtr类型"><a href="#conn是TcpConnectionPtr类型" class="headerlink" title="conn是TcpConnectionPtr类型"></a>conn是TcpConnectionPtr类型</h4><p><code>TcpConnectionPtr</code> 是 <strong>Muduo 网络库</strong> 中定义的一个智能指针类型，指向 <code>TcpConnection</code> 对象，通常用于表示一条活跃的 TCP 连接。</p>
+<pre class="language-c++" data-language="c++"><code class="language-c++">typedef std::shared_ptr&lt;TcpConnection&gt; TcpConnectionPtr;</code></pre>
+
+<p>它的生命周期由 <code>Muduo</code> 网络库自动管理。</p>
+<p>常见成员函数（通过 <code>TcpConnectionPtr</code> 调用）</p>
+<ul>
+<li><code>conn-&gt;send(data)</code>：发送数据到客户端</li>
+<li><code>conn-&gt;shutdown()</code>：关闭连接（半关闭）</li>
+<li><code>conn-&gt;connected()</code>：是否仍保持连接</li>
+<li><code>conn-&gt;peerAddress()</code>：对端地址</li>
+<li><code>conn-&gt;localAddress()</code>：本地地址</li>
+<li><code>conn-&gt;setContext()</code> &#x2F; <code>conn-&gt;getContext()</code>：绑定上下文（可保存登录信息、用户ID等）</li>
+</ul>
+<h4 id="实现注册业务时出现的问题"><a href="#实现注册业务时出现的问题" class="headerlink" title="实现注册业务时出现的问题"></a>实现注册业务时出现的问题</h4><p>实现注册业务时，使用vscod远程连接Linux出现了连接数据库不上的问题。</p>
+<pre class="language-none"><code class="language-none">20250604 13:22:35.282815Z 18893 INFO  connect mysql failed!Access denied for user &#39;root&#39;@&#39;localhost&#39; - db.cpp:29</code></pre>
+
+<p>数据库拒绝了 root 用户从 localhost 的访问请求。</p>
+<p>解决方案</p>
+<p>1.使用Linux root用户登录mysql</p>
+<p>2.修改root用户认证方式为密码登录</p>
+<pre class="language-sql" data-language="sql"><code class="language-sql"><span class="token keyword">ALTER</span> <span class="token keyword">USER</span> <span class="token string">'root'</span><span class="token variable">@'localhost'</span> IDENTIFIED <span class="token keyword">WITH</span> mysql_native_password <span class="token keyword">BY</span> <span class="token string">'123456'</span><span class="token punctuation">;</span>
+FLUSH <span class="token keyword">PRIVILEGES</span><span class="token punctuation">;</span>
+<span class="token keyword">EXIT</span><span class="token punctuation">;</span></code></pre>
+
+<p>第一句ALTER USER修改存在的用户 ‘root‘@’localhost’用户名为root,本地连接。IDENTIFIED WITH mysql_native_password 设置认证插件为 <code>mysql_native_password</code>（密码方式）</p>
+<p>第二句MySQL 会将用户和权限信息缓存在内存中，这条命令强制它 重新加载所有权限表。<code>ALTER USER</code> 做的更改立即生效，而不必重启 MySQL 服务</p>
+<p>第三句对用户权限和密码的修改完成了，退出命令行界面即可。</p>
+<p><code>auth_socket</code> 是 MySQL 默认的一种用户认证方式，<strong>主要用于本地登录</strong>，<strong>不使用密码，而是通过操作系统身份验证</strong>。MySQL 会验证：</p>
+<ul>
+<li>你是否是当前 Linux 系统的 <code>root</code> 用户；</li>
+<li>如果是，允许登录；</li>
+<li>否则，拒绝访问，即使你输入了正确的密码也没用。</li>
+</ul>
+<h3 id="登录业务实现"><a href="#登录业务实现" class="headerlink" title="登录业务实现"></a>登录业务实现</h3><h4 id="实现步骤："><a href="#实现步骤：" class="headerlink" title="实现步骤："></a>实现步骤：</h4><p>public.hpp</p>
+<pre class="language-c++" data-language="c++"><code class="language-c++">enum EnMsgType&#123;
+    LOGIN_MSG &#x3D; 1,&#x2F;&#x2F;登录消息
+    LOGIN_MSG_ACK,&#x2F;&#x2F;登录响应消息
+    REG_MSG,&#x2F;&#x2F;注册消息
+    REG_MSG_ACK &#x2F;&#x2F;注册响应消息
+&#125;;</code></pre>
+
+<p>加入LOGIN_MSG_ACK,&#x2F;&#x2F;登录响应消息</p>
+<p>usermodel.hpp</p>
+<pre class="language-c++" data-language="c++"><code class="language-c++">&#x2F;&#x2F;根据用户号码查询用户信息
+User query(int id);
+&#x2F;&#x2F;更新用户的状态信息
+bool updateState(User user);</code></pre>
+
+<p>加入这两个函数，后面会在登录业务用到</p>
+<p>usermodel.cpp 对应函数的具体实现</p>
+<pre class="language-c++" data-language="c++"><code class="language-c++">&#x2F;&#x2F;根据用户号码查询用户信息
+User UserModel::query(int id)&#123;
+    &#x2F;&#x2F;1 组装sql语句
+    char sql[1024] &#x3D;&#123;0&#125;;
+    sprintf(sql,&quot;select * from User where id&#x3D;%d&quot;,id);
+    MySQL mysql;
+    if(mysql.connect())&#123;
+        MYSQL_RES* res&#x3D;mysql.query(sql);
+        if(res!&#x3D;nullptr)&#123;&#x2F;&#x2F;查询成功
+            MYSQL_ROW row&#x3D;mysql_fetch_row(res);&#x2F;&#x2F;查一行
+            if(row!&#x3D;nullptr)&#123;
+                User user;
+                user.setId(atoi(row[0]));&#x2F;&#x2F;转换id为int，从数据库取出的都是字符串
+                user.setName(row[1]);&#x2F;&#x2F;用户名
+                user.setPwd(row[2]);&#x2F;&#x2F;密码
+                user.setState(row[3]);&#x2F;&#x2F;状态，以上是根据查询出的结果集取得
+                mysql_free_result(res);&#x2F;&#x2F;释放结果集资源
+                return user;
+            &#125;
+        &#125;
+    &#125;
+    return User();
+&#125;
+&#x2F;&#x2F;更新用户的状态信息
+bool UserModel::updateState(User user)&#123;
+    &#x2F;&#x2F;1 组装sql语句
+    char sql[1024] &#x3D;&#123;0&#125;;
+    sprintf(sql,&quot;update User set state &#x3D; &#39;%s&#39; where id &#x3D; %d&quot;,user.getState().c_str(),user.getId());
+    MySQL mysql;
+    if(mysql.connect())&#123;
+        if(mysql.update(sql))&#123;
+            return true;
+        &#125;
+    &#125;
+    return false;
+&#125;</code></pre>
+
+<p>chatservice.cpp</p>
+<p>实现login函数</p>
+<pre class="language-c++" data-language="c++"><code class="language-c++">&#x2F;&#x2F;处理登录业务 id pwd
+void ChatService::login(const TcpConnectionPtr &amp;conn,json &amp;js,Timestamp)&#123;
+    int id&#x3D;js[&quot;id&quot;];
+    string pwd&#x3D;js[&quot;password&quot;];
+    User user&#x3D;_userModel.query(id);
+    if(user.getId()&#x3D;&#x3D;id&amp;&amp;user.getPwd()&#x3D;&#x3D;pwd)&#123;
+        if(user.getState()&#x3D;&#x3D;&quot;online&quot;)&#123;
+            &#x2F;&#x2F;该用户已经登录，不允许重复登录
+            json response;
+            response[&quot;msgid&quot;]&#x3D; LOGIN_MSG_ACK;
+            response[&quot;errno&quot;]&#x3D;2;
+            response[&quot;errmsg&quot;]&#x3D;&quot;该账号已经登录，请输入新账号&quot;;
+            conn-&gt;send(response.dump());
+        &#125;else
+        &#123;
+            &#x2F;&#x2F;登录成功，更新用户状态信息 state offline&#x3D;&gt;online
+            user.setState(&quot;online&quot;);
+            _userModel.updateState(user);
+            json response;
+            response[&quot;msgid&quot;]&#x3D; LOGIN_MSG_ACK;
+            response[&quot;errno&quot;]&#x3D;0;
+            response[&quot;id&quot;]&#x3D;user.getId();
+            response[&quot;name&quot;]&#x3D;user.getName();
+            conn-&gt;send(response.dump());
+        &#125;
+        
+        
+    &#125;else&#123;
+        &#x2F;&#x2F;该用户不存在，登陆失败
+        json response;
+        response[&quot;msgid&quot;]&#x3D; LOGIN_MSG_ACK;
+        response[&quot;errno&quot;]&#x3D;1;
+        response[&quot;errmsg&quot;]&#x3D;&quot;用户名或者密码错误&quot;;
+        conn-&gt;send(response.dump());
+    &#125;
+&#125;</code></pre>
+
+<h3 id="记录用户的连接信息及线程安全性"><a href="#记录用户的连接信息及线程安全性" class="headerlink" title="记录用户的连接信息及线程安全性"></a>记录用户的连接信息及线程安全性</h3><p>因为要实现用户与用户之间的消息往来，所以要实现记录上线用户的连接信息和下线的删除。</p>
+<p>chatservice.hpp private:</p>
+<pre class="language-c++" data-language="c++"><code class="language-c++">&#x2F;&#x2F;存储在线用户的通信连接 注意线程安全
+    unordered_map&lt;int,TcpConnectionPtr&gt; _userConnMap;</code></pre>
+
+<p>那么这个值在什么时候更新，首先在登录成功时，添加连接</p>
+<p>chatservice.cpp login函数</p>
+<pre class="language-c++" data-language="c++"><code class="language-c++">_userConnMap.insert(&#123;id,conn&#125;);&#x2F;&#x2F;unordered_map容器没有线程安全需要添加线程互斥操作</code></pre>
+
+<p>当然插入了还不够，多个用户连接服务器，_userConnMap这个是在多线程环境下，要保证线程互斥性。</p>
+<p>大多数 <strong>C++ STL 容器本身</strong>（如 <code>vector</code>、<code>map</code>、<code>unordered_map</code> 等）<strong>不是线程安全的</strong>。</p>
+<p>所以我们要在对这个插入数据加锁。</p>
+<p>chatservice.hpp private:</p>
+<pre class="language-c++" data-language="c++"><code class="language-c++">&#x2F;&#x2F;记得包含头文件#include &lt;mutex&gt;
+&#x2F;&#x2F;定义互斥锁，保证_userConnMap的线程安全
+    mutex _connMutex;</code></pre>
+
+<p>chatservice.cpp login函数 </p>
+<p>还是在登录成功那里</p>
+<pre class="language-c++" data-language="c++"><code class="language-c++">&#123;
+     &#x2F;&#x2F;登录成功，记录用户连接信息
+     lock_guard&lt;mutex&gt; lock(_connMutex);&#x2F;&#x2F;如果不析构，得得遇到&#125;为止，都是互斥，所以加个域
+     _userConnMap.insert(&#123;id,conn&#125;);&#x2F;&#x2F;unordered_map容器没有线程安全需要添加线程互斥操作
+&#125;</code></pre>
+
+<p>有人会问为什么再加一个花括号，这是为了让lock_guard的生命周期结束，这个变量的特性是构造时加锁，析构时自动解锁。</p>
+<h3 id="客户端异常退出业务"><a href="#客户端异常退出业务" class="headerlink" title="客户端异常退出业务"></a>客户端异常退出业务</h3><p>当客户端异常退出时，我们的数据库还没有修改当前状态时在线还是下线，所以要实现这个业务</p>
+<p>chatservice.cpp 定义公共函数clientCloseException</p>
+<pre class="language-c++" data-language="c++"><code class="language-c++">&#x2F;&#x2F;处理客户端异常退出
+void clientCloseException(const TcpConnectionPtr &amp;conn);</code></pre>
+
+<p>chatservice.cpp 对应函数实现</p>
+<pre class="language-c++" data-language="c++"><code class="language-c++">&#x2F;&#x2F;处理客户端异常退出
+void ChatService::clientCloseException(const TcpConnectionPtr &amp;conn)&#123;
+    User user;
+    &#123;
+        lock_guard&lt;mutex&gt; lock(_connMutex);&#x2F;&#x2F;如果不析构，得得遇到&#125;为止，都是互斥，所以加个域
+        for(auto it&#x3D;_userConnMap.begin();it!&#x3D;_userConnMap.end();++it)&#123;
+            if(it-&gt;second &#x3D;&#x3D; conn)&#123;
+                user.setId(it-&gt;first);
+                &#x2F;&#x2F;从map表删除用户的连接信息
+                _userConnMap.erase(it);
+                break;
+            &#125;
+        &#125;
+    &#125;
+    &#x2F;&#x2F;更新用户的状态信息
+    if(user.getId()!&#x3D;-1)&#123;
+        user.setState(&quot;offline&quot;);
+        _userModel.updateState(user);
+    &#125;
+&#125;</code></pre>
+
+<p>chatserver.cpp  onConnection函数</p>
+<pre class="language-c++" data-language="c++"><code class="language-c++">if(!conn-&gt;connected())&#123;
+       &#x2F;&#x2F;处理异常退出业务，state更新为offline
+       ChatService::instance()-&gt;clientCloseException(conn);
+       conn-&gt;shutdown();
+   &#125;</code></pre>
+
+<p>在确认断开后，使用clientCloseException将state更新为offline。</p>
+<h3 id="一对一聊天业务：在线聊天实现"><a href="#一对一聊天业务：在线聊天实现" class="headerlink" title="一对一聊天业务：在线聊天实现"></a>一对一聊天业务：在线聊天实现</h3><p>public.hpp 加入聊天消息ONE_CHAT_MSG</p>
+<pre class="language-c++" data-language="c++"><code class="language-c++">&#x2F;*
+server和client的公共文件
+*&#x2F;
+enum EnMsgType&#123;
+    LOGIN_MSG &#x3D; 1,&#x2F;&#x2F;登录消息
+    LOGIN_MSG_ACK,&#x2F;&#x2F;登录响应消息
+    REG_MSG,&#x2F;&#x2F;注册消息
+    REG_MSG_ACK, &#x2F;&#x2F;注册响应消息
+    ONE_CHAT_MSG, &#x2F;&#x2F;聊天消息
+&#125;;</code></pre>
+
+<p>既然注册了业务，所以还要在chatservice.cpp的构造函数，注册业务</p>
+<pre class="language-c++" data-language="c++"><code class="language-c++">_msgHandlerMap.insert(&#123;ONE_CHAT_MSG,std::bind(&amp;ChatService::oneChat,this,_1,_2,_3)&#125;);</code></pre>
+
+<p>chatservice.hpp 声明一对一聊天业务函数声明</p>
+<pre class="language-c++" data-language="c++"><code class="language-c++">&#x2F;&#x2F;一对一聊天业务
+    void oneChat(const TcpConnectionPtr &amp;conn,json &amp;js,Timestamp);</code></pre>
+
+<p>chatservice.cpp 声明一对一聊天业务函数声明</p>
+<pre class="language-c++" data-language="c++"><code class="language-c++">void ChatService::oneChat(const TcpConnectionPtr &amp;conn,json &amp;js,Timestamp)&#123;
+    int toid&#x3D;js[&quot;to&quot;];
+    &#123;
+        lock_guard&lt;mutex&gt; lock(_connMutex);
+        auto it&#x3D;_userConnMap.find(toid);
+        if(it!&#x3D;_userConnMap.end())&#123;
+            &#x2F;&#x2F;toid在线，转发消息
+            &#x2F;&#x2F;凡涉及_userConnMap注意线程安全性
+            &#x2F;&#x2F;服务器主动推送原消息给toid用户
+            it-&gt;second-&gt;send(js.dump());
+            return;
+        &#125;
+    &#125;
+    &#x2F;&#x2F;toid不在线，存储离线信息
+&#125;</code></pre>
+
+<p>这里js里面的构成是</p>
+<p>msgid &#x2F;&#x2F;消息类型<br>id	发消息的id<br>from 发消息的name<br>to	接受方的id<br>msg 要发送的消息</p>
+<p>在线发送消息整体实现就是服务端接收到消息，之后查看接受用户是否在线，在线则调出服务端与接收端的连接，转发原消息。</p>
+<h3 id="一对一聊天业务：离线消息"><a href="#一对一聊天业务：离线消息" class="headerlink" title="一对一聊天业务：离线消息"></a>一对一聊天业务：离线消息</h3><p>首先离线消息是存储在数据库的一张表里</p>
+<p>这张表只有两个字段userid和message 这里就不用ORM映射构造一个类来保留，所以我们直接构造一个关于这张表的操作类OfflineMsgModel</p>
+<p>offlinemessagemodel.hpp</p>
+<pre class="language-c++" data-language="c++"><code class="language-c++">#include&lt;string&gt;
+#include&lt;vector&gt;
+using namespace std;
+&#x2F;&#x2F;提供离线消息表的操作接口方法
+class OfflineMsgModel&#123;
+public:
+    &#x2F;&#x2F;存储用户的离线消息
+    void insert(int userid,string msg);
+
+    &#x2F;&#x2F;删除用户的离线消息
+    void remove(int userid);
+
+    &#x2F;&#x2F;查询用户的离线消息
+    vector&lt;string&gt; query(int userid);
+&#125;;
+</code></pre>
+
+<p>offlinemessagemodel.cpp</p>
+<pre class="language-c++" data-language="c++"><code class="language-c++">#include &quot;offlinemessagemodel.hpp&quot;
+#include &quot;db.h&quot;
+&#x2F;&#x2F; 存储用户的离线消息
+void OfflineMsgModel::insert(int userid, string msg)&#123;
+    &#x2F;&#x2F;1 组装sql语句
+    char sql[1024] &#x3D;&#123;0&#125;;
+    sprintf(sql,&quot;insert into offlineMessage values(%d,&#39;%s&#39;)&quot;,userid,msg.c_str());
+    MySQL mysql;
+    if(mysql.connect())&#123;
+        mysql.update(sql);
+    &#125;
+&#125;
+
+&#x2F;&#x2F; 删除用户的离线消息
+void  OfflineMsgModel::remove(int userid)&#123;
+    &#x2F;&#x2F;1 组装sql语句
+    char sql[1024] &#x3D;&#123;0&#125;;
+    sprintf(sql,&quot;delete from offlineMessage where userid&#x3D;%d&quot;,userid);
+    MySQL mysql;
+    if(mysql.connect())&#123;
+        mysql.update(sql);
+    &#125;
+&#125;
+
+&#x2F;&#x2F; 查询用户的离线消息并返回对应id的消息数组
+vector&lt;string&gt;  OfflineMsgModel::query(int userid)&#123;
+    &#x2F;&#x2F;1 组装sql语句
+    char sql[1024] &#x3D;&#123;0&#125;;
+    sprintf(sql,&quot;select message from offlineMessage where userid&#x3D;%d&quot;,userid);
+    MySQL mysql;
+    vector&lt;string&gt; vec;   
+    if(mysql.connect())&#123;
+        MYSQL_RES* res&#x3D;mysql.query(sql);
+        if(res!&#x3D;nullptr)&#123;&#x2F;&#x2F;查询成功
+             &#x2F;&#x2F;把userid用户的所有离线消息放入vec中返回
+             &#x2F;&#x2F;查多行
+             MYSQL_ROW row;
+             while((row&#x3D;mysql_fetch_row(res))!&#x3D;nullptr)&#123;
+                vec.push_back(row[0]);
+             &#125;
+             mysql_free_result(res);
+             return vec;
+        &#125;
+    &#125;
+    return vec;
+&#125;</code></pre>
+
+<p>构造好对应的数据操作类，要在chatservice类实现功能</p>
+<p>chatservice.hpp 添加对应类的声明</p>
+<pre class="language-c++" data-language="c++"><code class="language-c++">OfflineMsgModel _offlineMsgModel;</code></pre>
+
+<p>chatservice.cpp</p>
+<p>首先在用户登录成功后，要查看离线表中是否有属于它的离线消息，所以在login函数中登录成功板块还要添加</p>
+<pre class="language-c++" data-language="c++"><code class="language-c++">&#x2F;&#x2F;查询该用户是否有离线消息
+            vector&lt;string&gt; vec&#x3D;_offlineMsgModel.query(id);
+            if(!vec.empty())&#123;
+                response[&quot;offlinemsg&quot;]&#x3D;vec;
+                &#x2F;&#x2F;读取该用户的离线消息后，把该用户的所有离线消息删除掉
+                _offlineMsgModel.remove(id);
+            &#125;</code></pre>
+
+<p>首先查询对应id是否有离线消息存在，存到vector数组中，如果不为空的话，response添加offlinemsg字段存储离线消息，并且在服务端删除属于接收端的离线消息，做完这些转发给接收端。</p>
+<p>还有存储离线消息在onechat函数中对应的接收端不在线，存储离线消息在服务端。</p>
+<pre class="language-c++" data-language="c++"><code class="language-c++">&#x2F;&#x2F;toid不在线，存储离线信息
+    _offlineMsgModel.insert(toid,js.dump());</code></pre>
+
+<p>这样一对一的聊天业务就算实现了。</p>
+<h3 id="服务器异常退出问题解决（ctrl-c退出）"><a href="#服务器异常退出问题解决（ctrl-c退出）" class="headerlink" title="服务器异常退出问题解决（ctrl+c退出）"></a>服务器异常退出问题解决（ctrl+c退出）</h3><p>这里遇到的问题是服务器异常退出，User表中用户们的在线状态并没有改变，所以我们要将其改变。</p>
+<p>因为这里数据库的操作，所以在usermodel.cpp UserModel类实现resetState函数，记得在hpp文件声明</p>
+<pre class="language-c++" data-language="c++"><code class="language-c++">&#x2F;&#x2F;重置用户的状态信息
+void UserModel::resetState()&#123;
+    &#x2F;&#x2F;1 组装sql语句
+    char sql[1024] &#x3D;&quot;update User set state &#x3D; &#39;offline&#39; where state &#x3D; &#39;online&#39;&quot;;
+    MySQL mysql;
+    if(mysql.connect())&#123;
+        mysql.update(sql);
+    &#125;
+&#125;</code></pre>
+
+<p>这个函数就在chatservice.cpp中ChatService类的reset新函数调用</p>
+<pre class="language-c++" data-language="c++"><code class="language-c++">&#x2F;&#x2F;服务器异常，业务重置方法
+void ChatService::reset()&#123;
+    &#x2F;&#x2F;把online状态的用户，设置成offline
+    _userModel.resetState();
+&#125;</code></pre>
+
+<p>最后在main.cpp实现这一功能</p>
+<pre class="language-c++" data-language="c++"><code class="language-c++">&#x2F;&#x2F;处理服务器ctrl+c结束后，重置user的状态信息
+void resetHandler(int)&#123;
+    ChatService::instance()-&gt;reset();
+    exit(0);
+&#125;</code></pre>
+
+<p>在main函数添加对应的信号</p>
+<pre class="language-c++" data-language="c++"><code class="language-c++">int main()&#123;
+    signal(SIGINT,resetHandler);
+    EventLoop loop;
+    InetAddress addr(&quot;127.0.0.1&quot;,6000);
+    ChatServer server(&amp;loop, addr, &quot;ChatServer&quot;);
+    server.start();
+    &#x2F;&#x2F;开启事件循环
+    loop.loop();
+    return 0;
+&#125;</code></pre>
+
+<p>重点：signal(SIGINT,resetHandler);</p>
+<p>注册信号处理函数</p>
+<ul>
+<li><strong><code>SIGINT</code></strong> 是一个信号，表示 <strong>中断信号</strong>，通常在终端按下 <code>Ctrl+C</code> 时触发。</li>
+<li><strong><code>resetHandler</code></strong> 是你定义的函数，用来在收到这个信号时执行一些清理逻辑。它的参数类型必须是 <code>int</code>，因为它接受信号编号</li>
+</ul>
+<p>当然signal(SIGINT,resetHandler);这句话也不能随便放，得放在服务端启动前。</p>
+<p>SIGINT 信号是：</p>
+<p>Interrupt Signal（中断信号），编号是 2，表示用户希望中断（终止）正在运行的程序。</p>
+<p>常见触发方式：</p>
+<ul>
+<li>当你在 终端&#x2F;命令行里运行一个程序时，按下 Ctrl + C，操作系统就会向该程序发送一个 SIGINT 信号。</li>
+</ul>
+<p>举个例子：</p>
+<pre class="language-none"><code class="language-none">bash复制编辑$ .&#x2F;chat_server
+# 运行中...
+
+# 你按下 Ctrl+C</code></pre>
+
+<p>这时，系统向 <code>chat_server</code> 进程发送 <code>SIGINT</code> 信号：</p>
+<ul>
+<li>如果你没处理这个信号，程序会<strong>直接终止</strong>；</li>
+<li>如果你写了 <code>signal(SIGINT, resetHandler);</code>，就会先执行 <code>resetHandler()</code>，再退出。</li>
+</ul>
+<p>背后原理：</p>
+<ul>
+<li>Linux&#x2F;Unix 中，信号（signal）是一种<strong>异步通知机制</strong>，用于通知进程发生了某种事件。</li>
+<li><code>SIGINT</code> 是一种 <strong>软件信号</strong>，由终端驱动程序发送给前台进程组。</li>
+</ul>
+<p>常见信号对比：</p>
+<table>
+<thead>
+<tr>
+<th>信号名</th>
+<th>编号</th>
+<th>含义</th>
+<th>默认行为</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>SIGINT</code></td>
+<td>2</td>
+<td>终端中断（Ctrl+C）</td>
+<td>终止进程</td>
+</tr>
+<tr>
+<td><code>SIGTERM</code></td>
+<td>15</td>
+<td>程序终止（系统或用户发送）</td>
+<td>终止进程</td>
+</tr>
+<tr>
+<td><code>SIGKILL</code></td>
+<td>9</td>
+<td>强制终止（不能捕获）</td>
+<td>立即终止进程</td>
+</tr>
+<tr>
+<td><code>SIGQUIT</code></td>
+<td>3</td>
+<td>退出（Ctrl+\）并生成 core dump</td>
+<td>终止+生成转储文件</td>
+</tr>
+<tr>
+<td><code>SIGSEGV</code></td>
+<td>11</td>
+<td>段错误（访问非法内存）</td>
+<td>终止进程</td>
+</tr>
+</tbody></table>
+<p>总结一句话：SIGINT 是终端用户通过 Ctrl+C 发出的“中断信号”，默认会终止程序，但你可以捕获它，在程序退出前做一些清理处理。</p>
+<h3 id="添加好友业务代码"><a href="#添加好友业务代码" class="headerlink" title="添加好友业务代码"></a>添加好友业务代码</h3><p>public.hpp</p>
+<pre class="language-c++" data-language="c++"><code class="language-c++">enum EnMsgType&#123;
+    LOGIN_MSG &#x3D; 1,&#x2F;&#x2F;登录消息
+    LOGIN_MSG_ACK,&#x2F;&#x2F;登录响应消息
+    REG_MSG,&#x2F;&#x2F;注册消息
+    REG_MSG_ACK, &#x2F;&#x2F;注册响应消息
+    ONE_CHAT_MSG, &#x2F;&#x2F;聊天消息
+    ADD_FRIEND_MSG,&#x2F;&#x2F;添加好友消息
+&#125;;</code></pre>
+
+<p>添加ADD_FRIEND_MSG,&#x2F;&#x2F;添加好友消息</p>
+<p>添加好友在数据库中对应的一张Friend表，其中字段是userid和friendid,所以我们实现一个操控Friend表的model类</p>
+<p>friendmodel.hpp</p>
+<pre class="language-c++" data-language="c++"><code class="language-c++">#ifndef FRIENDMODEL_H
+#define FRIENDMODEL_H
+#include &quot;user.hpp&quot;
+#include&lt;vector&gt;
+using namespace std;
+
+&#x2F;&#x2F;维护好友信息的操作接口方法
+class FriendModel&#123;
+public:
+    &#x2F;&#x2F;添加好友关系
+    void insert(int userid,int friendid);
+
+    &#x2F;&#x2F;返回用户好友列表 friendid
+    vector&lt;User&gt; query(int userid);
+&#125;;
+
+
+
+#endif</code></pre>
+
+<p>friendmodel.cpp</p>
+<pre class="language-c++" data-language="c++"><code class="language-c++">#include &quot;friendmodel.hpp&quot;
+#include &quot;db.h&quot;
+&#x2F;&#x2F;添加好友关系
+void FriendModel::insert(int userid,int friendid)&#123;
+    &#x2F;&#x2F;1 组装sql语句
+    char sql[1024] &#x3D;&#123;0&#125;;
+    sprintf(sql,&quot;insert into Friend values(%d,%d)&quot;,userid,friendid);
+    MySQL mysql;
+    if(mysql.connect())&#123;
+        mysql.update(sql);
+    &#125;
+&#125;
+
+&#x2F;&#x2F;返回用户好友列表 friendid
+vector&lt;User&gt; FriendModel::query(int userid)&#123;
+     &#x2F;&#x2F;1 组装sql语句
+    char sql[1024] &#x3D;&#123;0&#125;;
+    sprintf(sql,&quot;select a.id,a.name,a.state from User a inner join Friend b on b.friendid&#x3D;a.id where b.userid&#x3D;%d&quot;,userid);
+    MySQL mysql;
+    vector&lt;User&gt; vec;   
+    if(mysql.connect())&#123;
+        MYSQL_RES* res&#x3D;mysql.query(sql);
+        if(res!&#x3D;nullptr)&#123;&#x2F;&#x2F;查询成功
+             &#x2F;&#x2F;把userid用户的所有离线消息放入vec中返回
+             &#x2F;&#x2F;查多行
+             MYSQL_ROW row;
+             while((row&#x3D;mysql_fetch_row(res))!&#x3D;nullptr)&#123;
+                User user;
+                user.setId(atoi(row[0]));
+                user.setName(row[1]);
+                user.setState(row[2]);
+                vec.push_back(user);
+             &#125;
+             mysql_free_result(res);
+             return vec;
+        &#125;
+    &#125;
+    return vec;
+&#125;</code></pre>
+
+<p>insert函数实现的是将好友关系加到数据库中。query返回的是从数据库中返回的好友数据。</p>
+<p>当然还有一个业务绑定</p>
+<p>首先在chatservice.hpp声明一个FriendModel对象</p>
+<pre class="language-c++" data-language="c++"><code class="language-c++">FriendModel _friendModel;</code></pre>
+
+<p>在ChatService的构造函数实现绑定</p>
+<pre class="language-c++" data-language="c++"><code class="language-c++">_msgHandlerMap.insert(&#123;ADD_FRIEND_MSG,std::bind(&amp;ChatService::addFriend,this,_1,_2,_3)&#125;);</code></pre>
+
+<p>在chatservice.hpp声明一个addFriend的函数</p>
+<p>addFriend函数实现:</p>
+<pre class="language-c++" data-language="c++"><code class="language-c++">&#x2F;&#x2F;添加好友业务 msgid id friendid
+void ChatService::addFriend(const TcpConnectionPtr &amp;conn,json &amp;js,Timestamp)&#123;
+    int userid&#x3D;js[&quot;id&quot;];
+    int friendid&#x3D;js[&quot;friendid&quot;];
+    &#x2F;&#x2F;存储好友信息
+    _friendModel.insert(userid,friendid);
+
+&#125;</code></pre>
+
+<p>这里收到的json消息格式为</p>
+<pre class="language-json" data-language="json"><code class="language-json"><span class="token punctuation">&#123;</span><span class="token property">"msgid"</span><span class="token operator">:</span><span class="token number">6</span><span class="token punctuation">,</span><span class="token property">"id"</span><span class="token operator">:</span><span class="token number">1</span><span class="token punctuation">,</span><span class="token property">"friendid"</span><span class="token operator">:</span><span class="token number">2</span><span class="token punctuation">&#125;</span></code></pre>
+
+<p>还有一个问题，在用户登录时，也要好友信息的显示，所以在用户登陆成功时，服务端也要把好友信息发给用户端。</p>
+<p>所以在服务端登录的回复信息这里需要加上好友信息</p>
+<pre class="language-c++" data-language="c++"><code class="language-c++">&#x2F;&#x2F;查询该用户的好友信息并返回
+            vector&lt;User&gt; userVec&#x3D;_friendModel.query(id);
+            if(!userVec.empty())&#123;
+               vector&lt;string&gt; vec2;
+               for(User &amp;user:userVec)&#123;
+                json js;
+                js[&quot;id&quot;]&#x3D;user.getId();
+                js[&quot;name&quot;]&#x3D;user.getName();
+                js[&quot;state&quot;]&#x3D;user.getState();
+                vec2.push_back(js.dump());
+               &#125;
+               response[&quot;friends&quot;]&#x3D;vec2;
+            &#125;</code></pre>
+
+<p>这里添加好友的业务就实现了。</p>
+<h3 id="群组业务"><a href="#群组业务" class="headerlink" title="群组业务"></a>群组业务</h3><p>首先要实现群组业务，我在数据库有两张表实现群组业务AllGroup和GroupUser</p>
+<p>AllGroup的数据结构：</p>
+<pre class="language-sql" data-language="sql"><code class="language-sql"><span class="token operator">+</span><span class="token comment">-----------+--------------+------+-----+---------+----------------+</span>
+<span class="token operator">|</span> Field     <span class="token operator">|</span> <span class="token keyword">Type</span>         <span class="token operator">|</span> <span class="token boolean">Null</span> <span class="token operator">|</span> <span class="token keyword">Key</span> <span class="token operator">|</span> <span class="token keyword">Default</span> <span class="token operator">|</span> Extra          <span class="token operator">|</span>
+<span class="token operator">+</span><span class="token comment">-----------+--------------+------+-----+---------+----------------+</span>
+<span class="token operator">|</span> id        <span class="token operator">|</span> <span class="token keyword">int</span>          <span class="token operator">|</span> <span class="token keyword">NO</span>   <span class="token operator">|</span> PRI <span class="token operator">|</span> <span class="token boolean">NULL</span>    <span class="token operator">|</span> <span class="token keyword">auto_increment</span> <span class="token operator">|</span>
+<span class="token operator">|</span> groupname <span class="token operator">|</span> <span class="token keyword">varchar</span><span class="token punctuation">(</span><span class="token number">50</span><span class="token punctuation">)</span>  <span class="token operator">|</span> <span class="token keyword">NO</span>   <span class="token operator">|</span>     <span class="token operator">|</span> <span class="token boolean">NULL</span>    <span class="token operator">|</span>                <span class="token operator">|</span>
+<span class="token operator">|</span> groupdesc <span class="token operator">|</span> <span class="token keyword">varchar</span><span class="token punctuation">(</span><span class="token number">200</span><span class="token punctuation">)</span> <span class="token operator">|</span> YES  <span class="token operator">|</span>     <span class="token operator">|</span>         <span class="token operator">|</span>                <span class="token operator">|</span>
+<span class="token operator">+</span><span class="token comment">-----------+--------------+------+-----+---------+----------------+</span></code></pre>
+
+<p>GroupUSer的数据结构</p>
+<pre class="language-sql" data-language="sql"><code class="language-sql"><span class="token operator">+</span><span class="token comment">------------+--------------------------+------+-----+---------+-------+</span>
+<span class="token operator">|</span> Field      <span class="token operator">|</span> <span class="token keyword">Type</span>                     <span class="token operator">|</span> <span class="token boolean">Null</span> <span class="token operator">|</span> <span class="token keyword">Key</span> <span class="token operator">|</span> <span class="token keyword">Default</span> <span class="token operator">|</span> Extra <span class="token operator">|</span>
+<span class="token operator">+</span><span class="token comment">------------+--------------------------+------+-----+---------+-------+</span>
+<span class="token operator">|</span> groupid    <span class="token operator">|</span> <span class="token keyword">int</span>                      <span class="token operator">|</span> <span class="token keyword">NO</span>   <span class="token operator">|</span> PRI <span class="token operator">|</span> <span class="token boolean">NULL</span>    <span class="token operator">|</span>       <span class="token operator">|</span>
+<span class="token operator">|</span> userid     <span class="token operator">|</span> <span class="token keyword">int</span>                      <span class="token operator">|</span> <span class="token keyword">NO</span>   <span class="token operator">|</span>     <span class="token operator">|</span> <span class="token boolean">NULL</span>    <span class="token operator">|</span>       <span class="token operator">|</span>
+<span class="token operator">|</span> groupprole <span class="token operator">|</span> <span class="token keyword">enum</span><span class="token punctuation">(</span><span class="token string">'creator'</span><span class="token punctuation">,</span><span class="token string">'normal'</span><span class="token punctuation">)</span> <span class="token operator">|</span> YES  <span class="token operator">|</span>     <span class="token operator">|</span> normal  <span class="token operator">|</span>       <span class="token operator">|</span>
+<span class="token operator">+</span><span class="token comment">------------+--------------------------+------+-----+---------+-------+</span></code></pre>
+
+<p>groupuser.hpp</p>
+<pre class="language-c++" data-language="c++"><code class="language-c++">#ifndef GROUPUSER_H
+#define GROUPUSER_H
+#include &quot;user.hpp&quot;
+&#x2F;&#x2F;群组用户，多了个role角色信息，从User类直接继承，复用User的其他信息
+&#x2F;&#x2F;对应的GroupUser表，但是光是这张表的不够，还要联表查询，所以继承User类。
+class GroupUser:public User&#123;
+public:
+    void setRole(string role)&#123;this-&gt;role&#x3D;role;&#125;
+    string getRole()&#123;return this-&gt;role;&#125;
+private:
+    string role;
+&#125;;
+
+#endif</code></pre>
+
+<p>GroupUser类对象是记录关于组成员的详细信息的类，所以继承User。</p>
+<p>group.hpp</p>
+<pre class="language-c++" data-language="c++"><code class="language-c++">#ifndef GROUP_H
+#define GROUP_H
+#include&lt;vector&gt;
+#include&lt;string&gt;
+#include &quot;groupuser.hpp&quot;
+using namespace std;
+&#x2F;&#x2F;AllGroup表的ORM类但也不完全是还加了储存组用户的数组
+class Group&#123;
+public:
+    Group(int id&#x3D;-1,string name &#x3D;&quot;&quot;,string desc&#x3D;&quot;&quot;)&#123;
+        this-&gt;id&#x3D;id;
+        this-&gt;name&#x3D;name;
+        this-&gt;desc&#x3D;desc;
+    &#125;
+    void setId(int id)&#123;
+        this-&gt;id&#x3D;id;
+    &#125;
+    void setName(string name)&#123;
+        this-&gt;name&#x3D;name;
+    &#125;
+    void setDesc(string desc)&#123;this-&gt;desc&#x3D;desc;&#125;
+    int getId()&#123;
+        return this-&gt;id;
+    &#125;
+    string getName()&#123;
+        return this-&gt;name;
+    &#125;
+    string getDesc()&#123;
+        return this-&gt;desc;
+    &#125;
+    vector&lt;GroupUser&gt; &amp;getUsers() &#123;return this-&gt;users;&#125;
+
+private:
+    int id;&#x2F;&#x2F;组id
+    string name;&#x2F;&#x2F;组名
+    string desc;&#x2F;&#x2F;组功能描述
+    vector&lt;GroupUser&gt; users;&#x2F;&#x2F;组员的详细信息
+&#125;;
+#endif</code></pre>
+
+<p>Group类对象是AllGroup表的ORM类，但也不完全，这个类还添加了存储组成员详细信息的结构vector<GroupUser> users;</GroupUser></p>
+<p>因为这两张表的关联系很大，所以我们第一这个群组业务的数据操作接口。</p>
+<p>groupmodel.hpp</p>
+<pre class="language-c++" data-language="c++"><code class="language-c++">#ifndef GROUPMODEL_H
+#define GROUPMODEL_H
+#include &quot;group.hpp&quot;
+#include&lt;string&gt;
+#include&lt;vector&gt;
+using namespace std;
+&#x2F;&#x2F;维护群组信息的操作接口方法
+class GroupModel&#123;
+public:
+    &#x2F;&#x2F;创建群组
+    bool createGroup(Group &amp;group);
+    &#x2F;&#x2F;加入群组
+    void addGroup(int userid,int groupid,string role);
+    &#x2F;&#x2F;查询用户所在群组消息
+    vector&lt;Group&gt; queryGroups(int userid);
+    &#x2F;&#x2F;根据指定的groupid查询群组用户id列表，除userid自己，主要用户群聊业务给群组其他成员群发消息。
+    vector&lt;int&gt; queryGroupUsers(int userid,int groupid);
+&#125;;
+#endif</code></pre>
+
+<p>对应函数实现</p>
+<p>创建群组createGroup函数：</p>
+<pre class="language-c++" data-language="c++"><code class="language-c++">&#x2F;&#x2F; 创建群组
+bool GroupModel::createGroup(Group &amp;group)&#123;
+    &#x2F;&#x2F;1.组装sql语句
+    char sql[1024]&#x3D;&#123;0&#125;;
+    sprintf(sql,&quot;insert into AllGroup(groupname,groupdesc) values(&#39;%s&#39;,&#39;%s&#39;)&quot;,group.getName().c_str(),group.getDesc().c_str());
+    MySQL mysql;
+    if(mysql.connect())&#123;
+        if(mysql.update(sql))&#123;
+            group.setId(mysql_insert_id(mysql.getConnection()));
+            return true;
+        &#125;
+    &#125;
+    return false;
+&#125;</code></pre>
+
+<p>将组名和组介绍存到AllGroup表中。</p>
+<p>加入群组addGroup函数：</p>
+<pre class="language-c++" data-language="c++"><code class="language-c++">&#x2F;&#x2F; 加入群组
+void GroupModel::addGroup(int userid, int groupid, string role)&#123;
+    &#x2F;&#x2F;1.组装sql语句
+    char sql[1024]&#x3D;&#123;0&#125;;
+    sprintf(sql,&quot;insert into GroupUser values(%d,%d,&#39;%s&#39;)&quot;,groupid,userid,role.c_str());
+    MySQL mysql;
+    if(mysql.connect())&#123;
+       mysql.update(sql);
+    &#125;
+&#125;</code></pre>
+
+<p>&#x2F;&#x2F; 查询用户所在群组信息queryGroups</p>
+<pre class="language-c++" data-language="c++"><code class="language-c++">&#x2F;&#x2F; 查询用户所在群组消息
+vector&lt;Group&gt; GroupModel::queryGroups(int userid)&#123;
+    &#x2F;&#x2F; 1.先根据userid在GroupUser表中查询该用户所属的群组消息
+    &#x2F;&#x2F; 2.再根据群组消息，查询属于该群组的所有用户的userid,并且和User表进行多表联合查询，查出用户的详细信息
+    char sql[1024]&#x3D;&#123;0&#125;;
+    sprintf(sql,&quot;select a.id,a.groupname,a.groupdesc from AllGroup a inner join GroupUser b on a.id&#x3D;b.groupid where b.userid&#x3D;%d&quot;,userid);
+    vector&lt;Group&gt; groupVec;
+    MySQL mysql;
+    if(mysql.connect())&#123;
+        MYSQL_RES *res&#x3D;mysql.query(sql);
+        if(res!&#x3D;nullptr)&#123;
+            MYSQL_ROW row;
+            &#x2F;&#x2F;查出userid所有的群组消息
+            while((row&#x3D;mysql_fetch_row(res))!&#x3D;nullptr)&#123;
+                Group group;
+                group.setId(atoi(row[0]));
+                group.setName(row[1]);
+                group.setDesc(row[2]);
+                groupVec.push_back(group);
+            &#125;
+            mysql_free_result(res);
+        &#125;
+    &#125;
+    &#x2F;&#x2F;查询群组的用户信息
+    for(Group &amp;group:groupVec)&#123;
+        sprintf(sql,&quot;select a.id,a.name,a.state,b.grouprole from User a inner join GroupUser b on b.userid&#x3D;a.id where b.groupid&#x3D;%d&quot;,group.getId());
+        MYSQL_RES *res&#x3D;mysql.query(sql);
+        if(res!&#x3D;nullptr)&#123;
+            MYSQL_ROW row;
+            while((row&#x3D;mysql_fetch_row(res))!&#x3D;nullptr)&#123;
+                GroupUser user;
+                user.setId(atoi(row[0]));
+                user.setName(row[1]);
+                user.setState(row[2]);
+                user.setRole(row[3]);
+                group.getUsers().push_back(user);
+            &#125;
+            mysql_free_result(res);
+        &#125;
+    &#125;
+    return groupVec;
+&#125;</code></pre>
+
+<p>根据指定的groupid查询群组用户id列表，除userid自己。queryGroupUsers函数：</p>
+<pre class="language-c++" data-language="c++"><code class="language-c++">&#x2F;&#x2F; 根据指定的groupid查询群组用户id列表，除userid自己，主要用户群聊业务给群组其他成员群发消息。
+vector&lt;int&gt; GroupModel::queryGroupUsers(int userid, int groupid)&#123;
+    char sql[1024]&#x3D;&#123;0&#125;;
+    sprintf(sql,&quot;select userid from GroupUser where groupid&#x3D;%d and userid!&#x3D;%d&quot;,groupid,userid);
+    vector&lt;int&gt; idVec;
+    MySQL mysql;
+    if(mysql.connect())&#123;
+        MYSQL_RES *res&#x3D;mysql.query(sql);
+        if(res!&#x3D;nullptr)&#123;
+            MYSQL_ROW row;
+            while((row&#x3D;mysql_fetch_row(res))!&#x3D;nullptr)&#123;
+                idVec.push_back(atoi(row[0]));
+            &#125;
+            mysql_free_result(res);
+        &#125;
+    &#125;
+    return idVec;
+&#125;</code></pre>
+
+<p>完成这些在业务类使用这些功能</p>
+<p>首先在public.hpp更新消息类型：</p>
+<pre class="language-c++" data-language="c++"><code class="language-c++">CREATE_GROUP_MSG,&#x2F;&#x2F;创建群组
+    ADD_GROUP_MSG,&#x2F;&#x2F;加入群组
+    GROUP_CHAT_MSG,&#x2F;&#x2F;群聊天</code></pre>
+
+<p>在业务类ChatService中添加对应的数据操作类对象：</p>
+<pre class="language-c++" data-language="c++"><code class="language-c++">GroupModel _groupModel;</code></pre>
+
+<p>加入功能实现函数：</p>
+<pre class="language-c++" data-language="c++"><code class="language-c++">&#x2F;&#x2F;创建群组业务
+    void createGroup(const TcpConnectionPtr &amp;conn,json &amp;js,Timestamp);
+    &#x2F;&#x2F;加入群组业务
+    void addGroup(const TcpConnectionPtr &amp;conn,json &amp;js,Timestamp);
+    &#x2F;&#x2F;群组聊天业务
+    void groupChat(const TcpConnectionPtr &amp;conn,json &amp;js,Timestamp);</code></pre>
+
+<p>创建群组业务:</p>
+<pre class="language-c++" data-language="c++"><code class="language-c++">&#x2F;&#x2F;创建群组业务
+void ChatService::createGroup(const TcpConnectionPtr &amp;conn,json &amp;js,Timestamp)&#123;
+    int userid&#x3D;js[&quot;id&quot;];
+    string name&#x3D;js[&quot;groupname&quot;];
+    string desc&#x3D;js[&quot;groupdesc&quot;];
+    &#x2F;&#x2F;存储新创建的群组消息
+    Group group(-1,name,desc);
+    if(_groupModel.createGroup(group))&#123;
+        &#x2F;&#x2F;存储群组创建人消息
+        _groupModel.addGroup(userid,group.getId(),&quot;creator&quot;);
+    &#125;
+&#125;</code></pre>
+
+<p>加入群组业务:</p>
+<pre class="language-c++" data-language="c++"><code class="language-c++">&#x2F;&#x2F;加入群组业务
+void ChatService::addGroup(const TcpConnectionPtr &amp;conn,json &amp;js,Timestamp)&#123;
+    int userid&#x3D;js[&quot;id&quot;];
+    int groupid&#x3D;js[&quot;groupid&quot;];
+    _groupModel.addGroup(userid,groupid,&quot;normal&quot;);
+&#125;</code></pre>
+
+<p>群组聊天业务:</p>
+<pre class="language-c++" data-language="c++"><code class="language-c++">&#x2F;&#x2F;群组聊天业务
+void ChatService::groupChat(const TcpConnectionPtr &amp;conn,json &amp;js,Timestamp)&#123;
+    int userid&#x3D;js[&quot;id&quot;];
+    int groupid&#x3D;js[&quot;groupid&quot;];
+    vector&lt;int&gt; useridVec&#x3D;_groupModel.queryGroupUsers(userid,groupid);
+    lock_guard&lt;mutex&gt; lock(_connMutex);
+    for(int id:useridVec)&#123;
+        
+        auto it&#x3D;_userConnMap.find(id);
+        if(it!&#x3D;_userConnMap.end())&#123;
+            &#x2F;&#x2F;转发群消息
+            it-&gt;second-&gt;send(js.dump());
+        &#125;else&#123;
+            &#x2F;&#x2F;存储离线群消息
+            _offlineMsgModel.insert(id,js.dump());
+        &#125;
+    &#125;
+&#125;</code></pre>
+
+<p>还要在构造函数绑定消息对应函数：</p>
+<pre class="language-c++" data-language="c++"><code class="language-c++">&#x2F;&#x2F;群组业务注册
+    _msgHandlerMap.insert(&#123;CREATE_GROUP_MSG,std::bind(&amp;ChatService::createGroup,this,_1,_2,_3)&#125;);
+    _msgHandlerMap.insert(&#123;ADD_GROUP_MSG,std::bind(&amp;ChatService::addGroup,this,_1,_2,_3)&#125;);
+    _msgHandlerMap.insert(&#123;GROUP_CHAT_MSG,std::bind(&amp;ChatService::groupChat,this,_1,_2,_3)&#125;);</code></pre>
+
+<p>当然在用户登录成功时，还要把群组的信息发给客户端。</p>
+<pre class="language-c++" data-language="c++"><code class="language-c++">&#x2F;&#x2F;查询用户的群组信息
+            vector&lt;Group&gt; groupuserVec&#x3D;_groupModel.queryGroups(id);
+            if(!groupuserVec.empty())&#123;
+                &#x2F;&#x2F;group:[&#123;groupid:[xxx,xxx,xxx,xxx]&#125;]
+                vector&lt;string&gt; groupV;
+                for(Group &amp;group:groupuserVec)&#123;
+                    json grpjson;
+                    grpjson[&quot;id&quot;]&#x3D;group.getId();
+                    grpjson[&quot;groupname&quot;]&#x3D;group.getName();
+                    grpjson[&quot;groupdesc&quot;]&#x3D;group.getDesc();
+                    vector&lt;string&gt; userV;
+                    for(GroupUser &amp;user:group.getUsers())&#123;
+                        json js;
+                        js[&quot;id&quot;]&#x3D;user.getId();
+                        js[&quot;name&quot;]&#x3D;user.getName();
+                        js[&quot;state&quot;]&#x3D;user.getState();
+                        js[&quot;role&quot;]&#x3D;user.getRole();
+                        userV.push_back(js.dump());
+                    &#125;
+                    grpjson[&quot;users&quot;]&#x3D;userV;
+                    groupV.push_back(grpjson.dump());
+                &#125;
+                response[&quot;groups&quot;]&#x3D;groupV;
+            &#125;</code></pre>
+
+<p>群组业务就完成了。</p>
+<h3 id="客户端开发-首页面开发"><a href="#客户端开发-首页面开发" class="headerlink" title="客户端开发-首页面开发"></a>客户端开发-首页面开发</h3><p>首先在src&#x2F;client编写CMakeLists.txt和main.cpp</p>
+<p>CMakeLists.txt</p>
+<pre class="language-cmake" data-language="cmake"><code class="language-cmake"><span class="token comment">#定义了一个SRC_LIST变量，包含了该目录下所有的源文件</span>
+<span class="token keyword">aux_source_directory</span><span class="token punctuation">(</span>. SRC_LIST<span class="token punctuation">)</span>
+
+
+<span class="token comment">#指定生成可执行文件</span>
+<span class="token keyword">add_executable</span><span class="token punctuation">(</span>ChatClient <span class="token punctuation">$&#123;</span>SRC_LIST<span class="token punctuation">&#125;</span><span class="token punctuation">)</span>
+<span class="token comment">#指定可执行文件链接时所需要依赖的库文件</span>
+<span class="token keyword">target_link_libraries</span><span class="token punctuation">(</span>ChatClient pthread<span class="token punctuation">)</span></code></pre>
+
+<p>main.cpp编写我们的客户端程序</p>
+<p>首先保存的变量</p>
+<pre class="language-c++" data-language="c++"><code class="language-c++">&#x2F;&#x2F;记录当前系统登录的用户信息
+User g_currentUser;
+&#x2F;&#x2F;记录当前登录用户的好友列表信息
+vector&lt;User&gt; g_currentUserFriendList;
+&#x2F;&#x2F;记录当前登录用户的群组列表信息
+vector&lt;Group&gt; g_currentUserGroupList;</code></pre>
+
+<p>目前的函数</p>
+<pre class="language-c++" data-language="c++"><code class="language-c++">&#x2F;&#x2F;显示当前登录成功用户的基本信息
+void showCurrentUserData();
+&#x2F;&#x2F;接受线程
+void readTaskHandler(int clientfd);
+&#x2F;&#x2F;获取系统时间(聊天信息需要添加时间信息)
+string getCurrentTime();
+&#x2F;&#x2F;主聊天页面程序
+void mainMenu();</code></pre>
+
+<p>主线程main函数</p>
+<p>int main(int argc,char **argv) </p>
+<p>参数说明：</p>
+<ul>
+<li><code>int argc</code>：Argument Count，命令行参数的数量（包括程序本身的名称）。</li>
+<li><code>char **argv</code>：Argument Vector，命令行参数的数组。<code>argv[0]</code> 是程序的名字，<code>argv[1]</code> 到 <code>argv[argc-1]</code> 是你在命令行中输入的其他参数。</li>
+</ul>
+<p>在命令行运行.&#x2F;ChatClient 127.0.0.1 6000即可运行</p>
+<h4 id="客户端和服务端的连接"><a href="#客户端和服务端的连接" class="headerlink" title="客户端和服务端的连接"></a>客户端和服务端的连接</h4><p>首先客户端和服务端的连接代码：</p>
+<pre class="language-c++" data-language="c++"><code class="language-c++">if(argc&lt;3)&#123;
+    cerr&lt;&lt;&quot;command invalid!example:.&#x2F;ChatClient 127.0.0.1 6000&quot;&lt;&lt;endl;
+    exit(-1);&#x2F;&#x2F;异常退出 exit(0)是正常退出
+&#125;
+&#x2F;&#x2F;解析通过命令行参数传递的ip和port
+char *ip&#x3D;argv[1];
+uint16_t port&#x3D;atoi(argv[2]);
+&#x2F;&#x2F;创建client端的socket
+int clientfd&#x3D;socket(AF_INET,SOCK_STREAM,0);
+if(-1&#x3D;&#x3D;clientfd)&#123;
+    cerr&lt;&lt;&quot;socket create error&quot;&lt;&lt;endl;
+    exit(-1);
+&#125;
+&#x2F;&#x2F;填写client需要连接的server信息ip+port
+sockaddr_in server;
+memset(&amp;server,0,sizeof(sockaddr_in));
+server.sin_family&#x3D;AF_INET;
+server.sin_port&#x3D;htons(port);
+server.sin_addr.s_addr&#x3D;inet_addr(ip);
+&#x2F;&#x2F;client和server进行连接
+if(-1&#x3D;&#x3D;connect(clientfd,(sockaddr *)&amp;server,sizeof(sockaddr_in)))&#123;
+    cerr &lt;&lt;&quot;connect server error&quot;&lt;&lt;endl;
+    close(clientfd);
+    exit(-1);
+&#125;</code></pre>
+
+<p>对其中的函数解释：</p>
+<pre class="language-c++" data-language="c++"><code class="language-c++">int clientfd&#x3D;socket(AF_INET,SOCK_STREAM,0);</code></pre>
+
+<p>socket函数功能：创建一个 TCP 套接字（socket）</p>
+<p>其中的socket函数</p>
+<pre class="language-c++" data-language="c++"><code class="language-c++">#include &lt;sys&#x2F;socket.h&gt;</code></pre>
+
+<p> 各个参数含义：</p>
+<pre class="language-c++" data-language="c++"><code class="language-c++">socket(int domain, int type, int protocol)</code></pre>
+
+<ol>
+<li><code>AF_INET</code>（地址族）</li>
+</ol>
+<ul>
+<li>指定使用 <strong>IPv4</strong> 地址（Internet Protocol version 4）。</li>
+<li>如果是 <code>AF_INET6</code>，那就是 IPv6。</li>
+</ul>
+<ol start="2">
+<li><code>SOCK_STREAM</code>（套接字类型）</li>
+</ol>
+<ul>
+<li>表示使用的是 <strong>面向连接的、可靠的、基于字节流</strong> 的通信方式。</li>
+<li>通常对应 <strong>TCP</strong> 协议。</li>
+</ul>
+<ol start="3">
+<li><code>0</code>（协议编号）</li>
+</ol>
+<ul>
+<li>填 <code>0</code> 表示让系统根据前两个参数自动选择合适的协议。</li>
+<li>对于 <code>AF_INET + SOCK_STREAM</code>，系统会自动选择 <strong>TCP</strong> 协议。</li>
+</ul>
+<p>返回值：</p>
+<ul>
+<li>成功时返回一个非负整数（<strong>文件描述符</strong>，也就是 <code>clientfd</code>），用于后续的读写操作。</li>
+<li>失败时返回 <code>-1</code>，常见原因包括：系统资源耗尽、参数错误等。</li>
+</ul>
+<pre class="language-c++" data-language="c++"><code class="language-c++">sockaddr_in server;</code></pre>
+
+<p><code>sockaddr_in</code> 是 C&#x2F;C++ 中专门用来表示 <strong>IPv4 网络地址</strong> 的结构体。</p>
+<p>对应的头文件：</p>
+<pre class="language-c++" data-language="c++"><code class="language-c++">#include &lt;netinet&#x2F;in.h&gt;</code></pre>
+
+<pre class="language-c++" data-language="c++"><code class="language-c++">memset(&amp;server,0,sizeof(sockaddr_in));</code></pre>
+
+<p>把 <code>server</code> 结构体从首地址开始，连续 <code>sizeof(server)</code> 个字节都设置为 <code>0</code>。</p>
+<p>memset函数用法</p>
+<pre class="language-c++" data-language="c++"><code class="language-c++">void *memset(void *ptr, int value, size_t num);</code></pre>
+
+<p> 参数说明：</p>
+<table>
+<thead>
+<tr>
+<th>参数</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>ptr</code></td>
+<td>指向要被设置的内存的指针</td>
+</tr>
+<tr>
+<td><code>value</code></td>
+<td>要设置的值（会被转换为 <code>unsigned char</code> 类型）</td>
+</tr>
+<tr>
+<td><code>num</code></td>
+<td>要设置的字节数</td>
+</tr>
+</tbody></table>
+<pre class="language-c++" data-language="c++"><code class="language-c++">server.sin_family&#x3D;AF_INET;
+server.sin_port&#x3D;htons(port);
+server.sin_addr.s_addr&#x3D;inet_addr(ip);</code></pre>
+
+<pre class="language-c++" data-language="c++"><code class="language-c++">server.sin_family &#x3D; AF_INET;</code></pre>
+
+<ul>
+<li>表示使用的地址类型是 <strong>IPv4</strong>。</li>
+<li><code>AF_INET</code> 是 <strong>Address Family Internet</strong> 的缩写。</li>
+<li>这是 <code>sockaddr_in</code> 中的 <code>sin_family</code> 字段，必须设置为 <code>AF_INET</code>，否则系统无法识别地址格式。</li>
+</ul>
+<pre class="language-c++" data-language="c++"><code class="language-c++">server.sin_port &#x3D; htons(port);</code></pre>
+
+<ul>
+<li>设置端口号，例如：6000。</li>
+<li><code>htons()</code> 是 <strong>Host to Network Short</strong> 的缩写：h<ul>
+<li>它把本地主机的字节序（可能是小端）转换为网络字节序（大端）。</li>
+<li>因为 TCP&#x2F;IP 协议使用大端字节序进行数据传输。</li>
+</ul>
+</li>
+<li><code>port</code> 是你从命令行传进来的端口号字符串转成的整数。</li>
+</ul>
+<p>htons函数头文件：</p>
+<pre class="language-c++" data-language="c++"><code class="language-c++">#include &lt;netinet&#x2F;in.h&gt;</code></pre>
+
+<p> 端口必须转换成网络字节序，否则客户端连接服务器时会出错！</p>
+<pre class="language-c++" data-language="c++"><code class="language-c++">server.sin_addr.s_addr &#x3D; inet_addr(ip);</code></pre>
+
+<ul>
+<li>设置 IP 地址。</li>
+<li><code>inet_addr()</code> 函数把点分十进制的 IP 字符串（如 <code>&quot;127.0.0.1&quot;</code>）转换成 32 位的二进制整数。</li>
+<li>转换后的结果赋值给 <code>sin_addr.s_addr</code>，用于 socket 连接。</li>
+</ul>
+<p>inet_addr函数头文件：</p>
+<pre class="language-c++" data-language="c++"><code class="language-c++">#include &lt;arpa&#x2F;inet.h&gt;</code></pre>
+
+<pre class="language-c++" data-language="c++"><code class="language-c++">&#x2F;&#x2F;client和server进行连接
+    if(-1&#x3D;&#x3D;connect(clientfd,(sockaddr *)&amp;server,sizeof(sockaddr_in)))&#123;
+        cerr &lt;&lt;&quot;connect server error&quot;&lt;&lt;endl;
+        close(clientfd);&#x2F;&#x2F;释放socket资源
+        exit(-1);
+    &#125;</code></pre>
+
+<p><code>connect()</code> 函数详解：</p>
+<pre class="language-c++" data-language="c++"><code class="language-c++">int connect(int sockfd, const struct sockaddr *addr, socklen_t addrlen);</code></pre>
+
+<table>
+<thead>
+<tr>
+<th>参数</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>sockfd</code></td>
+<td>用 <code>socket()</code> 创建的套接字文件描述符（即 <code>clientfd</code>）</td>
+</tr>
+<tr>
+<td><code>addr</code></td>
+<td>服务器地址结构指针（需要强转成 <code>sockaddr*</code> 类型）</td>
+</tr>
+<tr>
+<td><code>addrlen</code></td>
+<td><code>addr</code> 结构体的大小，通常是 <code>sizeof(sockaddr_in)</code></td>
+</tr>
+</tbody></table>
+<h4 id="客户端业务实现"><a href="#客户端业务实现" class="headerlink" title="客户端业务实现"></a>客户端业务实现</h4><p>首先在一个死循环中实现循环选择：</p>
+<pre class="language-c++" data-language="c++"><code class="language-c++">&#x2F;&#x2F;显示首页面菜单 登录,注册，退出
+       cout&lt;&lt;&quot;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&quot;&lt;&lt;endl;
+       cout&lt;&lt;&quot;1. login&quot;&lt;&lt;endl;
+       cout&lt;&lt;&quot;2. register&quot;&lt;&lt;endl;
+       cout&lt;&lt;&quot;3. quit&quot;&lt;&lt;endl;
+       cout&lt;&lt;&quot;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&quot;&lt;&lt;endl;
+       cout&lt;&lt; &quot;choice:&quot;;
+       int choice&#x3D;0;
+       cin&gt;&gt;choice;
+       cin.get();&#x2F;&#x2F;读掉缓冲区残留的回车</code></pre>
+
+<p>使用switch语句实现不断选择。</p>
+<h5 id="首先登录业务："><a href="#首先登录业务：" class="headerlink" title="首先登录业务："></a>首先登录业务：</h5><pre class="language-c++" data-language="c++"><code class="language-c++">case 1:&#x2F;&#x2F;login业务
+            &#123;
+                int id&#x3D;0;
+                char pwd[50]&#x3D;&#123;0&#125;;
+                cout&lt;&lt; &quot;userid:&quot;;
+                cin&gt;&gt; id;
+                cin.get();&#x2F;&#x2F;读掉缓冲区残留的回车
+                cout&lt;&lt;&quot;user password:&quot;;
+                cin.getline(pwd,50);
+                json js;
+                js[&quot;msgid&quot;]&#x3D;LOGIN_MSG;
+                js[&quot;id&quot;]&#x3D;id;
+                js[&quot;password&quot;]&#x3D;pwd;
+                string request &#x3D;js.dump();
+                int len&#x3D;send(clientfd,request.c_str(),strlen(request.c_str())+1,0);
+                if(len&#x3D;&#x3D;-1)&#123;
+                    cerr&lt;&lt;&quot;send login msg error:&quot;&lt;&lt;request&lt;&lt;endl;
+                &#125;else&#123;
+                    char buffer[1024]&#x3D;&#123;0&#125;;
+                    len&#x3D;recv(clientfd,buffer,1024,0);
+                    if(len&#x3D;&#x3D;-1)&#123;
+                        cerr &lt;&lt;&quot;recv login response error&quot;&lt;&lt;endl;
+                    &#125;else&#123;
+                        json responsejs&#x3D;json::parse(buffer);
+                        if(responsejs[&quot;errno&quot;]!&#x3D;0)&#123;
+                            cerr&lt;&lt;responsejs[&quot;errmsg&quot;]&lt;&lt;endl;
+                        &#125;
+                        else&#123;&#x2F;&#x2F;登录成功
+                            &#x2F;&#x2F;记录当前用户的id和name
+                            g_currentUser.setId(responsejs[&quot;id&quot;]);
+                            g_currentUser.setName(responsejs[&quot;name&quot;]);
+                            &#x2F;&#x2F;记录当前用户的好友列表信息
+                            if(responsejs.contains(&quot;friends&quot;))&#123;&#x2F;&#x2F;看是否包含friends这个键
+                                vector&lt;string&gt; vec&#x3D;responsejs[&quot;friends&quot;];
+                                for(string &amp;str:vec)&#123;
+                                    json js&#x3D;json::parse(str);
+                                    User user;
+                                    user.setId(js[&quot;id&quot;]);
+                                    user.setName(js[&quot;name&quot;]);
+                                    user.setState(js[&quot;state&quot;]);
+                                    g_currentUserFriendList.push_back(user);
+                                &#125;
+                            &#125;
+                            &#x2F;&#x2F;记录当前用户的群组列表信息
+                            if(responsejs.contains(&quot;groups&quot;))&#123;
+                                vector&lt;string&gt; vec1&#x3D;responsejs[&quot;groups&quot;];
+                                for(string &amp;groupstr:vec1)&#123;
+                                    json grpjs&#x3D;json::parse(groupstr);
+                                    Group group;
+                                    group.setId(grpjs[&quot;id&quot;]);
+                                    group.setName(grpjs[&quot;groupname&quot;]);
+                                    group.setDesc(grpjs[&quot;groupdesc&quot;]);
+                                    vector&lt;string&gt; vec2&#x3D;grpjs[&quot;users&quot;];
+                                    for(string &amp;userstr:vec2)&#123;
+                                        GroupUser user;
+                                        json js&#x3D;json::parse(userstr);
+                                        user.setId(js[&quot;id&quot;]);
+                                        user.setName(js[&quot;name&quot;]);
+                                        user.setState(js[&quot;state&quot;]);
+                                        user.setRole(js[&quot;role&quot;]);
+                                        group.getUsers().push_back(user);
+                                    &#125;
+                                    g_currentUserGroupList.push_back(group);
+                                &#125;
+                            &#125;
+                            &#x2F;&#x2F;显示登录用户的基本信息
+                            showCurrentUserData();
+                            &#x2F;&#x2F;显示当前用户的离线消息 个人聊天消息或者群组消息
+                            if(responsejs.contains(&quot;offlinemsg&quot;))&#123;
+                                vector&lt;string&gt; vec&#x3D;responsejs[&quot;offlinemsg&quot;];
+                                for(string &amp;str:vec)&#123;
+                                    json js&#x3D;json::parse(str);
+                                    &#x2F;&#x2F;time +[id]+name+&quot;said: &quot;+xxx
+                                    cout&lt;&lt;js[&quot;time&quot;]&lt;&lt;&quot;[&quot;&lt;&lt;js[&quot;id&quot;]&lt;&lt;&quot;]&quot;&lt;&lt;js[&quot;name&quot;]&lt;&lt;&quot; said &quot;&lt;&lt;js[&quot;msg&quot;]&lt;&lt;endl;
+                                &#125;
+                            &#125;
+                            &#x2F;&#x2F;登录成功，启动接受线程负责接受数据
+                            std::thread readTask(readTaskHandler,clientfd);
+                            readTask.detach();
+                            &#x2F;&#x2F;进入聊天主菜单页面
+                            mainMenu();
+                        &#125;
+                    &#125;
+                &#125;
+            &#125;
+            break;</code></pre>
+
+<p>这里解释一些函数</p>
+<pre class="language-c++" data-language="c++"><code class="language-c++">int len&#x3D;send(clientfd,request.c_str(),strlen(request.c_str())+1,0);</code></pre>
+
+<p>通过 <code>send()</code> 函数将字符串 <code>request</code> 的内容发送到套接字 <code>clientfd</code> 所代表的对端。</p>
+<p>各参数详解：</p>
+<pre class="language-c++" data-language="c++"><code class="language-c++">send(socket, buffer, length, flags)</code></pre>
+
+<ul>
+<li><code>clientfd</code>：套接字描述符，表示要发送数据的目标。</li>
+<li><code>request.c_str()</code>：将 <code>std::string</code> 类型的 <code>request</code> 转为 C 风格的字符串（返回 <code>const char*</code> 指针）。c++</li>
+<li><code>strlen(request.c_str()) + 1</code>：表示发送的数据长度，<code>+1</code> 是为了包括字符串末尾的 <code>\0</code>（空字符终止符），这是为了让接收方知道字符串结束。</li>
+<li><code>0</code>：表示不使用额外的标志（默认行为）。</li>
+</ul>
+<p>关于返回值：</p>
+<table>
+<thead>
+<tr>
+<th>返回值 <code>len</code></th>
+<th>意义说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>&gt; 0</td>
+<td>成功发送了 <code>len</code> 字节的数据</td>
+</tr>
+<tr>
+<td>&#x3D;&#x3D; 0</td>
+<td>TCP 连接被优雅关闭（几乎不会出现在 <code>send()</code>，常出现在 <code>recv()</code>）</td>
+</tr>
+<tr>
+<td>&#x3D;&#x3D; -1</td>
+<td>发送失败，需检查 <code>errno</code> 查看错误原因</td>
+</tr>
+</tbody></table>
+<pre class="language-c++" data-language="c++"><code class="language-c++">len&#x3D;recv(clientfd,buffer,1024,0);</code></pre>
+
+<p><strong>从 <code>clientfd</code> 套接字接收最多 1024 字节的数据，存入 <code>buffer</code> 缓冲区中</strong>。</p>
+<p>各参数详解：</p>
+<pre class="language-c++" data-language="c++"><code class="language-c++">recv(socket, buffer, length, flags)</code></pre>
+
+<ul>
+<li><code>clientfd</code>：连接的套接字描述符（已连接的对端）。</li>
+<li><code>buffer</code>：用于存放接收数据的内存区域（<code>char buffer[1024];</code> 或 <code>char* buffer = new char[1024];</code>）。</li>
+<li><code>1024</code>：最多接收 1024 字节（防止缓冲区溢出）。</li>
+<li><code>0</code>：标志位，通常设置为 0（表示默认阻塞接收）。</li>
+</ul>
+<p>返回值说明（关键点）：</p>
+<table>
+<thead>
+<tr>
+<th>返回值 <code>len</code></th>
+<th>意义说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>&gt; 0</td>
+<td>实际接收到的数据字节数（并不一定等于 1024）</td>
+</tr>
+<tr>
+<td>&#x3D;&#x3D; 0</td>
+<td><strong>连接已关闭</strong>（对方调用了 <code>close()</code>）</td>
+</tr>
+<tr>
+<td>&#x3D;&#x3D; -1</td>
+<td><strong>接收失败</strong>，可通过 <code>errno</code> 查看错误原因</td>
+</tr>
+</tbody></table>
+<p>注意recv() 并不会自动在 buffer 的末尾添加 ‘\0‘</p>
+<p>所以我们定义buffer:保证末尾有’\0‘</p>
+<pre class="language-c++" data-language="c++"><code class="language-c++">char buffer[1024]&#x3D;&#123;0&#125;;</code></pre>
+
+<pre class="language-c++" data-language="c++"><code class="language-c++">&#x2F;&#x2F;登录成功，启动接受线程负责接受数据
+                            std::thread readTask(readTaskHandler,clientfd);
+                            readTask.detach();</code></pre>
+
+<p>创建了一个<strong>新线程</strong>，并立刻将它<strong>分离（detach）</strong>，用来异步执行函数 <code>readTaskHandler(clientfd)</code>。</p>
+<p>分析每一行作用：</p>
+<ol>
+<li><code>std::thread readTask(readTaskHandler, clientfd);</code></li>
+</ol>
+<ul>
+<li>创建一个线程对象 <code>readTask</code>，该线程会立即开始运行 <code>readTaskHandler(clientfd)</code>。</li>
+<li>通常用于处理客户端请求，比如接收数据、解析消息等。</li>
+</ul>
+<ol start="2">
+<li><code>readTask.detach();</code></li>
+</ol>
+<ul>
+<li>将线程<strong>分离</strong>，让它独立运行。</li>
+<li><strong>主线程不再管理这个子线程</strong>，也无法调用 <code>join()</code> 等待它。</li>
+<li>线程资源会在线程函数执行完毕后由系统自动回收。</li>
+</ul>
+<p> detach 的 <strong>优点与风险</strong>：</p>
+<p>优点：</p>
+<ul>
+<li>简单，<strong>不阻塞主线程</strong>，不需要显式 <code>join()</code>。</li>
+<li>适合执行时间短、无需主线程等待的任务（比如客户端的消息监听）。</li>
+</ul>
+<p>风险：</p>
+<ol>
+<li><strong>无法再追踪或管理线程</strong>：你不能再 join 或获取其返回状态。</li>
+<li><strong>容易引发悬空引用或资源泄漏问题</strong>：<ul>
+<li>如果 <code>readTaskHandler()</code> 里访问了已经销毁的变量，会崩。</li>
+<li>比如使用了传进来的 <code>clientfd</code> 后，主线程先关闭了它。</li>
+</ul>
+</li>
+<li><strong>调试困难</strong>：detach 后的线程出错更难排查。</li>
+</ol>
+<h5 id="注册业务："><a href="#注册业务：" class="headerlink" title="注册业务："></a>注册业务：</h5><pre class="language-c++" data-language="c++"><code class="language-c++">case 2:&#x2F;&#x2F;register业务
+            &#123;
+                char name[50]&#x3D;&#123;0&#125;;
+                char pwd[50]&#x3D;&#123;0&#125;;
+                cout&lt;&lt; &quot;username:&quot;;
+                cin.getline(name,50);
+                cout&lt;&lt;&quot;user password:&quot;;
+                cin.getline(pwd,50);
+
+                json js;
+                js[&quot;msgid&quot;]&#x3D;REG_MSG;
+                js[&quot;name&quot;]&#x3D;name;
+                js[&quot;password&quot;]&#x3D;pwd;
+                string request&#x3D;js.dump();
+                int len&#x3D;send(clientfd,request.c_str(),strlen(request.c_str())+1,0);
+                if(len&#x3D;&#x3D;-1)&#123;
+                    cerr &lt;&lt;&quot;send reg msg error:&quot;&lt;&lt;request&lt;&lt;endl;
+                &#125;else&#123;
+                    char buffer[1024]&#x3D;&#123;0&#125;;
+                    len&#x3D;recv(clientfd,buffer,1024,0);
+                    if(len&#x3D;&#x3D;-1)&#123;
+                        cerr&lt;&lt;&quot;recv reg response error&quot;&lt;&lt;endl;
+                    &#125;else&#123;
+                        json responsejs&#x3D;json::parse(buffer);
+                        if(0!&#x3D;responsejs[&quot;errno&quot;])&#123;&#x2F;&#x2F;注册失败
+                            cerr&lt;&lt;name&lt;&lt;&quot;is already exist,register error!&quot;&lt;&lt;endl;
+                        &#125;else&#123;&#x2F;&#x2F;注册成功
+                            cout&lt;&lt;name&lt;&lt;&quot;register success,userid is &quot;&lt;&lt;responsejs[&quot;id&quot;]&lt;&lt;&quot;, do not forget it!&quot;&lt;&lt;endl;
+                        &#125;
+                    &#125;
+                &#125;
+            &#125;
+            break;</code></pre>
+
+<h5 id="退出业务："><a href="#退出业务：" class="headerlink" title="退出业务："></a>退出业务：</h5><pre class="language-c++" data-language="c++"><code class="language-c++">case 3:&#x2F;&#x2F;quit 业务
+           &#123;
+               close(clientfd);&#x2F;&#x2F;释放连接，不要重复关闭
+               exit(0);
+           &#125;</code></pre>
+
+<h5 id="聊天主界面业务："><a href="#聊天主界面业务：" class="headerlink" title="聊天主界面业务："></a>聊天主界面业务：</h5><p>首先在登录业务实现，登录成功又该何去何从，所以聊天主界面业务，首先在登录业务有几个函数，还没有实现，实现一下：</p>
+<pre class="language-c++" data-language="c++"><code class="language-c++">&#x2F;&#x2F;显示登录用户的基本信息
+showCurrentUserData();</code></pre>
+
+<p>具体实现：</p>
+<pre class="language-c++" data-language="c++"><code class="language-c++">&#x2F;&#x2F;显示当前登录成功用户的基本信息
+void showCurrentUserData()&#123;
+    cout&lt;&lt;&quot;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;login user&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&quot;&lt;&lt;endl;
+    cout&lt;&lt;&quot;current login user &#x3D;&gt;id:&quot;&lt;&lt;g_currentUser.getId()&lt;&lt;&quot;name:&quot;&lt;&lt;g_currentUser.getName()&lt;&lt;endl;
+    cout&lt;&lt;&quot;-------------------------friend list------------------------------&quot;&lt;&lt;endl;
+    if(!g_currentUserFriendList.empty())&#123;
+        for(User &amp;user:g_currentUserFriendList)&#123;
+            cout&lt;&lt;user.getId()&lt;&lt;&quot; &quot;&lt;&lt;user.getName()&lt;&lt;&quot; &quot;&lt;&lt;user.getState() &lt;&lt;endl;
+        &#125;
+    &#125;
+    cout&lt;&lt;&quot;--------------------------group list-------------------------------&quot;&lt;&lt;endl;
+    if(!g_currentUserGroupList.empty())&#123;
+        for(Group &amp;group:g_currentUserGroupList)&#123;
+            cout&lt;&lt;group.getId()&lt;&lt;&quot; &quot;&lt;&lt;group.getName()&lt;&lt;&quot; &quot;&lt;&lt;group.getDesc()&lt;&lt;endl;
+            for(GroupUser &amp;user:group.getUsers())&#123;
+                cout&lt;&lt;user.getId()&lt;&lt;&quot; &quot;&lt;&lt;user.getName()&lt;&lt;&quot; &quot;&lt;&lt;user.getState()&lt;&lt;user.getRole()&lt;&lt;endl;
+            &#125;
+        &#125;
+    &#125;
+    cout&lt;&lt;&quot;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&quot;&lt;&lt;endl;
+&#125;</code></pre>
+
+<pre class="language-c++" data-language="c++"><code class="language-c++">&#x2F;&#x2F;登录成功，启动接受线程负责接受数据
+std::thread readTask(readTaskHandler,clientfd);
+readTask.detach();</code></pre>
+
+<p>其中readTaskHandler的实现：</p>
+<pre class="language-c++" data-language="c++"><code class="language-c++">&#x2F;&#x2F;接受线程
+void readTaskHandler(int clientfd)&#123;
+    for(;;)&#123;
+        char buffer[1024]&#x3D;&#123;0&#125;;
+        int len &#x3D;recv(clientfd,buffer,1024,0);
+        if(-1&#x3D;&#x3D;len||0&#x3D;&#x3D;len)&#123;
+            close(clientfd);
+            exit(-1);
+        &#125;
+        &#x2F;&#x2F;接收ChatServer转发的数据，反序列化生成json数据对象
+        json js&#x3D;json::parse(buffer);
+        if(ONE_CHAT_MSG&#x3D;&#x3D;js[&quot;msgid&quot;])&#123;
+            cout&lt;&lt;js[&quot;time&quot;].get&lt;string&gt;()&lt;&lt;&quot;[&quot;&lt;&lt;js[&quot;id&quot;]&lt;&lt;&quot;]&quot;&lt;&lt;js[&quot;name&quot;].get&lt;string&gt;()&lt;&lt; &quot; said: &quot;&lt;&lt;js[&quot;msg&quot;].get&lt;string&gt;()&lt;&lt;endl;
+            continue;
+        &#125;
+    &#125;
+&#125;</code></pre>
+
+<p>这个函数是用来接受服务端发来的消息的。主线程是发消息的。但是当前就实现了关于一对一聊天的接受消息。</p>
+<pre class="language-c++" data-language="c++"><code class="language-c++">&#x2F;&#x2F;进入聊天主菜单页面
+ mainMenu(clientfd);</code></pre>
+
+<p>进入聊天主菜单页面实现具体的业务：</p>
+<pre class="language-c++" data-language="c++"><code class="language-c++">&#x2F;&#x2F;主聊天页面程序
+void mainMenu(int clientfd)&#123;
+    help();
+
+    char buffer[1024]&#x3D;&#123;0&#125;;
+    for(;;)&#123;
+        cin.getline(buffer,1024);
+        string commandbuf(buffer);
+        string command;
+        int idx&#x3D;commandbuf.find(&quot;:&quot;);
+        if(idx&#x3D;&#x3D;-1)&#123;
+            command&#x3D;commandbuf;
+        &#125;
+        else&#123;
+            command&#x3D;commandbuf.substr(0,idx);
+        &#125;
+        auto it&#x3D;commandHandlerMap.find(command);
+        if(it&#x3D;&#x3D;commandHandlerMap.end())&#123;
+            cerr&lt;&lt; &quot;invalid input command!&quot;&lt;&lt;endl;
+            continue;
+        &#125;
+        &#x2F;&#x2F;调用相应命令的事件处理回调，mainMenu对修改封闭，添加新功能不需要修改该函数
+        it-&gt;second(clientfd,commandbuf.substr(idx+1,commandbuf.size()-idx));&#x2F;&#x2F;调用命令处理方法
+    &#125;
+&#125;</code></pre>
+
+<p>这个函数实现进入主页面使用对应的指令使用对应的功能。接下来说说其中的变量commandHandlerMap。</p>
+<pre class="language-c++" data-language="c++"><code class="language-c++">&#x2F;&#x2F;注册系统支持的客户端命令处理
+unordered_map&lt;string,function&lt;void(int,string)&gt;&gt;commandHandlerMap&#x3D;&#123;
+    &#123;&quot;help&quot;,help&#125;,
+    &#123;&quot;chat&quot;,chat&#125;,
+    &#123;&quot;addfriend&quot;,addfriend&#125;,
+    &#123;&quot;creategroup&quot;,creategroup&#125;,
+    &#123;&quot;addgroup&quot;,addgroup&#125;,
+    &#123;&quot;groupchat&quot;,groupchat&#125;,
+    &#123;&quot;loginout&quot;,loginout&#125;
+&#125;;</code></pre>
+
+<p>通过哈希表绑定对应的字符串和对应函数的实现。</p>
+<p>当然在实现这些功能时得要有一个文字说明，这就是help功能。</p>
+<pre class="language-c++" data-language="c++"><code class="language-c++">&#x2F;&#x2F;&quot;help&quot; command handler
+void help(int fd,string str)&#123;
+    cout&lt;&lt; &quot;show command lists:&quot;&lt;&lt;endl;
+    for(auto&amp;p:commandMap)&#123;
+        cout&lt;&lt;p.first&lt;&lt;&quot; : &quot;&lt;&lt;p.second&lt;&lt;endl;
+    &#125;
+    cout&lt;&lt;endl;
+&#125;
+</code></pre>
+
+<p>这有个细节，因为后续用户如果还想要再次使用help功能，所以把他放在commandHandlerMap中，但是help()函数不满足function&lt;void(int,string)&gt;,所以我们在声明的时候赋初始值，这样就可以直接help()实现了。在其中commandMap也是自己定义提示用户如何使用这些功能。</p>
+<pre class="language-c++" data-language="c++"><code class="language-c++">&#x2F;&#x2F;系统支持的客户端命令列表
+unordered_map&lt;string,string&gt; commandMap&#x3D;&#123;
+    &#123;&quot;help&quot;,&quot;显示所有支持的命令，格式help&quot;&#125;,
+    &#123;&quot;chat&quot;,&quot;一对一聊天，格式chat:friendid:message&quot;&#125;,
+    &#123;&quot;addfriend&quot;,&quot;添加好友，格式addfriend:friendid&quot;&#125;,
+    &#123;&quot;creategroup&quot;,&quot;创建群组，格式creategroup:groupname:groupdesc&quot;&#125;,
+    &#123;&quot;addgroup&quot;,&quot;加入群组，格式addgroup:groupid&quot;&#125;,
+    &#123;&quot;groupchat&quot;,&quot;群聊，格式groupchat:groupid:message&quot;&#125;,
+    &#123;&quot;loginout&quot;,&quot;注销，格式loginout&quot;&#125;
+&#125;;</code></pre>
+
+<p>由commandHandlerMap知道要实现的功能。</p>
+<pre class="language-c++" data-language="c++"><code class="language-c++">&#x2F;&#x2F;调用相应命令的事件处理回调，mainMenu对修改封闭，添加新功能不需要修改该函数
+it-&gt;second(clientfd,commandbuf.substr(idx+1,commandbuf.size()-idx));&#x2F;&#x2F;调用命令处理方法</code></pre>
+
+<p>这样就可以把具体实现的内容封装到每一个函数中，所以接下来聚集每个实现的函数。</p>
+<h6 id="chat功能实现："><a href="#chat功能实现：" class="headerlink" title="chat功能实现："></a>chat功能实现：</h6><pre class="language-c++" data-language="c++"><code class="language-c++">&#x2F;&#x2F;&quot;chat&quot; command handler
+void chat(int clientfd,string str)&#123;
+    int idx&#x3D;str.find(&quot;:&quot;);&#x2F;&#x2F;friendid:message
+    if(idx&#x3D;&#x3D;-1)&#123;
+        cerr&lt;&lt;&quot;chat command invalid!&quot;&lt;&lt;endl;
+        return;
+    &#125;
+    int friendid&#x3D;atoi(str.substr(0,idx).c_str());
+    string message&#x3D;str.substr(idx+1,str.size()-idx);
+    json js;
+    js[&quot;msgid&quot;]&#x3D;ONE_CHAT_MSG;
+    js[&quot;id&quot;]&#x3D;g_currentUser.getId();
+    js[&quot;name&quot;]&#x3D;g_currentUser.getName();
+    js[&quot;msg&quot;] &#x3D; message;
+    js[&quot;toid&quot;]&#x3D;friendid;
+    js[&quot;time&quot;]&#x3D;getCurrentTime();
+    string buffer&#x3D;js.dump();
+    int len&#x3D;send(clientfd,buffer.c_str(),strlen(buffer.c_str())+1,0);
+    if(len&#x3D;&#x3D;-1)&#123;
+        cerr&lt;&lt;&quot;send chat msg error:&quot;&lt;&lt;buffer&lt;&lt;endl;
+    &#125;
+
+&#125;</code></pre>
+
+<p>还要实现getCurrentTime函数：</p>
+<pre class="language-c++" data-language="c++"><code class="language-c++">&#x2F;&#x2F;获取系统时间(聊天信息需要添加时间信息)
+string getCurrentTime()&#123;
+    auto tt &#x3D; std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
+    struct tm *ptm &#x3D; localtime(&amp;tt);
+    char date[60] &#x3D; &#123;0&#125;;
+    sprintf(date, &quot;%d-%02d-%02d %02d:%02d:%02d&quot;,
+            (int)ptm-&gt;tm_year + 1900, (int)ptm-&gt;tm_mon + 1, (int)ptm-&gt;tm_mday,
+            (int)ptm-&gt;tm_hour, (int)ptm-&gt;tm_min, (int)ptm-&gt;tm_sec);
+    return std::string(date);
+&#125;</code></pre>
+
+<h6 id="addfriend功能实现："><a href="#addfriend功能实现：" class="headerlink" title="addfriend功能实现："></a>addfriend功能实现：</h6><pre class="language-c++" data-language="c++"><code class="language-c++">&#x2F;&#x2F;&quot;addfriend&quot; command handler
+void addfriend(int clienfd,string str)&#123;
+    int friendid&#x3D;atoi(str.c_str());
+    json js;
+    js[&quot;msgid&quot;]&#x3D;ADD_FRIEND_MSG;
+    js[&quot;id&quot;]&#x3D;g_currentUser.getId();
+    js[&quot;friendid&quot;]&#x3D;friendid;
+    string buffer&#x3D;js.dump();
+    int len&#x3D;send(clienfd,buffer.c_str(),strlen(buffer.c_str())+1,0);
+    if(len&#x3D;&#x3D;-1)&#123;
+        cerr&lt;&lt;&quot;send addfriend msg error-&gt;&quot;&lt;&lt;buffer&lt;&lt;endl;
+    &#125;
+&#125;</code></pre>
+
+<h6 id="creategroup功能实现："><a href="#creategroup功能实现：" class="headerlink" title="creategroup功能实现："></a>creategroup功能实现：</h6><pre class="language-c++" data-language="c++"><code class="language-c++">&#x2F;&#x2F;&quot;creategroup&quot; command handler
+void creategroup(int clientfd, string str)
+&#123;
+    int idx &#x3D; str.find(&quot;:&quot;);
+    if (idx &#x3D;&#x3D; -1)
+    &#123;
+        cerr &lt;&lt; &quot;creategroup command invalid!&quot; &lt;&lt; endl;
+        return;
+    &#125;
+    string groupname &#x3D; str.substr(0, idx);
+    string groupdesc &#x3D; str.substr(idx + 1, str.size() - idx);
+    json js;
+    js[&quot;msgid&quot;] &#x3D; CREATE_GROUP_MSG;
+    js[&quot;id&quot;] &#x3D; g_currentUser.getId();
+    js[&quot;groupname&quot;] &#x3D; groupname;
+    js[&quot;groupdesc&quot;] &#x3D; groupdesc;
+    string buffer &#x3D; js.dump();
+    int len &#x3D; send(clientfd, buffer.c_str(), strlen(buffer.c_str()) + 1, 0);
+    if (len &#x3D;&#x3D; -1)
+    &#123;
+        cerr &lt;&lt; &quot;send creategroup msg error:&quot; &lt;&lt; buffer &lt;&lt; endl;
+    &#125;
+&#125;</code></pre>
+
+<h6 id="addgroup功能实现："><a href="#addgroup功能实现：" class="headerlink" title="addgroup功能实现："></a>addgroup功能实现：</h6><pre class="language-c++" data-language="c++"><code class="language-c++">&#x2F;&#x2F;&quot;addgroup&quot; command handler
+void addgroup(int clientfd, string str)
+&#123;
+    int groupid &#x3D; atoi(str.c_str());
+    json js;
+    js[&quot;msgid&quot;] &#x3D; ADD_GROUP_MSG;
+    js[&quot;id&quot;] &#x3D; g_currentUser.getId();
+    js[&quot;groupid&quot;] &#x3D; groupid;
+    string buffer &#x3D; js.dump();
+    int len &#x3D; send(clientfd, buffer.c_str(), strlen(buffer.c_str()) + 1, 0);
+    if (len &#x3D;&#x3D; -1)
+    &#123;
+        cerr &lt;&lt; &quot;send addgroup msg error:&quot; &lt;&lt; buffer &lt;&lt; endl;
+    &#125;
+&#125;</code></pre>
+
+<h6 id="groupchat功能实现："><a href="#groupchat功能实现：" class="headerlink" title="groupchat功能实现："></a>groupchat功能实现：</h6><pre class="language-c++" data-language="c++"><code class="language-c++">&#x2F;&#x2F;&quot;groupchat&quot; command handler
+void groupchat(int clientfd, string str)
+&#123;
+    int idx &#x3D; str.find(&quot;:&quot;);
+    if (idx &#x3D;&#x3D; -1)
+    &#123;
+        cerr &lt;&lt; &quot;groupchat command invalid!&quot; &lt;&lt; endl;
+        return;
+    &#125;
+    int groupid &#x3D; atoi(str.substr(0, idx).c_str());
+    string message &#x3D; str.substr(idx + 1, str.size() - idx);
+    json js;
+    js[&quot;msgid&quot;] &#x3D; GROUP_CHAT_MSG;
+    js[&quot;id&quot;] &#x3D; g_currentUser.getId();
+    js[&quot;name&quot;] &#x3D; g_currentUser.getName();
+    js[&quot;groupid&quot;] &#x3D; groupid;
+    js[&quot;msg&quot;] &#x3D; message;
+    js[&quot;time&quot;] &#x3D; getCurrentTime();
+    string buffer &#x3D; js.dump();
+    int len &#x3D; send(clientfd, buffer.c_str(), strlen(buffer.c_str()) + 1, 0);
+    if (len &#x3D;&#x3D; -1)
+    &#123;
+        cerr &lt;&lt; &quot;send groupchat msg error:&quot; &lt;&lt; buffer &lt;&lt; endl;
+    &#125;
+&#125;</code></pre>
+
+<p>实现群聊功能后，需要在接受线程实现解析返回的信息，并且输出。服务端在这里是直接将消息转发。所以如下实现：</p>
+<pre class="language-c++" data-language="c++"><code class="language-c++">if (GROUP_CHAT_MSG &#x3D;&#x3D; msgtype)
+&#123;
+	cout &lt;&lt; &quot;群消息[&quot; &lt;&lt; js[&quot;groupid&quot;] &lt;&lt; &quot;]:&quot; &lt;&lt; js[&quot;time&quot;].get&lt;string&gt;() &lt;&lt; &quot;[&quot; &lt;&lt; js[&quot;id&quot;] &lt;&lt; &quot;]&quot; &lt;&lt; 		js[&quot;name&quot;].get&lt;string&gt;() &lt;&lt; &quot; said: &quot; &lt;&lt; js[&quot;msg&quot;].get&lt;string&gt;() &lt;&lt; endl;
+            continue;
+ &#125;</code></pre>
+
+<p>当然离线消息同时也要输出群组消息.</p>
+<pre class="language-c++" data-language="c++"><code class="language-c++">if (ONE_CHAT_MSG &#x3D;&#x3D; js[&quot;msgid&quot;].get&lt;int&gt;())
+                                &#123;
+                                    cout &lt;&lt; js[&quot;time&quot;].get&lt;string&gt;() &lt;&lt; &quot;[&quot; &lt;&lt; js[&quot;id&quot;] &lt;&lt; &quot;]&quot; &lt;&lt; js[&quot;name&quot;].get&lt;string&gt;() &lt;&lt; &quot; said: &quot; &lt;&lt; js[&quot;msg&quot;].get&lt;string&gt;() &lt;&lt; endl;
+                                &#125;else&#123;
+                                    cout &lt;&lt; &quot;群消息[&quot; &lt;&lt; js[&quot;groupid&quot;] &lt;&lt; &quot;]:&quot; &lt;&lt; js[&quot;time&quot;].get&lt;string&gt;() &lt;&lt; &quot;[&quot; &lt;&lt; js[&quot;id&quot;] &lt;&lt; &quot;]&quot; &lt;&lt; js[&quot;name&quot;].get&lt;string&gt;() &lt;&lt; &quot; said: &quot; &lt;&lt; js[&quot;msg&quot;].get&lt;string&gt;() &lt;&lt; endl;
+                                &#125;</code></pre>
+
+<p>else部分即为离线群组消息。</p>
+<h6 id="loginout功能实现："><a href="#loginout功能实现：" class="headerlink" title="loginout功能实现："></a>loginout功能实现：</h6><pre class="language-c++" data-language="c++"><code class="language-c++">&#x2F;&#x2F;&quot;login out&quot; command handler
+void loginout(int clientfd, string str)
+&#123;
+    json js;
+    js[&quot;msgid&quot;]&#x3D;LOGINOUT_MSG;
+    js[&quot;id&quot;]&#x3D;g_currentUser.getId();
+    string buffer&#x3D;js.dump();
+    int len&#x3D;send(clientfd,buffer.c_str(),strlen(buffer.c_str())+1,0);
+    if(len&#x3D;&#x3D;-1)&#123;
+        cerr&lt;&lt;&quot;send loginout msg error:&quot;&lt;&lt;buffer&lt;&lt;endl;
+    &#125;else&#123;
+        isMainMenuRunning&#x3D;false;
+    &#125;
+
+&#125;</code></pre>
+
+<p>首先这个函数实现需要在public.hpp</p>
+<pre class="language-c++" data-language="c++"><code class="language-c++">LOGINOUT_MSG,&#x2F;&#x2F;注销消息</code></pre>
+
+<p>在服务器端做出对应的函数：（记得在构造函数注册注销业务）</p>
+<pre class="language-c++" data-language="c++"><code class="language-c++">&#x2F;&#x2F;处理注销业务
+void ChatService::loginout(const TcpConnectionPtr &amp;conn,json &amp;js,Timestamp)&#123;
+    int userid&#x3D;js[&quot;id&quot;];
+    &#123;
+        lock_guard&lt;mutex&gt; lock(_connMutex);
+        auto it&#x3D;_userConnMap.find(userid);
+        if(it!&#x3D;_userConnMap.end())&#123;
+            _userConnMap.erase(it);
+        &#125;
+    &#125;
+    &#x2F;&#x2F;更新用户的状态信息
+    User user(userid,&quot;&quot;,&quot;&quot;,&quot;offline&quot;);
+    _userModel.updateState(user);
+
+&#125;</code></pre>
+
+<p>将_userConnMap对应的id的连接删去，并且更新用户的状态。</p>
+<p>isMainMenuRunning是一个全局变量，用来确保loginout后会回到首页。所以默认值为false。当进入主菜单界面时，变为true。这样mainMenu函数就会退出循环，运行结束，进入首页的循环。</p>
+<p>当然这里就出现了一个问题就是loginoutr退出但是程序没有退出，很多全局变量还保留着上一次的值，这就会在输出这些变量时会把上一次登录的用户信息都输出。所以在登录成功时，记得将对应变量初始化清空，再进行赋值。</p>
+<pre class="language-c++" data-language="c++"><code class="language-c++">&#x2F;&#x2F; 记录当前登录用户的好友列表信息
+vector&lt;User&gt; g_currentUserFriendList;
+&#x2F;&#x2F; 记录当前登录用户的群组列表信息
+vector&lt;Group&gt; g_currentUserGroupList;</code></pre>
+
+<p>这两个变量在登录成功后，会进行赋值，记得在赋值前，初始化，清空。</p>
+<p>这里还有一个问题，每次登录成功都会创造一个线程，当我在loginout后再次登录，又创造了一个新线程。所以要保证只有一个线程实现接受。所以在登录成功部分修改：</p>
+<pre class="language-c++" data-language="c++"><code class="language-c++"> &#x2F;&#x2F; 登录成功，启动接受线程负责接受数据 ,该线程只启动一次
+static int readthreadnumber&#x3D;0;
+if(readthreadnumber&#x3D;&#x3D;0)&#123;
+	std::thread readTask(readTaskHandler, clientfd); &#x2F;&#x2F; 在Linux pthread_create
+	readTask.detach();
+	readthreadnumber++;                               &#x2F;&#x2F; Linux pthread_detach
+&#125;</code></pre>
+
+<h3 id="引入负载均衡器："><a href="#引入负载均衡器：" class="headerlink" title="引入负载均衡器："></a>引入负载均衡器：</h3><p>以上我们基本完成了客户端和服务端的开发，由于是一个聊天服务器，要考虑一台服务器同时可以多少用户在线。我借用muduo模型创建 1个主线程（accept连接）+ 4个子线程（处理连接和事件）总共 5个线程，用于服务端 I&#x2F;O。主线程用于 accept 新连接4 个 <code>EventLoop</code> 子线程处理客户端连接的 I&#x2F;O 事件（读写、消息分发等）</p>
+<pre class="language-c++" data-language="c++"><code class="language-c++">&#x2F;&#x2F;设置线程数量
+_server.setThreadNum(4);</code></pre>
+
+<h4 id="操作系统的限制"><a href="#操作系统的限制" class="headerlink" title="操作系统的限制"></a><strong>操作系统的限制</strong></h4><p>操作系统对单个进程的文件描述符数量有限制，每个客户端连接通常占用一个文件描述符（socket）。</p>
+<ul>
+<li><strong>Linux默认值</strong>（可以用 <code>ulimit -n</code> 查看）：通常是 <strong>1024</strong>，也就是说一个进程默认最多只能同时处理约1000个客户端连接。</li>
+</ul>
+<h4 id="实际可支持的并发连接数（估算）："><a href="#实际可支持的并发连接数（估算）：" class="headerlink" title="实际可支持的并发连接数（估算）："></a>实际可支持的并发连接数（估算）：</h4><table>
+<thead>
+<tr>
+<th>类型</th>
+<th>数量</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Idle连接（不活跃）</td>
+<td>40,000 ~ 100,000（受内核和 FD 限制）</td>
+</tr>
+<tr>
+<td>活跃连接（频繁收发消息）</td>
+<td>10,000 ~ 20,000（实际取决于业务逻辑复杂度）</td>
+</tr>
+</tbody></table>
+<p>这是<strong>单进程、多线程、epoll</strong> 架构下的典型并发能力，非常高效。</p>
+<h4 id="什么是-Idle连接（不活跃连接）？"><a href="#什么是-Idle连接（不活跃连接）？" class="headerlink" title="什么是 Idle连接（不活跃连接）？"></a>什么是 <strong>Idle连接（不活跃连接）</strong>？</h4><p><strong>Idle（空闲）连接</strong> 是指：</p>
+<p>客户端虽然 <strong>已经建立了连接</strong>，但 <strong>长时间没有发送或接收任何数据</strong>，也就是说：</p>
+<ul>
+<li><strong>连接处于打开状态（TCP连接存在）</strong></li>
+<li>但没有发生 <strong>读写事件</strong></li>
+<li>占用资源极少（仅占用文件描述符、少量内存）</li>
+</ul>
+<h4 id="为什么要区分-Idle-与-活跃连接？"><a href="#为什么要区分-Idle-与-活跃连接？" class="headerlink" title="为什么要区分 Idle 与 活跃连接？"></a>为什么要区分 Idle 与 活跃连接？</h4><ol>
+<li><strong>资源占用不同</strong></li>
+</ol>
+<ul>
+<li>Idle 连接不产生消息，不触发回调，服务器处理负担极低</li>
+<li>活跃连接需要处理消息、业务逻辑，负担高</li>
+</ul>
+<ol start="2">
+<li><strong>并发能力的评估</strong></li>
+</ol>
+<ul>
+<li>很多高并发服务器说能支持“10万连接”，指的是 <strong>Idle连接数量</strong></li>
+<li>真正活跃（消息频繁）的连接，一般几千~上万就会达到服务器上限</li>
+</ul>
+<ol start="3">
+<li><strong>是否需要清理 Idle连接</strong></li>
+</ol>
+<ul>
+<li>有些服务器会设置 <strong>心跳&#x2F;超时机制</strong>，长时间不活跃的连接会被断开，防止资源泄漏或恶意占用</li>
+</ul>
+<p>我们还要提高并发量，就要引入<strong>负载均衡器</strong>的概念。</p>
+<h4 id="负载均衡器"><a href="#负载均衡器" class="headerlink" title="负载均衡器"></a>负载均衡器</h4><p><strong>负载均衡器（Load Balancer）</strong> 是一个把大量客户端请求 <strong>均匀分发</strong> 给多个后端服务器的组件，以提高系统的 <strong>吞吐能力、稳定性和可用性</strong>。</p>
+<h5 id="为什么需要它？"><a href="#为什么需要它？" class="headerlink" title="为什么需要它？"></a>为什么需要它？</h5><p>在高并发系统中，如果所有请求都打到一个服务器上，容易导致：</p>
+<ul>
+<li>响应慢</li>
+<li>连接超时</li>
+<li>服务宕机</li>
+</ul>
+<p>使用负载均衡器可以：</p>
+<ul>
+<li><strong>水平扩展</strong>服务器（多个 Muduo 实例）</li>
+<li><strong>分担压力</strong></li>
+<li>实现高可用（某个服务器挂了不影响整体）</li>
+</ul>
+<h5 id="按协议层划分（TCP-HTTP）"><a href="#按协议层划分（TCP-HTTP）" class="headerlink" title="按协议层划分（TCP&#x2F;HTTP）"></a>按协议层划分（TCP&#x2F;HTTP）</h5><table>
+<thead>
+<tr>
+<th>类型</th>
+<th>层级</th>
+<th>说明</th>
+<th>常用代表</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>四层负载均衡（L4）</strong></td>
+<td>TCP&#x2F;UDP</td>
+<td>基于 IP、端口、协议</td>
+<td>LVS、HAProxy、Nginx Stream、Keepalived</td>
+</tr>
+<tr>
+<td><strong>七层负载均衡（L7）</strong></td>
+<td>HTTP、HTTPS</td>
+<td>基于 URL、Header、Cookie</td>
+<td>Nginx、HAProxy、Traefik、Envoy、Kong</td>
+</tr>
+</tbody></table>
+<h5 id="常见软件负载均衡器对比"><a href="#常见软件负载均衡器对比" class="headerlink" title="常见软件负载均衡器对比"></a>常见软件负载均衡器对比</h5><table>
+<thead>
+<tr>
+<th>名称</th>
+<th>协议支持</th>
+<th>类型</th>
+<th>特点</th>
+<th>场景</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>LVS</strong></td>
+<td>L4 (TCP&#x2F;UDP)</td>
+<td>内核模块</td>
+<td>性能极高、稳定、复杂配置</td>
+<td>超高并发、基础设施层</td>
+</tr>
+<tr>
+<td><strong>HAProxy</strong></td>
+<td>L4 + L7</td>
+<td>用户态</td>
+<td>灵活、高性能、支持健康检查、监控完备</td>
+<td>Web、API 网关、数据库代理</td>
+</tr>
+<tr>
+<td><strong>Nginx</strong></td>
+<td>L7 (也支持 L4)</td>
+<td>用户态</td>
+<td>配置简单，静态资源支持好</td>
+<td>Web服务器、轻量级反代</td>
+</tr>
+<tr>
+<td><strong>Traefik</strong></td>
+<td>L7</td>
+<td>云原生</td>
+<td>自动发现服务（K8s、Docker）、面向微服务</td>
+<td>DevOps、容器化</td>
+</tr>
+<tr>
+<td><strong>Envoy</strong></td>
+<td>L4 + L7</td>
+<td>云原生</td>
+<td>微服务架构核心组件、支持 gRPC、动态配置</td>
+<td>Istio、Service Mesh</td>
+</tr>
+<tr>
+<td><strong>Kong</strong></td>
+<td>L7 API网关</td>
+<td>插件丰富</td>
+<td>基于 Nginx，提供限流、安全等扩展能力</td>
+<td>企业 API 管理</td>
+</tr>
+<tr>
+<td><strong>Keepalived</strong></td>
+<td>L4</td>
+<td>高可用</td>
+<td>常与 LVS 配合，提供主备切换</td>
+<td>双主结构、高可用架构</td>
+</tr>
+<tr>
+<td><strong>OpenResty</strong></td>
+<td>L7</td>
+<td>基于 Nginx</td>
+<td>支持 Lua，适合做复杂业务逻辑</td>
+<td>高定制需求</td>
+</tr>
+<tr>
+<td><strong>Caddy</strong></td>
+<td>L7</td>
+<td>自动 TLS</td>
+<td>HTTPS 自动配置简单</td>
+<td>个人、低门槛网站部署</td>
+</tr>
+</tbody></table>
+<p>我们这里要使用的是Nginx 的 TCP 负载均衡模块（即 stream 模块）</p>
+<p><img src="/2025/06/02/C++-chatserver/2.png" alt="2" loading="lazy"></p>
+<p>这是负载均衡器在本项目发挥的作用图。</p>
+<p>Nginx 默认是 HTTP 层负载均衡（七层），但它的 <strong><code>stream</code> 模块</strong> 支持四层（TCP&#x2F;UDP）负载均衡，非常适合。</p>
+<p>说白了，通过多台后台服务器提高并发量。但也面临着如何处理跨服务器通信的问题。</p>
+<h3 id="引入服务器中间件（redis）"><a href="#引入服务器中间件（redis）" class="headerlink" title="引入服务器中间件（redis）"></a>引入服务器中间件（redis）</h3><p><strong>Redis（Remote Dictionary Server）</strong> 是一个<strong>开源</strong>的、基于内存的<strong>键值对存储（Key-Value Store）数据库</strong>，支持丰富的数据结构，<strong>读写极快</strong>，非常适合用作缓存、中间件、消息队列等。</p>
+<p>引入redis是要解决如果一个用户要和另一个用户通信，但是另一个用户在另一台服务器上，我们能从数据库中看到他在线，但是我们不能获取他的连接，所以引入中间件。这样就可以解决跨服务器通信的问题。</p>
+<p>这里是redis在本项目的作用图：</p>
+<p><img src="/2025/06/02/C++-chatserver/3.png" alt="3" loading="lazy"></p>
+<h3 id="nginx项目配置"><a href="#nginx项目配置" class="headerlink" title="nginx项目配置"></a>nginx项目配置</h3><p>nginx配置编译好后，去修改&#x2F;usr&#x2F;local&#x2F;nginx&#x2F;conf中修改nginx.conf文件。</p>
+<pre class="language-bash" data-language="bash"><code class="language-bash"><span class="token comment">#nginx tcp loadbalance config</span>
+stream <span class="token punctuation">&#123;</span>
+        upstream MyServer <span class="token punctuation">&#123;</span>
+                server <span class="token number">127.0</span>.0.1:6000 <span class="token assign-left variable">weight</span><span class="token operator">=</span><span class="token number">1</span> <span class="token assign-left variable">max_fails</span><span class="token operator">=</span><span class="token number">3</span> <span class="token assign-left variable">fail_timeout</span><span class="token operator">=</span>30s<span class="token punctuation">;</span>
+                server <span class="token number">127.0</span>.0.1:6002 <span class="token assign-left variable">weight</span><span class="token operator">=</span><span class="token number">1</span> <span class="token assign-left variable">max_fails</span><span class="token operator">=</span><span class="token number">3</span> <span class="token assign-left variable">fail_timeout</span><span class="token operator">=</span>30s<span class="token punctuation">;</span>
+        <span class="token punctuation">&#125;</span>
+
+        server <span class="token punctuation">&#123;</span>
+                proxy_connect_timeout 1s<span class="token punctuation">;</span>
+                <span class="token comment">#proxy_timeout 3s; # 可以根据需要开启，控制代理的读写超时</span>
+                listen <span class="token number">8000</span><span class="token punctuation">;</span>
+                proxy_pass MyServer<span class="token punctuation">;</span>
+                tcp_nodelay on<span class="token punctuation">;</span>
+        <span class="token punctuation">&#125;</span>       
+<span class="token punctuation">&#125;</span>
+</code></pre>
+
+<p>在events和http领域之间加入上述代码。这一段代码就是加入**<code>stream</code> 模块** 。</p>
+<p>说明</p>
+<ul>
+<li>**stream{}**：用于 TCP&#x2F;UDP 负载均衡。</li>
+<li><strong>upstream MyServer</strong>：定义了两个后端服务器，权重相等。</li>
+<li><strong>max_fails&#x3D;3 fail_timeout&#x3D;30s</strong>：3次失败后，30秒内认为该节点不可用。</li>
+<li><strong>listen 8000</strong>：监听本机 8000 端口。</li>
+<li><strong>proxy_connect_timeout 1s</strong>：连接超时时间为1秒。</li>
+<li><strong>proxy_pass MyServer</strong>：请求转发到 MyServer 负载均衡组。</li>
+<li><strong>tcp_nodelay on</strong>：开启 TCP_NODELAY，减少延迟。</li>
+</ul>
+<p>这样就实现了多个客户端只需要向一个ip+port就可以。通过nginx对多台服务器管理，这样就增加了聊天服务器的并发量。当然跨服务器通信这一问题还没有解决。</p>
+<h3 id="Redis项目配置"><a href="#Redis项目配置" class="headerlink" title="Redis项目配置"></a>Redis项目配置</h3><p>首先在include和src建立redis文件夹，在对应的文件夹添加redis.hpp和redis.cpp。记得更新CMakeLists.txt文件。这里调用了hiredis库。hiredis是c++使用redis封装的库。</p>
+<p>redis.hpp</p>
+<pre class="language-c++" data-language="c++"><code class="language-c++">#ifndef REDIS_H
+#define REDIS_H
+#include &lt;hiredis&#x2F;hiredis.h&gt;
+#include &lt;thread&gt;
+#include &lt;functional&gt;
+using namespace std;
+class Redis&#123;
+    public:
+        Redis();
+        ~Redis();
+
+        &#x2F;&#x2F;连接redis服务器
+        bool connect();
+        &#x2F;&#x2F;向redis指定的通道channel发布消息
+        bool publish(int channel,string message);
+        &#x2F;&#x2F;向redis指定的通道subscribe订阅消息
+        bool subscribe(int channel);
+        &#x2F;&#x2F;向redis指定的通道unsubscribe取消订阅消息
+        bool unsubscribe(int channel);
+        &#x2F;&#x2F;在独立线程中接受订阅通道中的消息
+        void observer_channel_message();
+        &#x2F;&#x2F;初始化向业务层上报通道消息的回调对象
+        void init_notify_handler(function&lt;void(int,string)&gt; fn);
+    private:
+        &#x2F;&#x2F;hiredis同步上下文对象，负责publish消息
+        redisContext *_publish_context;
+        &#x2F;&#x2F;hiredis同步上下文对象，负责subscribe消息
+        redisContext * _subscribe_context;
+        &#x2F;&#x2F;回调操作，收到订阅的消息，给service层上报
+        function&lt;void (int,string)&gt; _notify_message_handler;
+&#125;;
+#endif</code></pre>
+
+<p>redis.cpp</p>
+<pre class="language-c++" data-language="c++"><code class="language-c++">#include&quot;redis.hpp&quot;
+#include&lt;iostream&gt;
+using namespace std;
+Redis::Redis():_publish_context(nullptr),_subscribe_context(nullptr)&#123;
+
+&#125;
+Redis::~Redis()&#123;
+    if(_publish_context!&#x3D;nullptr)&#123;
+        redisFree(_publish_context);
+    &#125;
+    if(_subscribe_context!&#x3D;nullptr)&#123;
+        redisFree(_subscribe_context);
+    &#125;
+&#125;
+bool Redis::connect()&#123;
+    &#x2F;&#x2F;负责publish发布消息的上下文连接
+    _publish_context&#x3D;redisConnect(&quot;127.0.0.1&quot;,6379);
+    if(_publish_context&#x3D;&#x3D;nullptr)&#123;
+        cerr&lt;&lt; &quot;connect redis failed!&quot;&lt;&lt;endl;
+        return false;
+    &#125;
+    &#x2F;&#x2F;负责subscribe订阅消息的上下文连接
+    _subscribe_context&#x3D;redisConnect(&quot;127.0.0.1&quot;,6379);
+    if(_subscribe_context&#x3D;&#x3D;nullptr)&#123;
+        cerr&lt;&lt; &quot;connect redis failed!&quot;&lt;&lt;endl;
+        return false;
+    &#125;
+    &#x2F;&#x2F;在单独的线程中，监听通道上的事件，有消息给业务层进行上报
+    thread t([&amp;]()&#123;
+        observer_channel_message();
+    &#125;);
+    t.detach();
+    cout&lt;&lt;&quot;connect redis_server success!&quot;&lt;&lt;endl;
+
+    return true;
+&#125;
+&#x2F;&#x2F;向redis指定的通道channel发布消息
+bool Redis::publish(int channel,string message)&#123;
+    redisReply *reply&#x3D;(redisReply*)redisCommand(_publish_context,&quot;PUBLISH %d %s&quot;,channel,message.c_str());
+    if(reply&#x3D;&#x3D;nullptr)&#123;
+        cerr&lt;&lt;&quot;publish command failed&quot;&lt;&lt;endl;
+        return false;
+    &#125;
+    freeReplyObject(reply);
+    return true;
+&#125;
+&#x2F;&#x2F;向redis指定的通道subscribe订阅消息
+bool Redis::subscribe(int channel)&#123;
+    &#x2F;&#x2F;subscribe命令本身会造成线程阻塞等待通道里面发生消息，这里只做订阅通道，不接受消息
+    &#x2F;&#x2F;通道消息的接受专门在observer_channel_message函数中的独立线程中进行
+    &#x2F;&#x2F;只负责发送命令，不阻塞接受redis server响应消息，否则和notifyMsg线程抢占响应资源。
+    if(REDIS_ERR&#x3D;&#x3D;redisAppendCommand(this-&gt;_subscribe_context,&quot;SUBSCRIBE %d&quot;,channel))&#123;
+        cerr&lt;&lt;&quot;subscribe command failed!&quot;&lt;&lt;endl;
+        return false;
+    &#125;
+    &#x2F;&#x2F;redisBufferWrite 可以循环发送缓冲区，直到缓冲区数据发送完毕（done被置为1）
+    int done&#x3D;0;
+    while(!done)&#123;
+        if(REDIS_ERR&#x3D;&#x3D;redisBufferWrite(this-&gt;_subscribe_context,&amp;done))&#123;
+            cerr&lt;&lt;&quot;subscribe command failed!&quot;&lt;&lt;endl;
+            return false;
+        &#125;
+    &#125;
+    &#x2F;&#x2F;redisGetReply不执行
+    return true;
+
+&#125;
+&#x2F;&#x2F;向redis指定的通道unsubscribe取消订阅消息
+bool Redis::unsubscribe(int channel)&#123;
+    if(REDIS_ERR&#x3D;&#x3D;redisAppendCommand(this-&gt;_subscribe_context,&quot;UNSUBSCRIBE %d&quot;,channel))&#123;
+        cerr&lt;&lt;&quot;unsubscribe command failed!&quot;&lt;&lt;endl;
+        return false;
+    &#125;
+    &#x2F;&#x2F;redisBufferWrite 可以循环发送缓冲区，直到缓冲区数据发送完毕（done被置为1）
+    int done&#x3D;0;
+    while(!done)&#123;
+        if(REDIS_ERR&#x3D;&#x3D;redisBufferWrite(this-&gt;_subscribe_context,&amp;done))&#123;
+            cerr&lt;&lt;&quot;unsubscribe command failed!&quot;&lt;&lt;endl;
+            return false;
+        &#125;
+    &#125;
+    return true;
+&#125;
+&#x2F;&#x2F;在独立线程中接受订阅通道中的消息
+void Redis::observer_channel_message()&#123;
+    redisReply *reply&#x3D;nullptr;
+    while(REDIS_OK&#x3D;&#x3D;redisGetReply(this-&gt;_subscribe_context,(void**)&amp;reply))&#123;
+        &#x2F;&#x2F;订阅收到的消息是一个带三元组的数组
+        if(reply!&#x3D;nullptr&amp;&amp;reply-&gt;element[2]!&#x3D;nullptr&amp;&amp;reply-&gt;element[2]-&gt;str!&#x3D;nullptr)&#123;
+            &#x2F;&#x2F;给业务层上报通道上发生的消息
+            _notify_message_handler(atoi(reply-&gt;element[1]-&gt;str),reply-&gt;element[2]-&gt;str);
+        &#125;
+        freeReplyObject(reply);
+    &#125;
+    cerr&lt;&lt;&quot;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;observer_channel_message quit &lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&quot;&lt;&lt;endl;
+&#125;
+&#x2F;&#x2F;初始化向业务层上报通道消息的回调对象
+void Redis::init_notify_handler(function&lt;void(int,string)&gt; fn)&#123;
+    this-&gt;_notify_message_handler&#x3D;fn;
+&#125;</code></pre>
+
+<p>这里需要注意的点就是关于订阅和发布，发布publish直接用redisCommand函数即可，因为这个命令直接执行本身不会堵塞（服务器会很快给出回复）。但是subscribe不一样，他直接执行会卡在那里，一直等待消息进入通道里（服务器不会很快回复）。所以我们这里使用redisAppendCommand<code>+</code>redisBufferWrite这两个函数一起，不用再等待响应。所以我们单开一个线程来接受通道里的消息。</p>
+<p>总结对比</p>
+<table>
+<thead>
+<tr>
+<th>功能</th>
+<th><code>redisCommand</code></th>
+<th><code>redisAppendCommand</code> + <code>redisBufferWrite</code></th>
+</tr>
+</thead>
+<tbody><tr>
+<td>用法</td>
+<td>直接发送+等待响应</td>
+<td>仅发送命令到 Redis，不等待响应</td>
+</tr>
+<tr>
+<td>是否阻塞</td>
+<td>会阻塞直到响应</td>
+<td>不会阻塞</td>
+</tr>
+<tr>
+<td>适用场景</td>
+<td>普通命令（GET&#x2F;SET）</td>
+<td>发布订阅等需要后台线程响应的命令</td>
+</tr>
+</tbody></table>
+<p>所以我们把监听逻辑放到线程里。</p>
+<p>注意：</p>
+<p>Redis 的订阅-发布机制设计：</p>
+<ul>
+<li><strong>订阅连接会被阻塞监听消息，不允许执行其他命令。</strong></li>
+<li>如果同一个连接既用来订阅又用来发布，订阅时会阻塞导致发布失败或延迟。</li>
+<li>所以一般建议<strong>发布和订阅使用独立的连接</strong>，保证各自的流畅性和响应效率。</li>
+</ul>
+<h3 id="解决跨服务器通信问题"><a href="#解决跨服务器通信问题" class="headerlink" title="解决跨服务器通信问题"></a>解决跨服务器通信问题</h3><p>我们已经配置好redis,并且封装了对应的redis类。接下来在业务类实现加入redis。</p>
+<p>在对应的ChatService类声明私有变量。</p>
+<pre class="language-c++" data-language="c++"><code class="language-c++">&#x2F;&#x2F;redis操作对象
+ Redis _redis;</code></pre>
+
+<p>在ChatService类的构造函数，实现redis连接并且加入回调函数。</p>
+<pre class="language-c++" data-language="c++"><code class="language-c++">&#x2F;&#x2F;连接redis服务器
+if(_redis.connect())&#123;
+	&#x2F;&#x2F;设置上报消息的回调
+	_redis.init_notify_handler(std::bind(&amp;ChatService::handleRedisSubscribeMessage,this,_1,_2));
+&#125;</code></pre>
+
+<p>handleRedisSubscribeMessage函数是从redis消息队列中获取订阅的消息（在另一个线程执行）</p>
+<pre class="language-c++" data-language="c++"><code class="language-c++">&#x2F;&#x2F;从redis消息队列中获取订阅的消息
+void ChatService::handleRedisSubscribeMessage(int userid,string msg)&#123;
+    lock_guard&lt;mutex&gt; lock(_connMutex);
+    auto it&#x3D;_userConnMap.find(userid);
+    if(it!&#x3D;_userConnMap.end())&#123;
+        it-&gt;second-&gt;send(msg);
+        return;
+    &#125;
+    &#x2F;&#x2F;存储该用户的离线消息
+    _offlineMsgModel.insert(userid,msg);
+&#125;</code></pre>
+
+<p>从redis返回的userid和message是当前服务器订阅的通道返回的消息，所以当前userid一定在当前服务器的_userConnMap中，当然也存在一种情况，发消息给redis时，还在线，redis传给对应的服务器时，该用户下线了，所以也要存储该用户的离线消息。</p>
+<p>接着还要在登录功能和注销功能做修改</p>
+<p>在登录成功后：</p>
+<pre class="language-c++" data-language="c++"><code class="language-c++">&#x2F;&#x2F;id用户登录成功后，向redis订阅channel(id)
+_redis.subscribe(id);</code></pre>
+
+<p>要向redis订阅消息，有向当前用户发送的消息会向在redis通道存储，之后会向当前用户输送。</p>
+<p>在注销（退出）后：</p>
+<pre class="language-c++" data-language="c++"><code class="language-c++">&#x2F;&#x2F;用户注销，相当于下线，在redis中取消订阅通道
+_redis.unsubscribe(userid);</code></pre>
+
+<p>关闭掉订阅通道。当然还有客户端异常退出时，也要关闭订阅</p>
+<pre class="language-c++" data-language="c++"><code class="language-c++">&#x2F;&#x2F;客户端关闭，相当于下线，在redis中取消订阅通道
+_redis.unsubscribe(user.getId());</code></pre>
+
+<p>最后对一对一聊天和群聊功能做修改。</p>
+<p>一对一聊天，当查到目标用户没有在_userConnMap中，说明目标用户不在当前服务器上或者不在线，所以接下来去数据库查看目标用户是否在线，若在线，则向redis对应的通道发布消息。不在线则存储连线消息。</p>
+<pre class="language-c++" data-language="c++"><code class="language-c++">&#x2F;&#x2F;查询toid是否在线（可能在其他服务器上）
+User user&#x3D;_userModel.query(toid);
+if(user.getState()&#x3D;&#x3D;&quot;online&quot;)&#123;
+	_redis.publish(toid,js.dump());
+	return;
+&#125;</code></pre>
+
+<p>群聊，当查到目标用户没有在_userConnMap中，说明目标用户不在当前服务器上或者不在线，所以接下来去数据库查看目标用户是否在线，若在线，则向redis对应的通道发布消息。不在线则存储连线消息。</p>
+<pre class="language-c++" data-language="c++"><code class="language-c++">auto it&#x3D;_userConnMap.find(id);
+if(it!&#x3D;_userConnMap.end())&#123;
+            &#x2F;&#x2F;转发群消息
+            it-&gt;second-&gt;send(js.dump());
+        &#125;else&#123;
+            &#x2F;&#x2F;查询id是否在线
+            User user&#x3D;_userModel.query(id);
+            if(user.getState()&#x3D;&#x3D;&quot;online&quot;)&#123;
+                _redis.publish(id,js.dump());
+            &#125;else&#123;
+                &#x2F;&#x2F;存储离线群消息
+                _offlineMsgModel.insert(id,js.dump());
+            &#125;
+            
+        &#125;</code></pre>
+
+<p>至此解决跨服务器通信问题。</p>
+<h3 id="解决登录注销后再次登录会阻塞的问题"><a href="#解决登录注销后再次登录会阻塞的问题" class="headerlink" title="解决登录注销后再次登录会阻塞的问题"></a>解决登录注销后再次登录会阻塞的问题</h3><p>在登录后注销退出后，在进行登录会一直卡住，没有关于用户的信息展示和指令展示，核查发现是主线程在执行recv,接受线程也在recv同一个socket,所以这里我们引入</p>
+<pre class="language-c++" data-language="c++"><code class="language-c++">&#x2F;&#x2F; 用于读写线程的通信
+sem_t rwem;
+&#x2F;&#x2F; 记录登录状态
+atomic_bool g_isLoginSuccess&#123;false&#125;;</code></pre>
+
+<p><code>sem_t</code> 是 POSIX 信号量类型（semaphore），用于线程之间同步或通信。</p>
+<p><code>tomic_bool</code> 是 C++ 的原子变量类型之一，用于线程安全地读写布尔值，防止并发条件竞争。</p>
+<p>一、信号量 <code>sem_t</code> 的初始化</p>
+<p>在使用前，<strong>必须初始化</strong>。常用的是 <code>sem_init</code>：</p>
+<pre class="language-c++" data-language="c++"><code class="language-c++">sem_t rwem;
+sem_init(&amp;rwem, 0, 0);</code></pre>
+
+<p>参数解释：</p>
+<pre class="language-c++" data-language="c++"><code class="language-c++">int sem_init(sem_t *sem, int pshared, unsigned int value);</code></pre>
+
+<table>
+<thead>
+<tr>
+<th>参数</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>sem</code></td>
+<td>指向信号量的指针</td>
+</tr>
+<tr>
+<td><code>pshared=0</code></td>
+<td>表示是线程之间使用（同一进程）</td>
+</tr>
+<tr>
+<td><code>value=0</code></td>
+<td>初始值为 0（表示“没有资源”）</td>
+</tr>
+</tbody></table>
+<p> 通常设为 0，表示线程必须等待 <code>sem_post()</code> 才能继续。</p>
+<p>二、sem_post 和 sem_wait 的配合逻辑</p>
+<table>
+<thead>
+<tr>
+<th>函数</th>
+<th>含义</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>sem_post(&amp;rwem)</code></td>
+<td>给信号量加1，表示“有资源了”或“可以继续了”</td>
+</tr>
+<tr>
+<td><code>sem_wait(&amp;rwem)</code></td>
+<td>阻塞等待信号量值&gt;0，然后减1，表示“我来用这个资源”</td>
+</tr>
+</tbody></table>
+<p>总体步骤：</p>
+<table>
+<thead>
+<tr>
+<th>步骤</th>
+<th>函数</th>
+<th>示例</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>初始化</td>
+<td><code>sem_init(&amp;rwem, 0, 0);</code></td>
+<td>启动阶段</td>
+</tr>
+<tr>
+<td>发送信号（通知）</td>
+<td><code>sem_post(&amp;rwem);</code></td>
+<td>接收线程收到数据时</td>
+</tr>
+<tr>
+<td>等待信号</td>
+<td><code>sem_wait(&amp;rwem);</code></td>
+<td>处理线程等待数据</td>
+</tr>
+<tr>
+<td>销毁</td>
+<td><code>sem_destroy(&amp;rwem);</code></td>
+<td>程序结束或退出登录时</td>
+</tr>
+</tbody></table>
+<p>由于登录成功和注册成功的消息的收取是在主线程进行的，其他信息的收取是在另一个进程中，所以我要修改代码，把登录和注册的回复消息由接受进程收取。</p>
+<p>首先在客户端main函数中连接服务器端成功后，插入</p>
+<pre class="language-c++" data-language="c++"><code class="language-c++">&#x2F;&#x2F; 初始化读写线程通信用的信号量
+sem_init(&amp;rwem, 0, 0);
+
+&#x2F;&#x2F; 连接服务器成功，启动接受线程
+std::thread readTask(readTaskHandler, clientfd); &#x2F;&#x2F; 在Linux pthread_create
+readTask.detach();</code></pre>
+
+<p>在登录时向服务端发送登录消息后，插入</p>
+<pre class="language-c++" data-language="c++"><code class="language-c++">sem_wait(&amp;rwem); &#x2F;&#x2F; 等待信号量，由子线程处理完登录的响应消息后，通知这里
+g_isLoginSuccess &#x3D; false;</code></pre>
+
+<p>sem_wait(&amp;rwem); 是为了<strong>接受线程</strong>消息处理好后会sem_post(&amp;rewm)，主线程接受到信号进行往下走。</p>
+<p>g_isLoginSuccess时为了确认登录是否成功，如不成功，就进入首页面，成功进主菜单页面。</p>
+<pre class="language-c++" data-language="c++"><code class="language-c++">if (g_isLoginSuccess)
+            &#123;
+                &#x2F;&#x2F; 进入聊天主菜单页面
+                isMainMenuRunning &#x3D; true;
+                mainMenu(clientfd);
+            &#125;</code></pre>
+
+<p>注册就只需要等待信号就可以了</p>
+<pre class="language-c++" data-language="c++"><code class="language-c++">sem_wait(&amp;rwem); &#x2F;&#x2F; 等待信号量，由子线程处理完注册的响应消息后，通知这里</code></pre>
+
+<p>在退出业务记得把信号回收</p>
+<pre class="language-c++" data-language="c++"><code class="language-c++">sem_destroy(&amp;rwem);</code></pre>
+
+<p>在接受线程里</p>
+<pre class="language-c++" data-language="c++"><code class="language-c++">if (LOGIN_MSG_ACK &#x3D;&#x3D; msgtype)
+        &#123;
+            doLoginResponse(js); &#x2F;&#x2F; 处理登录响应的业务逻辑
+            sem_post(&amp;rwem);     &#x2F;&#x2F; 通知主线程，登录结果处理完成
+            continue;
+        &#125;
+        if (REG_MSG_ACK &#x3D;&#x3D; msgtype)
+        &#123;
+            doRegResponse(js);
+            sem_post(&amp;rwem); &#x2F;&#x2F; 通知主线程，注册结果处理完成
+            continue;
+        &#125;</code></pre>
+
+<p>当收到对应业务的消息，就执行对应逻辑。</p>
+<pre class="language-c++" data-language="c++"><code class="language-c++">&#x2F;&#x2F; 处理登录响应的业务
+void doLoginResponse(json &amp;responsejs)
+&#123;
+    if (responsejs[&quot;errno&quot;] !&#x3D; 0)
+    &#123;
+        cerr &lt;&lt; responsejs[&quot;errmsg&quot;] &lt;&lt; endl;
+        g_isLoginSuccess &#x3D; false;
+    &#125;
+    else
+    &#123; &#x2F;&#x2F; 登录成功
+        &#x2F;&#x2F; 记录当前用户的id和name
+        g_currentUser.setId(responsejs[&quot;id&quot;]);
+        g_currentUser.setName(responsejs[&quot;name&quot;]);
+        &#x2F;&#x2F; 记录当前用户的好友列表信息
+        if (responsejs.contains(&quot;friends&quot;))
+        &#123;
+            &#x2F;&#x2F; 初始化
+            g_currentUserFriendList.clear();
+
+            &#x2F;&#x2F; 看是否包含friends这个键
+            vector&lt;string&gt; vec &#x3D; responsejs[&quot;friends&quot;];
+            for (string &amp;str : vec)
+            &#123;
+                json js &#x3D; json::parse(str);
+                User user;
+                user.setId(js[&quot;id&quot;]);
+                user.setName(js[&quot;name&quot;]);
+                user.setState(js[&quot;state&quot;]);
+                g_currentUserFriendList.push_back(user);
+            &#125;
+        &#125;
+        &#x2F;&#x2F; 记录当前用户的群组列表信息
+        if (responsejs.contains(&quot;groups&quot;))
+        &#123;
+            &#x2F;&#x2F; 初始化
+            g_currentUserGroupList.clear();
+
+            vector&lt;string&gt; vec1 &#x3D; responsejs[&quot;groups&quot;];
+            for (string &amp;groupstr : vec1)
+            &#123;
+                json grpjs &#x3D; json::parse(groupstr);
+                Group group;
+                group.setId(grpjs[&quot;id&quot;]);
+                group.setName(grpjs[&quot;groupname&quot;]);
+                group.setDesc(grpjs[&quot;groupdesc&quot;]);
+                vector&lt;string&gt; vec2 &#x3D; grpjs[&quot;users&quot;];
+                for (string &amp;userstr : vec2)
+                &#123;
+                    GroupUser user;
+                    json js &#x3D; json::parse(userstr);
+                    user.setId(js[&quot;id&quot;]);
+                    user.setName(js[&quot;name&quot;]);
+                    user.setState(js[&quot;state&quot;]);
+                    user.setRole(js[&quot;role&quot;]);
+                    group.getUsers().push_back(user);
+                &#125;
+                g_currentUserGroupList.push_back(group);
+            &#125;
+        &#125;
+        &#x2F;&#x2F; 显示登录用户的基本信息
+        showCurrentUserData();
+        &#x2F;&#x2F; 显示当前用户的离线消息 个人聊天消息或者群组消息
+        if (responsejs.contains(&quot;offlinemsg&quot;))
+        &#123;
+            vector&lt;string&gt; vec &#x3D; responsejs[&quot;offlinemsg&quot;];
+            for (string &amp;str : vec)
+            &#123;
+                json js &#x3D; json::parse(str);
+                &#x2F;&#x2F; time +[id]+name+&quot;said: &quot;+xxx
+                if (ONE_CHAT_MSG &#x3D;&#x3D; js[&quot;msgid&quot;].get&lt;int&gt;())
+                &#123;
+                    cout &lt;&lt; js[&quot;time&quot;].get&lt;string&gt;() &lt;&lt; &quot;[&quot; &lt;&lt; js[&quot;id&quot;] &lt;&lt; &quot;]&quot; &lt;&lt; js[&quot;name&quot;].get&lt;string&gt;() &lt;&lt; &quot; said: &quot; &lt;&lt; js[&quot;msg&quot;].get&lt;string&gt;() &lt;&lt; endl;
+                &#125;
+                else
+                &#123;
+                    cout &lt;&lt; &quot;群消息[&quot; &lt;&lt; js[&quot;groupid&quot;] &lt;&lt; &quot;]:&quot; &lt;&lt; js[&quot;time&quot;].get&lt;string&gt;() &lt;&lt; &quot;[&quot; &lt;&lt; js[&quot;id&quot;] &lt;&lt; &quot;]&quot; &lt;&lt; js[&quot;name&quot;].get&lt;string&gt;() &lt;&lt; &quot; said: &quot; &lt;&lt; js[&quot;msg&quot;].get&lt;string&gt;() &lt;&lt; endl;
+                &#125;
+            &#125;
+        &#125;
+        g_isLoginSuccess &#x3D; true;
+    &#125;
+&#125;</code></pre>
+
+<p>当然，在登陆成功后记得把g_isLoginSuccess置为true。</p>
+<pre class="language-c++" data-language="c++"><code class="language-c++">&#x2F;&#x2F; 处理注册响应的业务
+void doRegResponse(json &amp;responsejs)
+&#123;
+    if (0 !&#x3D; responsejs[&quot;errno&quot;])
+    &#123; &#x2F;&#x2F; 注册失败
+        cerr &lt;&lt;&quot;name is already exist,register error!&quot; &lt;&lt; endl;
+    &#125;
+    else
+    &#123; &#x2F;&#x2F; 注册成功
+        cout &lt;&lt;&quot;name register success,userid is &quot; &lt;&lt; responsejs[&quot;id&quot;] &lt;&lt; &quot;, do not forget it!&quot; &lt;&lt; endl;
+    &#125;
+&#125;</code></pre>
+
+<p>这样就把这个问题解决了。</p>
+</div></section><div id="reward-container"><span class="hty-icon-button button-glow" id="reward-button" title="打赏" onclick="var qr = document.getElementById(&quot;qr&quot;); qr.style.display = (qr.style.display === &quot;none&quot;) ? &quot;block&quot; : &quot;none&quot;;"><span class="icon iconify" data-icon="ri:hand-coin-line"></span></span><div id="reward-comment">能白嫖就白嫖</div><div id="qr" style="display:none;"><div style="display:inline-block"><a href="/images/wechatpay.png"><img loading="lazy" src="/images/wechatpay.png" alt="微信支付" title="微信支付"></a><div><span style="color:#2DC100"><span class="icon iconify" data-icon="ri:wechat-pay-line"></span></span></div></div></div></div><ul class="post-copyright"><li class="post-copyright-author"><strong>本文作者：</strong>YuStone</li><li class="post-copyright-link"><strong>本文链接：</strong><a href="http://yustonerain.top/2025/06/02/C++-chatserver.html" title="c++实现集群聊天服务器">http://yustonerain.top/2025/06/02/C++-chatserver.html</a></li><li class="post-copyright-license"><strong>版权声明：</strong>本博客所有文章除特别声明外，均默认采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh" target="_blank" rel="noopener" title="CC BY-NC-SA 4.0 "><span class="icon iconify" data-icon="ri:creative-commons-line"></span><span class="icon iconify" data-icon="ri:creative-commons-by-line"></span><span class="icon iconify" data-icon="ri:creative-commons-nc-line"></span><span class="icon iconify" data-icon="ri:creative-commons-sa-line"></span></a> 许可协议。</li></ul></article><div class="post-nav"><div class="post-nav-item"><a class="post-nav-prev" href="/2025/06/02/data-structure-100.html" rel="prev" title="数据结构100题"><span class="icon iconify" data-icon="ri:arrow-left-s-line"></span><span class="post-nav-text">数据结构100题</span></a></div><div class="post-nav-item"></div></div></div><div class="hty-card" id="comment"><div class="comment-tooltip text-center"><span>若您想及时得到回复提醒，建议跳转 GitHub Issues 评论。</span><br><span>若没有本文 Issue，您可以使用 Comment 模版新建。</span><br><a class="hty-button hty-button--raised" id="github-issues" target="_blank" rel="noopener" href="https://github.com/YuStone0416/YuStone0416.github.io/issues?q=is:issue+c++实现集群聊天服务器">GitHub Issues</a></div></div></main><footer class="sidebar-translate" id="footer"><div class="copyright"><span>&copy; 2025 </span><a class="with-love" id="animate" href="http://yustonerain.top" title="YuStone Blog"><span class="icon iconify" data-icon="ri:cloud-line"></span></a><span class="author"> YuStone</span></div><div class="powered"><span>由 <a href="https://hexo.io" target="_blank" rel="noopener">Hexo</a> 驱动 v7.3.0</span><span class="footer-separator">|</span><span>主题 - <a rel="noopener" href="https://github.com/YunYouJun/hexo-theme-yun" target="_blank"><span>Yun</span></a> v1.10.11</span></div><div class="live-time"><span>感谢陪伴</span><span id="display_live_time"></span><span class="moe-text">(●'◡'●)</span><script>function blog_live_time() {
+  setTimeout(blog_live_time, 1000);
+  const start = new Date('2025-06-02T00:00:00');
+  const now = new Date();
+  const timeDiff = (now.getTime() - start.getTime());
+  const msPerMinute = 60 * 1000;
+  const msPerHour = 60 * msPerMinute;
+  const msPerDay = 24 * msPerHour;
+  const passDay = Math.floor(timeDiff / msPerDay);
+  const passHour = Math.floor((timeDiff % msPerDay) / 60 / 60 / 1000);
+  const passMinute = Math.floor((timeDiff % msPerHour) / 60 / 1000);
+  const passSecond = Math.floor((timeDiff % msPerMinute) / 1000);
+  display_live_time.innerHTML = ` ${passDay} 天 ${passHour} 小时 ${passMinute} 分 ${passSecond} 秒`;
+}
+blog_live_time();
+</script></div><div class="footer-custom-text">YuStoneblog Description</div></footer></div><a class="hty-icon-button" id="back-to-top" aria-label="back-to-top" href="#"><span class="icon iconify" data-icon="ri:arrow-up-s-line"></span><svg class="progress-circle-container" viewBox="0 0 100 100"><circle class="progress-circle" id="progressCircle" cx="50" cy="50" r="48" fill="none" stroke="#0078E7" stroke-width="2" stroke-linecap="round"></circle></svg></a><a class="popup-trigger hty-icon-button icon-search" id="search" href="javascript:;" title="搜索"><span class="site-state-item-icon"><span class="icon iconify" data-icon="ri:search-line"></span></span></a><script>window.addEventListener("DOMContentLoaded", () => {
+  // Handle and trigger popup window
+  document.querySelector(".popup-trigger").addEventListener("click", () => {
+    document.querySelector(".popup").classList.add("show");
+    setTimeout(() => {
+      document.querySelector(".search-input").focus();
+    }, 100);
+  });
+
+  // Monitor main search box
+  const onPopupClose = () => {
+    document.querySelector(".popup").classList.remove("show");
+  };
+
+  document.querySelector(".popup-btn-close").addEventListener("click", () => {
+    onPopupClose();
+  });
+
+  window.addEventListener("keyup", event => {
+    if (event.key === "Escape") {
+      onPopupClose();
+    }
+  });
+});
+</script><script src="https://fastly.jsdelivr.net/npm/hexo-generator-searchdb@1.4.0/dist/search.js"></script><script src="/js/search/local-search.js" defer type="module"></script><div class="popup search-popup"><div class="search-header"><span class="popup-btn-close close-icon hty-icon-button"><span class="icon iconify" data-icon="ri:close-line"></span></span></div><div class="search-input-container"><input class="search-input" id="local-search-input" type="text" placeholder="搜索..." value=""></div><div class="search-result-container"></div></div><script src="https://fastly.jsdelivr.net/npm/medium-zoom@1.0.6/dist/medium-zoom.min.js"></script><script>const images = [...document.querySelectorAll('.markdown-body img')]
+mediumZoom(images)</script><style>.medium-zoom-image {
+  z-index: 99;
+}</style></body></html>
