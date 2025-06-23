@@ -203,13 +203,19 @@ local_search:
 comment:
   enable: true
   tips:
-    - 若您想及时得到回复提醒，建议跳转 GitHub Issues 评论。
-    - 若没有本文 Issue，您可以使用 Comment 模版新建。
+    - 若您想及时得到回复提醒，可以直接联系我
   candidates:
-    - github_issues  # GitHub Issues 评论系统
+    - utterances # utterances 评论系统
 
-github_issues:
+# github_issues:
+#   enable: true
+#   username: YuStone0416
+#   repository: YuStone0416.github.io
+#   filters: is:issue
+
+utterances:
   enable: true
-  username: YuStone0416
-  repository: YuStone0416.github.io
-  filters: is:issue
+  repo: YuStone0416/YuStone0416.github.io
+  issue-term: pathname
+  # label: comment
+  theme: github-light
