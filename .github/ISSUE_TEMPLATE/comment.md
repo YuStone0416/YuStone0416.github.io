@@ -7,7 +7,7 @@ assignees: ''
 
 ---
 
-文章链接：<https://www.yunyoujun.cn/>
+文章链接：<https://yustonerain.top/>
 
 <!-- 
 - 发起前请先检查是否已存在该文章 Issue。请不要重复建立相同 Issue。
