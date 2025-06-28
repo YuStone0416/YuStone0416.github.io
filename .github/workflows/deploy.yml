@@ -18,12 +18,12 @@ jobs:
         with:
           node-version: '22'
 
-      - name: Run update-updated script
-        run: node update-updated.js
-        
       - name: Install dependencies
         run: npm install
 
+      - name: Run update-updated script
+        run: node update-updated.js
+        
       - name: Generate static files
         run: npx hexo generate
 
