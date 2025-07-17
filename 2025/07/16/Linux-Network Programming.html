@@ -8,18 +8,27 @@ document.addEventListener("pjax:success", initScrollReveal);
 </script><link rel="icon" type="image/png" href="/favicon1.ico"><link rel="mask-icon" href="/favicon1.ico" color="#0078E7"><link rel="preload" href="/css/hexo-theme-yun.css" as="style"><link rel="prefetch" href="/js/sidebar.js" as="script"><link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin><link rel="preconnect" href="https://fastly.jsdelivr.net/npm/" crossorigin><script id="yun-config">
     window.Yun = {}
     window.CONFIG = {"hostname":"yustonerain.top","root":"/","title":"跟着梦走过时光","version":"1.10.11","mode":"auto","copycode":true,"page":{"isPost":true},"i18n":{"placeholder":"搜索...","empty":"找不到您查询的内容: ${query}","hits":"找到 ${hits} 条结果","hits_time":"找到 ${hits} 条结果（用时 ${time} 毫秒）"},"anonymous_image":"https://cdn.yunyoujun.cn/img/avatar/none.jpg","say":{"api":"https://el-bot-api.vercel.app/api/words/young"},"local_search":{"path":"/search.json"},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"vendors":{"host":"https://fastly.jsdelivr.net/npm/","darken":"https://fastly.jsdelivr.net/npm/darken@1.5.0"}};
-  </script><link rel="stylesheet" href="/css/hexo-theme-yun.css"><script src="/js/hexo-theme-yun.js" type="module"></script><link rel="alternate" href="/atom.xml" title="YuStone Blogs" type="application/atom+xml"><link rel="stylesheet" href="/css/custom.css"><meta name="description" content="heihei">
+  </script><link rel="stylesheet" href="/css/hexo-theme-yun.css"><script src="/js/hexo-theme-yun.js" type="module"></script><link rel="alternate" href="/atom.xml" title="YuStone Blogs" type="application/atom+xml"><link rel="stylesheet" href="/css/custom.css"><meta name="description" content="网络基础mac地址（6个字节 48位）标记网卡的id,；理论上这个id全球唯一 mac地址一般用来标识主机的id,这个id是物理地址，不会改变。 ip地址，ipv4(4个字节，32位)，ipv6(16个字节，128位)IP地址是标识主机的id,这个id是虚拟的，会改变。 一个IP将其分为子网id和主机id 子网id和主机id需要和子网掩码一起来看，  ping命令用来测试两台主机的网络联通性（wi">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Linux网络编程">
 <meta property="og:url" content="http://yustonerain.top/2025/07/16/Linux-Network%20Programming.html">
 <meta property="og:site_name" content="YuStone Blogs">
-<meta property="og:description" content="heihei">
+<meta property="og:description" content="网络基础mac地址（6个字节 48位）标记网卡的id,；理论上这个id全球唯一 mac地址一般用来标识主机的id,这个id是物理地址，不会改变。 ip地址，ipv4(4个字节，32位)，ipv6(16个字节，128位)IP地址是标识主机的id,这个id是虚拟的，会改变。 一个IP将其分为子网id和主机id 子网id和主机id需要和子网掩码一起来看，  ping命令用来测试两台主机的网络联通性（wi">
 <meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://yustonerain.top/2025/07/16/Linux-Network%20Programming/1.png">
+<meta property="og:image" content="http://yustonerain.top/2025/07/16/Linux-Network%20Programming/2.png">
+<meta property="og:image" content="http://yustonerain.top/2025/07/16/Linux-Network%20Programming/3.png">
+<meta property="og:image" content="http://yustonerain.top/2025/07/16/Linux-Network%20Programming/4.png">
+<meta property="og:image" content="http://yustonerain.top/2025/07/16/Linux-Network%20Programming/5.png">
+<meta property="og:image" content="http://yustonerain.top/2025/07/16/Linux-Network%20Programming/6.png">
+<meta property="og:image" content="http://yustonerain.top/2025/07/16/Linux-Network%20Programming/7.png">
+<meta property="og:image" content="http://yustonerain.top/2025/07/16/Linux-Network%20Programming/8.png">
 <meta property="article:published_time" content="2025-07-16T14:54:16.000Z">
-<meta property="article:modified_time" content="2025-07-16T13:26:00.000Z">
+<meta property="article:modified_time" content="2025-07-16T13:26:16.000Z">
 <meta property="article:author" content="YuStone">
 <meta property="article:tag" content="Linux">
-<meta name="twitter:card" content="summary"><script>(function() {
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://yustonerain.top/2025/07/16/Linux-Network%20Programming/1.png"><script>(function() {
   if (CONFIG.mode !== 'auto') return
   const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches
   const setting = localStorage.getItem('darken-mode') || 'auto'
@@ -36,7 +45,293 @@ IconifyProviders = {
     // Wait for 1 second before switching API hosts
     rotate: 1000,
   },
-};</script><div class="container"><a class="sidebar-toggle hty-icon-button" id="menu-btn"><div class="hamburger hamburger--spin" type="button"><span class="hamburger-box"><span class="hamburger-inner"></span></span></div></a><div class="sidebar-toggle sidebar-overlay"></div><aside class="sidebar"><script src="/js/sidebar.js" type="module"></script><ul class="sidebar-nav"><li class="sidebar-nav-item sidebar-nav-toc hty-icon-button" data-target="post-toc-wrap" title="文章目录"><span class="icon iconify" data-icon="ri:list-ordered"></span></li><li class="sidebar-nav-item sidebar-nav-overview hty-icon-button sidebar-nav-active" data-target="site-overview-wrap" title="站点概览"><span class="icon iconify" data-icon="ri:passport-line"></span></li></ul><div class="sidebar-panel sidebar-panel-active" id="site-overview-wrap"><div class="site-info fix-top"><a class="site-author-avatar" href="/about/" title="YuStone"><img width="96" loading="lazy" src="/images/avatar.jpg" alt="YuStone"><span class="site-author-status" title="四季花开">☺️</span></a><div class="site-author-name"><a href="/about/">YuStone</a></div><span class="site-name">YuStone Blogs</span><sub class="site-subtitle">the world</sub><div class="site-description">圭璋学习总结</div></div><nav class="site-state"><a class="site-state-item hty-icon-button icon-home" href="/" title="首页"><span class="site-state-item-icon"><span class="icon iconify" data-icon="ri:home-4-line"></span></span></a><div class="site-state-item"><a href="/archives/" title="归档"><span class="site-state-item-icon"><span class="icon iconify" data-icon="ri:archive-line"></span></span><span class="site-state-item-count">5</span></a></div><div class="site-state-item"><a href="/categories/" title="分类"><span class="site-state-item-icon"><span class="icon iconify" data-icon="ri:folder-2-line"></span></span><span class="site-state-item-count">2</span></a></div><div class="site-state-item"><a href="/tags/" title="标签"><span class="site-state-item-icon"><span class="icon iconify" data-icon="ri:price-tag-3-line"></span></span><span class="site-state-item-count">4</span></a></div><a class="site-state-item hty-icon-button" target="_blank" rel="noopener" href="https://yun.yunyoujun.cn" title="文档"><span class="site-state-item-icon"><span class="icon iconify" data-icon="ri:settings-line"></span></span></a></nav><hr style="margin-bottom:0.5rem"><div class="links-of-author"><a class="links-of-author-item hty-icon-button" rel="noopener" href="/atom.xml" title="RSS" target="_blank" style="color:orange"><span class="icon iconify" data-icon="ri:rss-line"></span></a><a class="links-of-author-item hty-icon-button" rel="noopener" href="https://github.com/YuStone0416" title="GitHub" target="_blank" style="color:#181717"><span class="icon iconify" data-icon="ri:github-line"></span></a><a class="links-of-author-item hty-icon-button" rel="noopener" href="mailto:2754523646@qq.com" title="E-Mail" target="_blank" style="color:#8E71C1"><span class="icon iconify" data-icon="ri:mail-line"></span></a><a class="links-of-author-item hty-icon-button" rel="noopener" href="https://space.bilibili.com/436681227?spm_id_from=333.1387.0.0" title="哔哩哔哩" target="_blank" style="color:#FF8EB3"><span class="icon iconify" data-icon="ri:bilibili-line"></span></a></div><hr style="margin:0.5rem 1rem"><div class="links"><a class="links-item hty-icon-button" href="/links/" title="我的小伙伴们" style="color:dodgerblue"><span class="icon iconify" data-icon="ri:genderless-line"></span></a></div><br><a class="links-item hty-icon-button" id="toggle-mode-btn" href="javascript:;" title="Mode" style="color: #f1cb64"><span class="icon iconify" data-icon="ri:contrast-2-line"></span></a></div><div class="sidebar-panel" id="post-toc-wrap"><div class="post-toc"><div class="post-toc-content">很遗憾，咱没写啥目录</div></div></div></aside><main class="sidebar-translate" id="content"><div id="post"><article class="hty-card post-block" itemscope itemtype="https://schema.org/Article" style="--smc-primary:#0078E7;"><link itemprop="mainEntityOfPage" href="http://yustonerain.top/2025/07/16/Linux-Network%20Programming.html"><span hidden itemprop="author" itemscope itemtype="https://schema.org/Person"><meta itemprop="name" content="YuStone"><meta itemprop="description"></span><span hidden itemprop="publisher" itemscope itemtype="https://schema.org/Organization"><meta itemprop="name" content="YuStone Blogs"></span><header class="post-header"><h1 class="post-title" itemprop="name headline">Linux网络编程</h1><div class="post-meta"><div class="post-time"><span class="post-meta-item-icon"><span class="icon iconify" data-icon="ri:calendar-line"></span></span> <time title="创建时间：2025-07-16 22:54:16" itemprop="dateCreated datePublished" datetime="2025-07-16T22:54:16+08:00">2025-07-16</time></div><div class="post-classify"><span class="post-category"> <span class="post-meta-item-icon" style="margin-right:3px;"><span class="icon iconify" data-icon="ri:folder-line"></span></span><span itemprop="about" itemscope itemtype="https://schema.org/Thing"><a class="category-item" href="/categories/%E8%AE%A1%E7%AE%97%E6%9C%BA%E5%AD%A6%E4%B9%A0/" style="--text-color:var(--hty-text-color)" itemprop="url" rel="index"><span itemprop="text">计算机学习</span></a></span></span><span class="post-tag"><span class="post-meta-divider">-</span><a class="tag-item" href="/tags/Linux/" style="--text-color:var(--hty-text-color)"><span class="post-meta-item-icon"><span class="icon iconify" data-icon="ri:price-tag-3-line"></span></span><span class="tag-name">Linux</span></a></span></div></div></header><section class="post-body" itemprop="articleBody"><div class="post-content markdown-body"><p>heihei</p>
+};</script><div class="container"><a class="sidebar-toggle hty-icon-button" id="menu-btn"><div class="hamburger hamburger--spin" type="button"><span class="hamburger-box"><span class="hamburger-inner"></span></span></div></a><div class="sidebar-toggle sidebar-overlay"></div><aside class="sidebar"><script src="/js/sidebar.js" type="module"></script><ul class="sidebar-nav"><li class="sidebar-nav-item sidebar-nav-toc hty-icon-button sidebar-nav-active" data-target="post-toc-wrap" title="文章目录"><span class="icon iconify" data-icon="ri:list-ordered"></span></li><li class="sidebar-nav-item sidebar-nav-overview hty-icon-button" data-target="site-overview-wrap" title="站点概览"><span class="icon iconify" data-icon="ri:passport-line"></span></li></ul><div class="sidebar-panel" id="site-overview-wrap"><div class="site-info fix-top"><a class="site-author-avatar" href="/about/" title="YuStone"><img width="96" loading="lazy" src="/images/avatar.jpg" alt="YuStone"><span class="site-author-status" title="四季花开">☺️</span></a><div class="site-author-name"><a href="/about/">YuStone</a></div><span class="site-name">YuStone Blogs</span><sub class="site-subtitle">the world</sub><div class="site-description">圭璋学习总结</div></div><nav class="site-state"><a class="site-state-item hty-icon-button icon-home" href="/" title="首页"><span class="site-state-item-icon"><span class="icon iconify" data-icon="ri:home-4-line"></span></span></a><div class="site-state-item"><a href="/archives/" title="归档"><span class="site-state-item-icon"><span class="icon iconify" data-icon="ri:archive-line"></span></span><span class="site-state-item-count">5</span></a></div><div class="site-state-item"><a href="/categories/" title="分类"><span class="site-state-item-icon"><span class="icon iconify" data-icon="ri:folder-2-line"></span></span><span class="site-state-item-count">2</span></a></div><div class="site-state-item"><a href="/tags/" title="标签"><span class="site-state-item-icon"><span class="icon iconify" data-icon="ri:price-tag-3-line"></span></span><span class="site-state-item-count">4</span></a></div><a class="site-state-item hty-icon-button" target="_blank" rel="noopener" href="https://yun.yunyoujun.cn" title="文档"><span class="site-state-item-icon"><span class="icon iconify" data-icon="ri:settings-line"></span></span></a></nav><hr style="margin-bottom:0.5rem"><div class="links-of-author"><a class="links-of-author-item hty-icon-button" rel="noopener" href="/atom.xml" title="RSS" target="_blank" style="color:orange"><span class="icon iconify" data-icon="ri:rss-line"></span></a><a class="links-of-author-item hty-icon-button" rel="noopener" href="https://github.com/YuStone0416" title="GitHub" target="_blank" style="color:#181717"><span class="icon iconify" data-icon="ri:github-line"></span></a><a class="links-of-author-item hty-icon-button" rel="noopener" href="mailto:2754523646@qq.com" title="E-Mail" target="_blank" style="color:#8E71C1"><span class="icon iconify" data-icon="ri:mail-line"></span></a><a class="links-of-author-item hty-icon-button" rel="noopener" href="https://space.bilibili.com/436681227?spm_id_from=333.1387.0.0" title="哔哩哔哩" target="_blank" style="color:#FF8EB3"><span class="icon iconify" data-icon="ri:bilibili-line"></span></a></div><hr style="margin:0.5rem 1rem"><div class="links"><a class="links-item hty-icon-button" href="/links/" title="我的小伙伴们" style="color:dodgerblue"><span class="icon iconify" data-icon="ri:genderless-line"></span></a></div><br><a class="links-item hty-icon-button" id="toggle-mode-btn" href="javascript:;" title="Mode" style="color: #f1cb64"><span class="icon iconify" data-icon="ri:contrast-2-line"></span></a></div><div class="sidebar-panel sidebar-panel-active" id="post-toc-wrap"><div class="post-toc"><div class="post-toc-content"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%BD%91%E7%BB%9C%E5%9F%BA%E7%A1%80"><span class="toc-number">1.</span> <span class="toc-text">网络基础</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#mac%E5%9C%B0%E5%9D%80%EF%BC%886%E4%B8%AA%E5%AD%97%E8%8A%82-48%E4%BD%8D%EF%BC%89"><span class="toc-number">1.1.</span> <span class="toc-text">mac地址（6个字节 48位）</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#ip%E5%9C%B0%E5%9D%80%EF%BC%8Cipv4-4%E4%B8%AA%E5%AD%97%E8%8A%82%EF%BC%8C32%E4%BD%8D-%EF%BC%8Cipv6-16%E4%B8%AA%E5%AD%97%E8%8A%82%EF%BC%8C128%E4%BD%8D"><span class="toc-number">1.2.</span> <span class="toc-text">ip地址，ipv4(4个字节，32位)，ipv6(16个字节，128位)</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%A1%A5%E6%8E%A5%E6%A8%A1%E5%BC%8F%EF%BC%88Bridged-Networking%EF%BC%89"><span class="toc-number">1.3.</span> <span class="toc-text">桥接模式（Bridged Networking）</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#NAT-%E6%A8%A1%E5%BC%8F%EF%BC%88%E7%BD%91%E7%BB%9C%E5%9C%B0%E5%9D%80%E8%BD%AC%E6%8D%A2%EF%BC%89"><span class="toc-number">1.4.</span> <span class="toc-text">NAT 模式（网络地址转换）</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%AB%AF%E5%8F%A3%EF%BC%88port%EF%BC%89"><span class="toc-number">1.5.</span> <span class="toc-text">端口（port）</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#OSI%E4%B8%83%E5%B1%82%E6%A8%A1%E5%9E%8B"><span class="toc-number">1.6.</span> <span class="toc-text">OSI七层模型</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#TCP-IP%E5%9B%9B%E5%B1%82%E6%A8%A1%E5%9E%8B"><span class="toc-number">1.7.</span> <span class="toc-text">TCP&#x2F;IP四层模型</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%8D%8F%E8%AE%AE"><span class="toc-number">1.8.</span> <span class="toc-text">协议</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%BD%91%E7%BB%9C%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F"><span class="toc-number">1.9.</span> <span class="toc-text">网络设计模式</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Socket%E7%BC%96%E7%A8%8B"><span class="toc-number">2.</span> <span class="toc-text">Socket编程</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%A4%A7%E5%B0%8F%E7%AB%AF%EF%BC%9A"><span class="toc-number">2.1.</span> <span class="toc-text">大小端：</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#IP%E5%9C%B0%E5%9D%80%E8%BD%AC%E6%8D%A2%E5%87%BD%E6%95%B0"><span class="toc-number">2.2.</span> <span class="toc-text">IP地址转换函数</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#ipv4%E5%A5%97%E6%8E%A5%E5%AD%97%E7%BB%93%E6%9E%84%E4%BD%93"><span class="toc-number">2.3.</span> <span class="toc-text">ipv4套接字结构体</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%BD%91%E7%BB%9C%E5%A5%97%E6%8E%A5%E5%AD%97%E5%87%BD%E6%95%B0"><span class="toc-number">2.4.</span> <span class="toc-text">网络套接字函数</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E7%BD%91%E7%BB%9C%E9%80%9A%E4%BF%A1%E6%B5%81%E7%A8%8B"><span class="toc-number">2.4.1.</span> <span class="toc-text">网络通信流程</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%88%9B%E5%BB%BA%E5%A5%97%E6%8E%A5%E5%AD%97%E5%87%BD%E6%95%B0socket"><span class="toc-number">2.4.2.</span> <span class="toc-text">创建套接字函数socket()</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E8%BF%9E%E6%8E%A5%E6%9C%8D%E5%8A%A1%E5%99%A8%E5%87%BD%E6%95%B0connect"><span class="toc-number">2.4.3.</span> <span class="toc-text">连接服务器函数connect()</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#tcp%E5%AE%A2%E6%88%B7%E7%AB%AF%E4%BB%A3%E7%A0%81"><span class="toc-number">2.4.4.</span> <span class="toc-text">tcp客户端代码</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#tcp%E6%9C%8D%E5%8A%A1%E5%99%A8%E9%80%9A%E4%BF%A1%E6%B5%81%E7%A8%8B"><span class="toc-number">2.4.5.</span> <span class="toc-text">tcp服务器通信流程</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#bind%E5%87%BD%E6%95%B0"><span class="toc-number">2.4.6.</span> <span class="toc-text">bind函数</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#listen%E5%87%BD%E6%95%B0"><span class="toc-number">2.4.7.</span> <span class="toc-text">listen函数</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#accept%E5%87%BD%E6%95%B0"><span class="toc-number">2.4.8.</span> <span class="toc-text">accept函数</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#tcp%E6%9C%8D%E5%8A%A1%E5%99%A8%E4%BB%A3%E7%A0%81"><span class="toc-number">2.4.9.</span> <span class="toc-text">tcp服务器代码</span></a></li></ol></li></ol></li></ol></div></div></div></aside><main class="sidebar-translate" id="content"><div id="post"><article class="hty-card post-block" itemscope itemtype="https://schema.org/Article" style="--smc-primary:#0078E7;"><link itemprop="mainEntityOfPage" href="http://yustonerain.top/2025/07/16/Linux-Network%20Programming.html"><span hidden itemprop="author" itemscope itemtype="https://schema.org/Person"><meta itemprop="name" content="YuStone"><meta itemprop="description"></span><span hidden itemprop="publisher" itemscope itemtype="https://schema.org/Organization"><meta itemprop="name" content="YuStone Blogs"></span><header class="post-header"><h1 class="post-title" itemprop="name headline">Linux网络编程</h1><div class="post-meta"><div class="post-time"><span class="post-meta-item-icon"><span class="icon iconify" data-icon="ri:calendar-line"></span></span> <time title="创建时间：2025-07-16 22:54:16" itemprop="dateCreated datePublished" datetime="2025-07-16T22:54:16+08:00">2025-07-16</time></div><div class="post-classify"><span class="post-category"> <span class="post-meta-item-icon" style="margin-right:3px;"><span class="icon iconify" data-icon="ri:folder-line"></span></span><span itemprop="about" itemscope itemtype="https://schema.org/Thing"><a class="category-item" href="/categories/%E8%AE%A1%E7%AE%97%E6%9C%BA%E5%AD%A6%E4%B9%A0/" style="--text-color:var(--hty-text-color)" itemprop="url" rel="index"><span itemprop="text">计算机学习</span></a></span></span><span class="post-tag"><span class="post-meta-divider">-</span><a class="tag-item" href="/tags/Linux/" style="--text-color:var(--hty-text-color)"><span class="post-meta-item-icon"><span class="icon iconify" data-icon="ri:price-tag-3-line"></span></span><span class="tag-name">Linux</span></a></span></div></div></header><section class="post-body" itemprop="articleBody"><div class="post-content markdown-body"><h2 id="网络基础"><a href="#网络基础" class="headerlink" title="网络基础"></a>网络基础</h2><h3 id="mac地址（6个字节-48位）"><a href="#mac地址（6个字节-48位）" class="headerlink" title="mac地址（6个字节 48位）"></a><strong>mac地址</strong>（6个字节 48位）</h3><p>标记网卡的id,；理论上这个id全球唯一</p>
+<p><strong>mac地址一般用来标识主机的id,这个id是物理地址，不会改变。</strong></p>
+<h3 id="ip地址，ipv4-4个字节，32位-，ipv6-16个字节，128位"><a href="#ip地址，ipv4-4个字节，32位-，ipv6-16个字节，128位" class="headerlink" title="ip地址，ipv4(4个字节，32位)，ipv6(16个字节，128位)"></a><strong>ip地址，ipv4(4个字节，32位)，ipv6(16个字节，128位)</strong></h3><p>IP地址是标识主机的id,这个id是虚拟的，会改变。</p>
+<p>一个IP将其分为子网id和主机id</p>
+<p><strong>子网id和主机id需要和子网掩码一起来看，</strong></p>
+<p><img src="/2025/07/16/Linux-Network%20Programming/1.png" alt="1" loading="lazy"></p>
+<p>ping命令用来测试两台主机的网络联通性（windows和Linux都适用）。</p>
+<p>Linux下设置ip命令</p>
+<pre class="language-bash" data-language="bash"><code class="language-bash"><span class="token function">ifconfig</span> ens33 <span class="token number">192.168</span>.131.133 netmask <span class="token number">255.255</span>.255.0</code></pre>
+
+<h3 id="桥接模式（Bridged-Networking）"><a href="#桥接模式（Bridged-Networking）" class="headerlink" title="桥接模式（Bridged Networking）"></a><strong>桥接模式（Bridged Networking）</strong></h3><p>桥接模式是将虚拟机&#x2F;容器的网络<strong>桥接到物理网卡</strong>上，使其就像是局域网中的一台独立主机。</p>
+<p>工作原理：</p>
+<p>虚拟机通过虚拟网桥（Bridge）连接到宿主机的物理网卡，相当于直接插入交换机，与宿主机处于<strong>同一物理局域网</strong>中。</p>
+<p>网络特点：</p>
+<ul>
+<li>虚拟机可获得<strong>与宿主机同网段的IP地址</strong>（例如通过 DHCP）</li>
+<li>可以被局域网中其他设备访问（可 ping 通）</li>
+<li>能访问局域网和外网</li>
+</ul>
+<p>优点：</p>
+<ul>
+<li>网络透明，虚拟机像一台真实的独立主机</li>
+<li>易于与其他局域网设备通信</li>
+</ul>
+<p>缺点：</p>
+<ul>
+<li>需要宿主网络支持（如局域网允许多个 IP）</li>
+<li>有可能增加网络冲突和安全风险</li>
+</ul>
+<h3 id="NAT-模式（网络地址转换）"><a href="#NAT-模式（网络地址转换）" class="headerlink" title="NAT 模式（网络地址转换）"></a><strong>NAT 模式（网络地址转换）</strong></h3><p>NAT 模式是虚拟机&#x2F;容器通过宿主机的网络连接上网，<strong>共享宿主机的 IP</strong>。</p>
+<p>工作原理：</p>
+<p>宿主机充当“路由器”，将虚拟机的私有 IP 转换为宿主的公网 IP，进行地址转换。</p>
+<p>网络特点：</p>
+<ul>
+<li>虚拟机使用<strong>私有 IP 地址（如 192.168.xx.xx）</strong></li>
+<li>能访问外网，但外部主机<strong>无法主动访问虚拟机</strong></li>
+<li>类似家庭内的多台设备通过路由器上网</li>
+</ul>
+<p>优点：</p>
+<ul>
+<li>设置简单，几乎无须额外配置</li>
+<li>安全性高，外部无法直接访问虚拟机</li>
+</ul>
+<p>缺点：</p>
+<ul>
+<li>虚拟机不能被外部主机主动访问（除非端口转发）</li>
+<li>网络透明度低，不适合复杂网络测试</li>
+</ul>
+<h3 id="端口（port）"><a href="#端口（port）" class="headerlink" title="端口（port）"></a>端口（port）</h3><p><strong>作用：用来标识应用程序（进程）</strong></p>
+<p><strong>port:两个字节 0-65535</strong></p>
+<p><strong>0-1023 知名端口</strong></p>
+<p><strong>自定义端口1024-65535（避免冲突）</strong></p>
+<p><strong>一个应用可以有多个端口，一个端口只能有一个应用程序。</strong></p>
+<h3 id="OSI七层模型"><a href="#OSI七层模型" class="headerlink" title="OSI七层模型"></a>OSI七层模型</h3><p>为了使各种不同的计算机之间可以互联，ARPANet指定了一套计算机通信协议，即TCP&#x2F;IP协议（族）；</p>
+<p>为了减少协议设计的复杂性，大多数网络模型均采用分层的方式来组织。</p>
+<p>每一层利用下一层提供的服务来为上一层提供服务，本层服务的实现细节对上层屏蔽。</p>
+<p><strong>物理层：双绞线（网线）接口类型，光纤的传输速率等等</strong></p>
+<p><strong>数据链路层：mac 负责收发数据</strong></p>
+<p><strong>网络层：ip 给两台主机提供路径选择。</strong></p>
+<p><strong>传输层：port 区分数据递送到那个应用程序。</strong></p>
+<p><strong>会话层：建立连接</strong></p>
+<p><strong>表示层：解码</strong></p>
+<p><strong>应用层：应用程序</strong></p>
+<p><img src="/2025/07/16/Linux-Network%20Programming/2.png" alt="2" loading="lazy"></p>
+<h3 id="TCP-IP四层模型"><a href="#TCP-IP四层模型" class="headerlink" title="TCP&#x2F;IP四层模型"></a>TCP&#x2F;IP四层模型</h3><p><img src="/2025/07/16/Linux-Network%20Programming/3.png" alt="3" loading="lazy"></p>
+<h3 id="协议"><a href="#协议" class="headerlink" title="协议"></a>协议</h3><p><strong>规定了数据传输的方式和格式</strong></p>
+<p><strong>这里主要按照TCP&#x2F;IP四层模型有的协议。</strong></p>
+<p><strong>应用层协议：</strong></p>
+<p><strong>FTP:文件传输协议</strong></p>
+<p><strong>HTTP:超文本传输协议</strong></p>
+<p><strong>NFS:网络文件系统</strong></p>
+<p><strong>传输层协议：</strong></p>
+<p><strong>TCP:传输控制协议</strong> 头部20个字节</p>
+<p><strong>UDP:用户数据报协议</strong> 头部8个字节</p>
+<p><strong>网络层：</strong></p>
+<p><strong>IP:英特网互联协议</strong> 头部20个字节</p>
+<p><strong>ICMP:英特网控制报文协议 ping命令就是这个协议</strong><br><strong>IGMP：英特网组管理协议</strong></p>
+<p><strong>链路层：</strong></p>
+<p><strong>ARP:地址解析协议 通过ip找mac地址</strong></p>
+<p><strong>RARP:反向地址解析协议 通过mac找ip</strong></p>
+<p><strong>硬件接口：mac头</strong> 头部14个字节</p>
+<p>目的mac地址为ff:ff:ff:ff:ff:ff 局域网内其他主机无条件接受。（常在ARP协议上使用）</p>
+<p><img src="/2025/07/16/Linux-Network%20Programming/4.png" alt="4" loading="lazy"></p>
+<h3 id="网络设计模式"><a href="#网络设计模式" class="headerlink" title="网络设计模式"></a>网络设计模式</h3><p><strong>B&#x2F;S browser&#x2F;server</strong></p>
+<p><strong>C&#x2F;S client&#x2F;server</strong></p>
+<p>C&#x2F;S 性能较好 客户端容易篡改数据 开发周期较长</p>
+<p>B&#x2F;S 性能低 客户端安全 开发周期短</p>
+<h2 id="Socket编程"><a href="#Socket编程" class="headerlink" title="Socket编程"></a>Socket编程</h2><p>无名管道，命名管道，文件，信号，消息队列，共享内存只能用于本机的进程间通信。</p>
+<p><strong>不同主机间进程通信方法：socket</strong></p>
+<p>socket是一个伪文件。</p>
+<p><img src="/2025/07/16/Linux-Network%20Programming/5.png" alt="5" loading="lazy"></p>
+<p><strong>socket必须成对出现。</strong></p>
+<h3 id="大小端："><a href="#大小端：" class="headerlink" title="大小端："></a><strong>大小端：</strong></h3><p><strong>小端：低位存低地址，高位存高地址</strong></p>
+<p><strong>大端：高位存低地址，低位存高地址</strong></p>
+<p><strong>网络上走的数据都是大端的，主机的主机字节序是未知的，需要转换。</strong></p>
+<ul>
+<li><strong>协议头部：如 TCP&#x2F;IP 头、DNS 头等 → 这些字段是标准协议的，必须按规定的大端（网络字节序）</strong></li>
+<li><strong>数据部分（Payload）：完全由你应用程序自己定义</strong></li>
+</ul>
+<p>网络字节序和主机字节序的转换</p>
+<pre class="language-c" data-language="c"><code class="language-c"><span class="token macro property"><span class="token directive-hash">#</span><span class="token directive keyword">include</span><span class="token string">&lt;arpa/inet.h></span></span>
+
+<span class="token class-name">uint32_t</span> <span class="token function">htonl</span><span class="token punctuation">(</span><span class="token class-name">uint32_t</span> hostlong<span class="token punctuation">)</span><span class="token punctuation">;</span><span class="token comment">//主机字节序转网络字节序（4个字节）转ip</span>
+<span class="token class-name">uint16_t</span> <span class="token function">htons</span><span class="token punctuation">(</span><span class="token class-name">uint16_t</span> hostshort<span class="token punctuation">)</span><span class="token punctuation">;</span><span class="token comment">//主机字节序转网络字节序（2个字节）转port</span>
+<span class="token class-name">uint32_t</span> <span class="token function">ntohl</span><span class="token punctuation">(</span><span class="token class-name">uint32_t</span> netlong<span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token class-name">uint16_t</span> <span class="token function">ntohs</span><span class="token punctuation">(</span><span class="token class-name">uint16_t</span> netshort<span class="token punctuation">)</span><span class="token punctuation">;</span></code></pre>
+
+<p>示例代码</p>
+<pre class="language-c" data-language="c"><code class="language-c"><span class="token macro property"><span class="token directive-hash">#</span><span class="token directive keyword">include</span><span class="token string">&lt;arpa/inet.h></span></span>
+<span class="token macro property"><span class="token directive-hash">#</span><span class="token directive keyword">include</span><span class="token string">&lt;stdio.h></span></span>
+<span class="token keyword">int</span> <span class="token function">main</span><span class="token punctuation">(</span><span class="token keyword">int</span> argc<span class="token punctuation">,</span><span class="token keyword">char</span> <span class="token operator">*</span>argv<span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token punctuation">)</span><span class="token punctuation">&#123;</span>
+    <span class="token keyword">char</span> buf<span class="token punctuation">[</span><span class="token number">4</span><span class="token punctuation">]</span><span class="token operator">=</span><span class="token punctuation">&#123;</span><span class="token number">192</span><span class="token punctuation">,</span><span class="token number">168</span><span class="token punctuation">,</span><span class="token number">1</span><span class="token punctuation">,</span><span class="token number">2</span><span class="token punctuation">&#125;</span><span class="token punctuation">;</span>
+    <span class="token keyword">int</span> num<span class="token operator">=</span><span class="token operator">*</span><span class="token punctuation">(</span><span class="token keyword">int</span> <span class="token operator">*</span><span class="token punctuation">)</span>buf<span class="token punctuation">;</span>
+    <span class="token keyword">int</span> sum<span class="token operator">=</span><span class="token function">htonl</span><span class="token punctuation">(</span>num<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token keyword">unsigned</span> <span class="token keyword">char</span> <span class="token operator">*</span>p<span class="token operator">=</span><span class="token operator">&amp;</span>sum<span class="token punctuation">;</span>
+    <span class="token function">printf</span><span class="token punctuation">(</span><span class="token string">"%d %d %d %d\n"</span><span class="token punctuation">,</span><span class="token operator">*</span>p<span class="token punctuation">,</span><span class="token operator">*</span><span class="token punctuation">(</span>p<span class="token operator">+</span><span class="token number">1</span><span class="token punctuation">)</span><span class="token punctuation">,</span><span class="token operator">*</span><span class="token punctuation">(</span>p<span class="token operator">+</span><span class="token number">2</span><span class="token punctuation">)</span><span class="token punctuation">,</span><span class="token operator">*</span><span class="token punctuation">(</span>p<span class="token operator">+</span><span class="token number">3</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+    <span class="token keyword">unsigned</span> <span class="token keyword">short</span> a<span class="token operator">=</span><span class="token number">0x0102</span><span class="token punctuation">;</span>
+    <span class="token keyword">unsigned</span> <span class="token keyword">short</span> b<span class="token operator">=</span><span class="token function">htons</span><span class="token punctuation">(</span>a<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token function">printf</span><span class="token punctuation">(</span><span class="token string">"%x\n"</span><span class="token punctuation">,</span>b<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token keyword">return</span> <span class="token number">0</span><span class="token punctuation">;</span>
+<span class="token punctuation">&#125;</span></code></pre>
+
+<pre class="language-bash" data-language="bash"><code class="language-bash"><span class="token number">2</span> <span class="token number">1</span> <span class="token number">168</span> <span class="token number">192</span>
+<span class="token number">201</span></code></pre>
+
+<p>说明我的电脑是小端。</p>
+<h3 id="IP地址转换函数"><a href="#IP地址转换函数" class="headerlink" title="IP地址转换函数"></a>IP地址转换函数</h3><pre class="language-c" data-language="c"><code class="language-c"><span class="token macro property"><span class="token directive-hash">#</span><span class="token directive keyword">include</span><span class="token string">&lt;arpa/inet.h></span></span>
+
+<span class="token keyword">int</span> <span class="token function">inet_pton</span><span class="token punctuation">(</span><span class="token keyword">int</span> af<span class="token punctuation">,</span><span class="token keyword">const</span> <span class="token keyword">char</span> <span class="token operator">*</span>src<span class="token punctuation">,</span><span class="token keyword">void</span> <span class="token operator">*</span>dst<span class="token punctuation">)</span><span class="token punctuation">;</span>
+功能：将点分十进制串转成<span class="token number">32</span>位网络大端的数据
+参数：af<span class="token operator">:</span>
+		AF_INET IPV4
+        AF_INET6 IPV6
+   	 src：点分十进制串的首地址
+   	 dst<span class="token operator">:</span><span class="token number">32</span>位网络数据的首地址
+返回值：
+     成功：返回<span class="token number">1</span>
+     失败：返回<span class="token number">0</span>
+<span class="token keyword">const</span> <span class="token keyword">char</span> <span class="token operator">*</span><span class="token function">inet_ntop</span><span class="token punctuation">(</span><span class="token keyword">int</span> af<span class="token punctuation">,</span><span class="token keyword">const</span> <span class="token keyword">void</span> <span class="token operator">*</span>src<span class="token punctuation">,</span><span class="token keyword">char</span> <span class="token operator">*</span>dst<span class="token punctuation">,</span><span class="token class-name">socklen_t</span> size<span class="token punctuation">)</span><span class="token punctuation">;</span>
+功能：将<span class="token number">32</span>位大端的网络数据转成点分十进制串
+参数：af<span class="token operator">:</span>
+		AF_INET IPV4
+        AF_INET6 IPV6
+   	 src：<span class="token number">32</span>位网络数据的首地址
+   	 dst<span class="token operator">:</span> 点分十进制串的首地址
+     size<span class="token operator">:</span>存储点分制串数组的大小 通常写<span class="token number">16</span>
+返回值：
+     存储点分制串数组的首地址。
+支持IPV4和IPV6。</code></pre>
+
+<p>示例代码：</p>
+<pre class="language-c" data-language="c"><code class="language-c"><span class="token macro property"><span class="token directive-hash">#</span><span class="token directive keyword">include</span><span class="token string">&lt;stdio.h></span></span>
+<span class="token macro property"><span class="token directive-hash">#</span><span class="token directive keyword">include</span><span class="token string">&lt;arpa/inet.h></span></span>
+
+<span class="token keyword">int</span> <span class="token function">main</span><span class="token punctuation">(</span><span class="token keyword">int</span> argc<span class="token punctuation">,</span><span class="token keyword">char</span> <span class="token operator">*</span>argv<span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token punctuation">)</span><span class="token punctuation">&#123;</span>
+    <span class="token keyword">char</span> buf<span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token operator">=</span><span class="token string">"192.168.1.4"</span><span class="token punctuation">;</span>
+    <span class="token keyword">unsigned</span> <span class="token keyword">int</span> num<span class="token operator">=</span><span class="token number">0</span><span class="token punctuation">;</span>
+    <span class="token function">inet_pton</span><span class="token punctuation">(</span>AF_INET<span class="token punctuation">,</span>buf<span class="token punctuation">,</span><span class="token operator">&amp;</span>num<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token keyword">unsigned</span> <span class="token keyword">char</span> <span class="token operator">*</span>p<span class="token operator">=</span><span class="token punctuation">(</span><span class="token keyword">unsigned</span> <span class="token keyword">char</span> <span class="token operator">*</span><span class="token punctuation">)</span><span class="token operator">&amp;</span>num<span class="token punctuation">;</span>
+    <span class="token function">printf</span><span class="token punctuation">(</span><span class="token string">"%d %d %d %d\n"</span><span class="token punctuation">,</span><span class="token operator">*</span>p<span class="token punctuation">,</span><span class="token operator">*</span><span class="token punctuation">(</span>p<span class="token operator">+</span><span class="token number">1</span><span class="token punctuation">)</span><span class="token punctuation">,</span><span class="token operator">*</span><span class="token punctuation">(</span>p<span class="token operator">+</span><span class="token number">2</span><span class="token punctuation">)</span><span class="token punctuation">,</span><span class="token operator">*</span><span class="token punctuation">(</span>p<span class="token operator">+</span><span class="token number">3</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token keyword">char</span> ip<span class="token punctuation">[</span><span class="token number">16</span><span class="token punctuation">]</span><span class="token operator">=</span><span class="token string">""</span><span class="token punctuation">;</span>
+    <span class="token function">inet_ntop</span><span class="token punctuation">(</span>AF_INET<span class="token punctuation">,</span><span class="token operator">&amp;</span>num<span class="token punctuation">,</span>ip<span class="token punctuation">,</span><span class="token number">16</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token function">printf</span><span class="token punctuation">(</span><span class="token string">"%s\n"</span><span class="token punctuation">,</span>ip<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token keyword">return</span> <span class="token number">0</span><span class="token punctuation">;</span>
+<span class="token punctuation">&#125;</span></code></pre>
+
+<pre class="language-bash" data-language="bash"><code class="language-bash"><span class="token number">192</span> <span class="token number">168</span> <span class="token number">1</span> <span class="token number">4</span>
+<span class="token number">192.168</span>.1.4</code></pre>
+
+<h3 id="ipv4套接字结构体"><a href="#ipv4套接字结构体" class="headerlink" title="ipv4套接字结构体"></a>ipv4套接字结构体</h3><pre class="language-c" data-language="c"><code class="language-c"><span class="token keyword">struct</span> <span class="token class-name">sockaddr_in</span> <span class="token punctuation">&#123;</span>
+  <span class="token class-name">sa_family_t</span> sin_family<span class="token punctuation">;</span> <span class="token comment">/* address family: AF_INET */</span> 对应的协议（ipv4）
+  <span class="token class-name">in_port_t</span> sin_port<span class="token punctuation">;</span> <span class="token comment">/* port in network byte order */</span> 端口
+  <span class="token keyword">struct</span> <span class="token class-name">in_addr</span> sin_addr<span class="token punctuation">;</span> <span class="token comment">/* internet address */</span> ip地址
+<span class="token punctuation">&#125;</span><span class="token punctuation">;</span>
+
+<span class="token comment">/* Internet address */</span>
+<span class="token keyword">struct</span> <span class="token class-name">in_addr</span> <span class="token punctuation">&#123;</span>
+  <span class="token class-name">uint32_t</span> s_addr<span class="token punctuation">;</span> <span class="token comment">/* address in network byte order */</span> ip地址
+<span class="token punctuation">&#125;</span><span class="token punctuation">;</span></code></pre>
+
+<p><strong>ipv6套接字结构体太多了，这里不展示</strong></p>
+<p>因为有这两种套接字结构体，所以我们要统一，方便函数编写。</p>
+<p><strong>通用套接字结构体</strong></p>
+<pre class="language-c" data-language="c"><code class="language-c"><span class="token keyword">struct</span> <span class="token class-name">sockaddr</span><span class="token punctuation">&#123;</span>
+    <span class="token class-name">sa_family_t</span> sa_family<span class="token punctuation">;</span> <span class="token comment">/* address family,AF_xxx*/</span>
+    <span class="token keyword">char</span> sa_data<span class="token punctuation">[</span><span class="token number">14</span><span class="token punctuation">]</span><span class="token punctuation">;</span> <span class="token comment">/*14 bytes of protocol address*/</span>
+<span class="token punctuation">&#125;</span><span class="token punctuation">;</span></code></pre>
+
+<h3 id="网络套接字函数"><a href="#网络套接字函数" class="headerlink" title="网络套接字函数"></a>网络套接字函数</h3><p>tcp  特点：出错重传 每次发送数据，对方都会回ACK 可靠</p>
+<h4 id="网络通信流程"><a href="#网络通信流程" class="headerlink" title="网络通信流程"></a>网络通信流程</h4><p><img src="/2025/07/16/Linux-Network%20Programming/6.png" alt="6" loading="lazy"></p>
+<h4 id="创建套接字函数socket"><a href="#创建套接字函数socket" class="headerlink" title="创建套接字函数socket()"></a>创建套接字函数socket()</h4><pre class="language-c" data-language="c"><code class="language-c"><span class="token macro property"><span class="token directive-hash">#</span><span class="token directive keyword">include</span> <span class="token string">&lt;sys/socket.h></span></span>
+<span class="token keyword">int</span> <span class="token function">socket</span><span class="token punctuation">(</span><span class="token keyword">int</span> domain<span class="token punctuation">,</span><span class="token keyword">int</span> type<span class="token punctuation">,</span><span class="token keyword">int</span> protocol<span class="token punctuation">)</span><span class="token punctuation">;</span>
+功能：创建套接字
+参数：domain<span class="token operator">:</span>AF_INET
+     type<span class="token operator">:</span>SOCK_STREAM 流式套接字 用于TCP通信
+     protocol<span class="token operator">:</span><span class="token number">0</span>
+返回值：
+     成功：返回文件描述符
+     失败：返回<span class="token operator">-</span><span class="token number">1</span></code></pre>
+
+<h4 id="连接服务器函数connect"><a href="#连接服务器函数connect" class="headerlink" title="连接服务器函数connect()"></a>连接服务器函数connect()</h4><pre class="language-c" data-language="c"><code class="language-c"><span class="token macro property"><span class="token directive-hash">#</span><span class="token directive keyword">include</span> <span class="token string">&lt;sys/socket.h></span></span>
+
+<span class="token keyword">int</span> <span class="token function">connect</span><span class="token punctuation">(</span><span class="token keyword">int</span> sockfd<span class="token punctuation">,</span>
+  <span class="token keyword">const</span> <span class="token keyword">struct</span> <span class="token class-name">sockaddr</span> <span class="token operator">*</span> addr<span class="token punctuation">,</span>
+    <span class="token class-name">socklen_t</span> addrlen<span class="token punctuation">)</span><span class="token punctuation">;</span>
+功能：连接服务器
+参数：
+    sockfd<span class="token operator">:</span>socket套接字
+    addr<span class="token operator">:</span>ipv4套接字结构体地址
+    addrlen<span class="token operator">:</span>ipv4套接字结构体的长度</code></pre>
+
+<h4 id="tcp客户端代码"><a href="#tcp客户端代码" class="headerlink" title="tcp客户端代码"></a>tcp客户端代码</h4><pre class="language-c" data-language="c"><code class="language-c"><span class="token macro property"><span class="token directive-hash">#</span><span class="token directive keyword">include</span><span class="token string">&lt;arpa/inet.h></span></span>
+<span class="token macro property"><span class="token directive-hash">#</span><span class="token directive keyword">include</span><span class="token string">&lt;sys/socket.h></span></span>
+<span class="token macro property"><span class="token directive-hash">#</span><span class="token directive keyword">include</span><span class="token string">&lt;stdio.h></span></span>
+<span class="token macro property"><span class="token directive-hash">#</span><span class="token directive keyword">include</span><span class="token string">&lt;unistd.h></span></span>
+<span class="token keyword">int</span> <span class="token function">main</span><span class="token punctuation">(</span><span class="token keyword">int</span> argc<span class="token punctuation">,</span><span class="token keyword">char</span> <span class="token operator">*</span>argv<span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token punctuation">)</span><span class="token punctuation">&#123;</span>
+    <span class="token comment">//创建套接字</span>
+    <span class="token keyword">int</span> sock_fd<span class="token punctuation">;</span>
+    sock_fd<span class="token operator">=</span><span class="token function">socket</span><span class="token punctuation">(</span>AF_INET<span class="token punctuation">,</span>SOCK_STREAM<span class="token punctuation">,</span><span class="token number">0</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token keyword">if</span><span class="token punctuation">(</span>sock_fd<span class="token operator">==</span><span class="token operator">-</span><span class="token number">1</span><span class="token punctuation">)</span><span class="token punctuation">&#123;</span>
+        <span class="token function">printf</span><span class="token punctuation">(</span><span class="token string">"连接失败"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">&#125;</span><span class="token keyword">else</span><span class="token punctuation">&#123;</span>
+        <span class="token function">printf</span><span class="token punctuation">(</span><span class="token string">"连接成功"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">&#125;</span>
+    <span class="token comment">//连接服务器</span>
+    <span class="token keyword">struct</span> <span class="token class-name">sockaddr_in</span> addr<span class="token punctuation">;</span>
+    addr<span class="token punctuation">.</span>sin_family<span class="token operator">=</span>AF_INET<span class="token punctuation">;</span>
+    addr<span class="token punctuation">.</span>sin_port<span class="token operator">=</span><span class="token function">htons</span><span class="token punctuation">(</span><span class="token number">12345</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token function">inet_pton</span><span class="token punctuation">(</span>AF_INET<span class="token punctuation">,</span><span class="token string">"192.168.149.1"</span><span class="token punctuation">,</span><span class="token operator">&amp;</span>addr<span class="token punctuation">.</span>sin_addr<span class="token punctuation">.</span>s_addr<span class="token punctuation">)</span><span class="token punctuation">;</span>  
+    <span class="token function">connect</span><span class="token punctuation">(</span>sock_fd<span class="token punctuation">,</span><span class="token punctuation">(</span><span class="token keyword">struct</span> <span class="token class-name">sockaddr</span> <span class="token operator">*</span><span class="token punctuation">)</span><span class="token operator">&amp;</span>addr<span class="token punctuation">,</span><span class="token keyword">sizeof</span><span class="token punctuation">(</span>addr<span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token comment">//读写数据</span>
+    <span class="token keyword">char</span> buf<span class="token punctuation">[</span><span class="token number">1024</span><span class="token punctuation">]</span><span class="token operator">=</span><span class="token string">""</span><span class="token punctuation">;</span>
+    <span class="token keyword">while</span><span class="token punctuation">(</span><span class="token number">1</span><span class="token punctuation">)</span><span class="token punctuation">&#123;</span>
+        <span class="token keyword">int</span> n<span class="token operator">=</span><span class="token function">read</span><span class="token punctuation">(</span>STDIN_FILENO<span class="token punctuation">,</span>buf<span class="token punctuation">,</span><span class="token keyword">sizeof</span><span class="token punctuation">(</span>buf<span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token function">write</span><span class="token punctuation">(</span>sock_fd<span class="token punctuation">,</span>buf<span class="token punctuation">,</span>n<span class="token punctuation">)</span><span class="token punctuation">;</span><span class="token comment">//发送数据给服务器</span>
+        n<span class="token operator">=</span><span class="token function">read</span><span class="token punctuation">(</span>sock_fd<span class="token punctuation">,</span>buf<span class="token punctuation">,</span><span class="token keyword">sizeof</span><span class="token punctuation">(</span>buf<span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token function">write</span><span class="token punctuation">(</span>STDOUT_FILENO<span class="token punctuation">,</span>buf<span class="token punctuation">,</span><span class="token keyword">sizeof</span><span class="token punctuation">(</span>buf<span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+    <span class="token punctuation">&#125;</span>
+    <span class="token comment">//关闭</span>
+    <span class="token function">close</span><span class="token punctuation">(</span>sock_fd<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token keyword">return</span> <span class="token number">0</span><span class="token punctuation">;</span>
+<span class="token punctuation">&#125;</span></code></pre>
+
+<h4 id="tcp服务器通信流程"><a href="#tcp服务器通信流程" class="headerlink" title="tcp服务器通信流程"></a>tcp服务器通信流程</h4><p><img src="/2025/07/16/Linux-Network%20Programming/7.png" alt="7" loading="lazy"></p>
+<p>对于得到一个新的连接套接字（提取连接部分），服务器是要接受多个客户端连接的，所以先连接上，再分配新的连接和客户端通信。</p>
+<p><img src="/2025/07/16/Linux-Network%20Programming/8.png" alt="8" loading="lazy"></p>
+<h4 id="bind函数"><a href="#bind函数" class="headerlink" title="bind函数"></a>bind函数</h4><p>给套接字绑定固定的端口和ip</p>
+<pre class="language-c" data-language="c"><code class="language-c"><span class="token macro property"><span class="token directive-hash">#</span><span class="token directive keyword">include</span> <span class="token string">&lt;sys/socket.h></span></span>
+
+<span class="token keyword">int</span> <span class="token function">bind</span><span class="token punctuation">(</span><span class="token keyword">int</span> sockfd<span class="token punctuation">,</span>
+  <span class="token keyword">const</span> <span class="token keyword">struct</span> <span class="token class-name">sockaddr</span> <span class="token operator">*</span> addr<span class="token punctuation">,</span>
+    <span class="token class-name">socklen_t</span> addrlen<span class="token punctuation">)</span><span class="token punctuation">;</span>
+功能：给套接字绑定固定的端口和ip
+参数：
+    sockfd<span class="token operator">:</span>套接字
+    addr<span class="token operator">:</span>ipv4套接字结构体地址
+    addrlen<span class="token operator">:</span>ipv4结构体的大小
+返回值：
+    成功：返回<span class="token number">0</span>
+    失败：返回<span class="token operator">-</span><span class="token number">1</span></code></pre>
+
+<h4 id="listen函数"><a href="#listen函数" class="headerlink" title="listen函数"></a>listen函数</h4><pre class="language-c" data-language="c"><code class="language-c"><span class="token macro property"><span class="token directive-hash">#</span><span class="token directive keyword">include</span> <span class="token string">&lt;sys/socket.h></span></span>
+
+<span class="token keyword">int</span> <span class="token function">listen</span><span class="token punctuation">(</span><span class="token keyword">int</span> sockfd<span class="token punctuation">,</span> <span class="token keyword">int</span> backlog<span class="token punctuation">)</span><span class="token punctuation">;</span>
+功能：
+    监听套接字
+参数：
+    sockfd<span class="token operator">:</span>套接字
+    backlog<span class="token operator">:</span>已完成连接队列和未完成连接队列之和的最大值 一般写<span class="token number">128</span></code></pre>
+
+<h4 id="accept函数"><a href="#accept函数" class="headerlink" title="accept函数"></a>accept函数</h4><pre class="language-c" data-language="c"><code class="language-c"><span class="token macro property"><span class="token directive-hash">#</span><span class="token directive keyword">include</span> <span class="token string">&lt;sys/socket.h></span></span>
+
+<span class="token keyword">int</span> <span class="token function">accept</span><span class="token punctuation">(</span><span class="token keyword">int</span> sockfd<span class="token punctuation">,</span> <span class="token keyword">struct</span> <span class="token class-name">sockaddr</span> <span class="token operator">*</span> _Nullable restrict addr<span class="token punctuation">,</span>
+  <span class="token class-name">socklen_t</span> <span class="token operator">*</span> _Nullable restrict addrlen<span class="token punctuation">)</span><span class="token punctuation">;</span>
+功能：
+    从已完成连接队列提取新的连接，如果没有新的连接，accept会阻塞。
+参数：
+    sockfd<span class="token operator">:</span>套接字
+    addr<span class="token operator">:</span>获取的客户端的ip和端口信息 ipv4套接字结构体
+    addrlen<span class="token operator">:</span>ipv4套接字结构体的大小的地址
+返回值：
+    新的已连接套接字的文件描述符</code></pre>
+
+<h4 id="tcp服务器代码"><a href="#tcp服务器代码" class="headerlink" title="tcp服务器代码"></a>tcp服务器代码</h4><pre class="language-c" data-language="c"><code class="language-c"></code></pre>
+
 </div></section><div id="reward-container"><span class="hty-icon-button button-glow" id="reward-button" title="打赏" onclick="var qr = document.getElementById(&quot;qr&quot;); qr.style.display = (qr.style.display === &quot;none&quot;) ? &quot;block&quot; : &quot;none&quot;;"><span class="icon iconify" data-icon="ri:hand-coin-line"></span></span><div id="reward-comment">能白嫖就白嫖</div><div id="qr" style="display:none;"><div style="display:inline-block"><a href="/images/wechatpay.png"><img loading="lazy" src="/images/wechatpay.png" alt="微信支付" title="微信支付"></a><div><span style="color:#2DC100"><span class="icon iconify" data-icon="ri:wechat-pay-line"></span></span></div></div></div></div><ul class="post-copyright"><li class="post-copyright-author"><strong>本文作者：</strong>YuStone</li><li class="post-copyright-link"><strong>本文链接：</strong><a href="http://yustonerain.top/2025/07/16/Linux-Network%20Programming.html" title="Linux网络编程">http://yustonerain.top/2025/07/16/Linux-Network%20Programming.html</a></li><li class="post-copyright-license"><strong>版权声明：</strong>本博客所有文章除特别声明外，均默认采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh" target="_blank" rel="noopener" title="CC BY-NC-SA 4.0 "><span class="icon iconify" data-icon="ri:creative-commons-line"></span><span class="icon iconify" data-icon="ri:creative-commons-by-line"></span><span class="icon iconify" data-icon="ri:creative-commons-nc-line"></span><span class="icon iconify" data-icon="ri:creative-commons-sa-line"></span></a> 许可协议。</li></ul></article><div class="post-nav"><div class="post-nav-item"></div><div class="post-nav-item"><a class="post-nav-next" href="/2025/07/03/mysql%E8%BF%9E%E6%8E%A5%E6%B1%A0.html" rel="next" title="mysql连接池"><span class="post-nav-text">mysql连接池</span><span class="icon iconify" data-icon="ri:arrow-right-s-line"></span></a></div></div></div><div class="hty-card" id="comment"><div class="comment-tooltip text-center"><span>若您想及时得到回复提醒，可以直接联系我</span><br></div><style>.utterances {
   max-width: 100%;
 }</style><script src="https://utteranc.es/client.js" repo="YuStone0416/YuStone0416.github.io" issue-term="pathname" theme="github-light" crossorigin="anonymous" async></script></div></main><footer class="sidebar-translate" id="footer"><div class="copyright"><span>&copy; 2025 </span><a class="with-love" id="animate" href="http://yustonerain.top" title="YuStone Blog"><span class="icon iconify" data-icon="ri:cloud-line"></span></a><span class="author"> YuStone</span></div><div class="powered"><span>由 <a href="https://hexo.io" target="_blank" rel="noopener">Hexo</a> 驱动 v7.3.0</span><span class="footer-separator">|</span><span>主题 - <a rel="noopener" href="https://github.com/YunYouJun/hexo-theme-yun" target="_blank"><span>Yun</span></a> v1.10.11</span></div><div class="live-time"><span>感谢陪伴</span><span id="display_live_time"></span><span class="moe-text">(●'◡'●)</span><script>function blog_live_time() {
