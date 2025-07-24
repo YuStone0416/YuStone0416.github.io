@@ -14,7 +14,7 @@ notice:
   content: 欢迎光临我的世界
 bg_image:
   enable: true
-  url: /images/background.png
+  url: /images/back1.png
   # dark:
   blur: 0px # 设置背景模糊程度
   opacity: 1
