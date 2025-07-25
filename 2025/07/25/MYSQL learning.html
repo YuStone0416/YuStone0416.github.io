@@ -1,0 +1,816 @@
+<!DOCTYPE html><html lang="zh-CN"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="theme-color" content="#0078E7"><meta name="author" content="YuStone"><meta name="copyright" content="YuStone"><meta name="generator" content="Hexo 7.3.0"><meta name="theme" content="hexo-theme-yun"><title>MYSQL learning | YuStone Blogs</title><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@900&amp;display=swap" media="print" onload="this.media='all'"><link rel="stylesheet" href="https://fastly.jsdelivr.net/npm/star-markdown-css@0.4.1/dist/yun/yun-markdown.min.css"><link rel="stylesheet" href="https://fastly.jsdelivr.net/npm/prism-theme-vars/base.css"><script src="https://fastly.jsdelivr.net/npm/scrollreveal/dist/scrollreveal.min.js" defer></script><script>function initScrollReveal() {
+  [".post-card",".markdown-body img"].forEach((target)=> {
+    ScrollReveal().reveal(target);
+  })
+}
+document.addEventListener("DOMContentLoaded", initScrollReveal);
+document.addEventListener("pjax:success", initScrollReveal);
+</script><link rel="icon" type="image/png" href="/favicon1.ico"><link rel="mask-icon" href="/favicon1.ico" color="#0078E7"><link rel="preload" href="/css/hexo-theme-yun.css" as="style"><link rel="prefetch" href="/js/sidebar.js" as="script"><link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin><link rel="preconnect" href="https://fastly.jsdelivr.net/npm/" crossorigin><script id="yun-config">
+    window.Yun = {}
+    window.CONFIG = {"hostname":"yustonerain.top","root":"/","title":"跟着梦走过时光","version":"1.10.11","mode":"auto","copycode":true,"page":{"isPost":true},"i18n":{"placeholder":"搜索...","empty":"找不到您查询的内容: ${query}","hits":"找到 ${hits} 条结果","hits_time":"找到 ${hits} 条结果（用时 ${time} 毫秒）"},"anonymous_image":"https://cdn.yunyoujun.cn/img/avatar/none.jpg","say":{"api":"https://el-bot-api.vercel.app/api/words/young"},"local_search":{"path":"/search.json"},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"vendors":{"host":"https://fastly.jsdelivr.net/npm/","darken":"https://fastly.jsdelivr.net/npm/darken@1.5.0"}};
+  </script><link rel="stylesheet" href="/css/hexo-theme-yun.css"><script src="/js/hexo-theme-yun.js" type="module"></script><link rel="alternate" href="/atom.xml" title="YuStone Blogs" type="application/atom+xml"><link rel="stylesheet" href="/css/custom.css"><meta name="description" content="MySQL基础MySQL介绍 关系型数据库(有行有列) SQLite(进程内的db)  NOSQL(非关系数据库)键值对（key-value）:redis leveldb rocksdb 大数据分析列式数据库 Hbase 大家熟悉的关系型数据库还有SQL Server,Oracle,MySQL,MariaDB,DB2 MySQL区别于其他关系型数据库最大的一个特点就是支持插件式的存储引擎，支持如I">
+<meta property="og:type" content="article">
+<meta property="og:title" content="MYSQL learning">
+<meta property="og:url" content="http://yustonerain.top/2025/07/25/MYSQL%20learning.html">
+<meta property="og:site_name" content="YuStone Blogs">
+<meta property="og:description" content="MySQL基础MySQL介绍 关系型数据库(有行有列) SQLite(进程内的db)  NOSQL(非关系数据库)键值对（key-value）:redis leveldb rocksdb 大数据分析列式数据库 Hbase 大家熟悉的关系型数据库还有SQL Server,Oracle,MySQL,MariaDB,DB2 MySQL区别于其他关系型数据库最大的一个特点就是支持插件式的存储引擎，支持如I">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://yustonerain.top/2025/07/25/MYSQL%20learning/1.png">
+<meta property="article:published_time" content="2025-07-25T07:46:07.000Z">
+<meta property="article:modified_time" content="2025-07-25T13:26:16.000Z">
+<meta property="article:author" content="YuStone">
+<meta property="article:tag" content="MYSQL learning">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://yustonerain.top/2025/07/25/MYSQL%20learning/1.png"><script>(function() {
+  if (CONFIG.mode !== 'auto') return
+  const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches
+  const setting = localStorage.getItem('darken-mode') || 'auto'
+  if (setting === 'dark' || (prefersDark && setting !== 'light'))
+    document.documentElement.classList.toggle('dark', true)
+})()</script></head><body><script src="https://code.iconify.design/2/2.1.1/iconify.min.js"></script><script>// Define global variable
+IconifyProviders = {
+  // Empty prefix: overwrite default API provider configuration
+  '': {
+    // Use custom API first, use Iconify public API as backup
+    resources: [
+        'https://api.iconify.design',
+    ],
+    // Wait for 1 second before switching API hosts
+    rotate: 1000,
+  },
+};</script><div class="container"><a class="sidebar-toggle hty-icon-button" id="menu-btn"><div class="hamburger hamburger--spin" type="button"><span class="hamburger-box"><span class="hamburger-inner"></span></span></div></a><div class="sidebar-toggle sidebar-overlay"></div><aside class="sidebar"><script src="/js/sidebar.js" type="module"></script><ul class="sidebar-nav"><li class="sidebar-nav-item sidebar-nav-toc hty-icon-button sidebar-nav-active" data-target="post-toc-wrap" title="文章目录"><span class="icon iconify" data-icon="ri:list-ordered"></span></li><li class="sidebar-nav-item sidebar-nav-overview hty-icon-button" data-target="site-overview-wrap" title="站点概览"><span class="icon iconify" data-icon="ri:passport-line"></span></li></ul><div class="sidebar-panel" id="site-overview-wrap"><div class="site-info fix-top"><a class="site-author-avatar" href="/about/" title="YuStone"><img width="96" loading="lazy" src="/images/avatar.jpg" alt="YuStone"><span class="site-author-status" title="四季花开">☺️</span></a><div class="site-author-name"><a href="/about/">YuStone</a></div><span class="site-name">YuStone Blogs</span><sub class="site-subtitle">the world</sub><div class="site-description">圭璋学习总结</div></div><nav class="site-state"><a class="site-state-item hty-icon-button icon-home" href="/" title="首页"><span class="site-state-item-icon"><span class="icon iconify" data-icon="ri:home-4-line"></span></span></a><div class="site-state-item"><a href="/archives/" title="归档"><span class="site-state-item-icon"><span class="icon iconify" data-icon="ri:archive-line"></span></span><span class="site-state-item-count">6</span></a></div><div class="site-state-item"><a href="/categories/" title="分类"><span class="site-state-item-icon"><span class="icon iconify" data-icon="ri:folder-2-line"></span></span><span class="site-state-item-count">6</span></a></div><div class="site-state-item"><a href="/tags/" title="标签"><span class="site-state-item-icon"><span class="icon iconify" data-icon="ri:price-tag-3-line"></span></span><span class="site-state-item-count">6</span></a></div><a class="site-state-item hty-icon-button" target="_blank" rel="noopener" href="https://yun.yunyoujun.cn" title="文档"><span class="site-state-item-icon"><span class="icon iconify" data-icon="ri:settings-line"></span></span></a></nav><hr style="margin-bottom:0.5rem"><div class="links-of-author"><a class="links-of-author-item hty-icon-button" rel="noopener" href="/atom.xml" title="RSS" target="_blank" style="color:orange"><span class="icon iconify" data-icon="ri:rss-line"></span></a><a class="links-of-author-item hty-icon-button" rel="noopener" href="https://github.com/YuStone0416" title="GitHub" target="_blank" style="color:#181717"><span class="icon iconify" data-icon="ri:github-line"></span></a><a class="links-of-author-item hty-icon-button" rel="noopener" href="mailto:2754523646@qq.com" title="E-Mail" target="_blank" style="color:#8E71C1"><span class="icon iconify" data-icon="ri:mail-line"></span></a><a class="links-of-author-item hty-icon-button" rel="noopener" href="https://space.bilibili.com/436681227?spm_id_from=333.1387.0.0" title="哔哩哔哩" target="_blank" style="color:#FF8EB3"><span class="icon iconify" data-icon="ri:bilibili-line"></span></a></div><hr style="margin:0.5rem 1rem"><div class="links"><a class="links-item hty-icon-button" href="/links/" title="我的小伙伴们" style="color:dodgerblue"><span class="icon iconify" data-icon="ri:genderless-line"></span></a></div><br><a class="links-item hty-icon-button" id="toggle-mode-btn" href="javascript:;" title="Mode" style="color: #f1cb64"><span class="icon iconify" data-icon="ri:contrast-2-line"></span></a></div><div class="sidebar-panel sidebar-panel-active" id="post-toc-wrap"><div class="post-toc"><div class="post-toc-content"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#MySQL%E5%9F%BA%E7%A1%80"><span class="toc-number">1.</span> <span class="toc-text">MySQL基础</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#MySQL%E4%BB%8B%E7%BB%8D"><span class="toc-number">1.1.</span> <span class="toc-text">MySQL介绍</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#MySQL%E6%95%B0%E6%8D%AE%E7%B1%BB%E5%9E%8B"><span class="toc-number">1.2.</span> <span class="toc-text">MySQL数据类型</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%95%B4%E6%95%B0%E7%B1%BB%E5%9E%8B%EF%BC%88Integer-Types%EF%BC%89"><span class="toc-number">1.2.1.</span> <span class="toc-text">整数类型（Integer Types）</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%B5%AE%E7%82%B9%E4%B8%8E%E5%AE%9A%E7%82%B9%E7%B1%BB%E5%9E%8B%EF%BC%88Floating-Point-and-Fixed-Point-Types%EF%BC%89"><span class="toc-number">1.2.2.</span> <span class="toc-text">浮点与定点类型（Floating-Point and Fixed-Point Types）</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%AD%97%E7%AC%A6%E5%9E%8B%E7%B1%BB%E5%9E%8B"><span class="toc-number">1.2.3.</span> <span class="toc-text">字符型类型</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%97%A5%E6%9C%9F%E5%92%8C%E6%97%B6%E9%97%B4%E7%B1%BB%E5%9E%8B"><span class="toc-number">1.2.4.</span> <span class="toc-text">日期和时间类型</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%9E%9A%E4%B8%BE%E4%B8%8E%E9%9B%86%E5%90%88%E7%B1%BB%E5%9E%8B%EF%BC%88%E5%8F%AF%E5%AD%98%E5%82%A8%E9%A2%84%E5%AE%9A%E4%B9%89%E5%AD%97%E7%AC%A6%E4%B8%B2%EF%BC%89"><span class="toc-number">1.2.5.</span> <span class="toc-text">枚举与集合类型（可存储预定义字符串）</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#MySQL%E8%BF%90%E7%AE%97%E7%AC%A6"><span class="toc-number">1.3.</span> <span class="toc-text">MySQL运算符</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E7%AE%97%E6%95%B0%E8%BF%90%E7%AE%97%E7%AC%A6"><span class="toc-number">1.3.1.</span> <span class="toc-text">算数运算符</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E9%80%BB%E8%BE%91%E8%BF%90%E7%AE%97%E7%AC%A6"><span class="toc-number">1.3.2.</span> <span class="toc-text">逻辑运算符</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%AF%94%E8%BE%83%E8%BF%90%E7%AE%97%E7%AC%A6"><span class="toc-number">1.3.3.</span> <span class="toc-text">比较运算符</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#MySQL%E5%B8%B8%E7%94%A8%E5%87%BD%E6%95%B0"><span class="toc-number">1.4.</span> <span class="toc-text">MySQL常用函数</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#MySQL%E5%AE%8C%E6%95%B4%E6%80%A7%E7%BA%A6%E6%9D%9F"><span class="toc-number">1.5.</span> <span class="toc-text">MySQL完整性约束</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E4%B8%BB%E9%94%AE%E7%BA%A6%E6%9D%9F"><span class="toc-number">1.5.1.</span> <span class="toc-text">主键约束</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E8%87%AA%E5%A2%9E%E9%94%AE%E7%BA%A6%E6%9D%9F"><span class="toc-number">1.5.2.</span> <span class="toc-text">自增键约束</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%94%AF%E4%B8%80%E9%94%AE%E7%BA%A6%E6%9D%9F"><span class="toc-number">1.5.3.</span> <span class="toc-text">唯一键约束</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E9%9D%9E%E7%A9%BA%E7%BA%A6%E6%9D%9F"><span class="toc-number">1.5.4.</span> <span class="toc-text">非空约束</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E9%BB%98%E8%AE%A4%E5%80%BC%E7%BA%A6%E6%9D%9F"><span class="toc-number">1.5.5.</span> <span class="toc-text">默认值约束</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%A4%96%E9%94%AE%E7%BA%A6%E6%9D%9F"><span class="toc-number">1.5.6.</span> <span class="toc-text">外键约束</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%85%B3%E7%B3%BB%E5%9E%8B%E6%95%B0%E6%8D%AE%E5%BA%93%E8%A1%A8%E8%AE%BE%E8%AE%A1"><span class="toc-number">1.6.</span> <span class="toc-text">关系型数据库表设计</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E4%B8%80%E5%AF%B9%E4%B8%80"><span class="toc-number">1.6.1.</span> <span class="toc-text">一对一</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E4%B8%80%E5%AF%B9%E5%A4%9A"><span class="toc-number">1.6.2.</span> <span class="toc-text">一对多</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%A4%9A%E5%AF%B9%E5%A4%9A"><span class="toc-number">1.6.3.</span> <span class="toc-text">多对多</span></a></li></ol></li></ol></li></ol></div></div></div></aside><main class="sidebar-translate" id="content"><div id="post"><article class="hty-card post-block" itemscope itemtype="https://schema.org/Article" style="--smc-primary:#0078E7;"><link itemprop="mainEntityOfPage" href="http://yustonerain.top/2025/07/25/MYSQL%20learning.html"><span hidden itemprop="author" itemscope itemtype="https://schema.org/Person"><meta itemprop="name" content="YuStone"><meta itemprop="description"></span><span hidden itemprop="publisher" itemscope itemtype="https://schema.org/Organization"><meta itemprop="name" content="YuStone Blogs"></span><header class="post-header"><h1 class="post-title" itemprop="name headline">MYSQL learning</h1><div class="post-meta"><div class="post-time"><span class="post-meta-item-icon"><span class="icon iconify" data-icon="ri:calendar-line"></span></span> <time title="创建时间：2025-07-25 15:46:07" itemprop="dateCreated datePublished" datetime="2025-07-25T15:46:07+08:00">2025-07-25</time></div><div class="post-classify"><span class="post-category"> <span class="post-meta-item-icon" style="margin-right:3px;"><span class="icon iconify" data-icon="ri:folder-line"></span></span><span itemprop="about" itemscope itemtype="https://schema.org/Thing"><a class="category-item" href="/categories/MYSQL-learning/" style="--text-color:var(--hty-text-color)" itemprop="url" rel="index"><span itemprop="text">MYSQL learning</span></a></span></span><span class="post-tag"><span class="post-meta-divider">-</span><a class="tag-item" href="/tags/MYSQL-learning/" style="--text-color:var(--hty-text-color)"><span class="post-meta-item-icon"><span class="icon iconify" data-icon="ri:price-tag-3-line"></span></span><span class="tag-name">MYSQL learning</span></a></span></div></div></header><section class="post-body" itemprop="articleBody"><div class="post-content markdown-body"><h2 id="MySQL基础"><a href="#MySQL基础" class="headerlink" title="MySQL基础"></a>MySQL基础</h2><h3 id="MySQL介绍"><a href="#MySQL介绍" class="headerlink" title="MySQL介绍"></a>MySQL介绍</h3><ol>
+<li>关系型数据库(<strong>有行有列</strong>) <strong>SQLite(进程内的db)</strong>  NOSQL(<strong>非关系数据库)键值对</strong>（key-value）:redis leveldb rocksdb 大数据分析列式数据库 Hbase</li>
+<li>大家熟悉的关系型数据库还有SQL Server,Oracle,MySQL,MariaDB,DB2</li>
+<li>MySQL区别于其他关系型数据库最大的一个特点就是<strong>支持插件式的存储引擎</strong>，支持如<strong>InnoDB,MyISAM,Memory</strong>等</li>
+<li>MySQL设计成<strong>C&#x2F;S模型</strong></li>
+<li>MySQL的服务器模型采用的是<strong>I&#x2F;O复用+可伸缩的线程池</strong>，是实现网络服务器的经典模型。用的是<strong>select+线程池。</strong>这里为什么不设计成epoll+线程池，或者更高效的模型，<strong>用select,因为网络I&#x2F;O快，但是MySQL还需要把数据存储到磁盘，磁盘I&#x2F;O速度是比较慢的，所以速度匹配即可，没必要做那么快</strong>。</li>
+</ol>
+<p><img src="/2025/07/25/MYSQL%20learning/1.png" alt="1" loading="lazy"></p>
+<p><strong>Windows下MySQL安装目录中有一个my.ini文件，可以做一些配置调优。在data文件夹中，每建立一个数据库会有一个文件夹与其对应。</strong></p>
+<p><strong>Linux下mysql的配置文件 &#x2F;etc&#x2F;my.cnf，没有可以自己创建</strong></p>
+<pre class="language-bash" data-language="bash"><code class="language-bash"><span class="token comment">#在root用户下</span>
+<span class="token function">netstat</span> <span class="token parameter variable">-tanp</span> <span class="token comment">#查看mysql是否启动,这个命令主要显示当前系统的所有 TCP 连接及其状态，并显示对应的进程信息。</span>
+<span class="token function">service</span> mysql start <span class="token comment">#启动mysql</span></code></pre>
+
+<h3 id="MySQL数据类型"><a href="#MySQL数据类型" class="headerlink" title="MySQL数据类型"></a>MySQL数据类型</h3><p><strong>MySQL数据类型定义了数据的大小范围，因此使用时选择合适的类型，不仅会降低表占用的磁盘空间，间接减少了磁盘I&#x2F;O的次数，提高了表的访问效率，而且索引的效率也和数据的类型息息相关。</strong></p>
+<h4 id="整数类型（Integer-Types）"><a href="#整数类型（Integer-Types）" class="headerlink" title="整数类型（Integer Types）"></a><strong>整数类型（Integer Types）</strong></h4><table>
+<thead>
+<tr>
+<th>类型</th>
+<th>大小（字节）</th>
+<th>范围（有符号）</th>
+<th>范围（无符号）</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>TINYINT</code></td>
+<td>1</td>
+<td>-128 到 127</td>
+<td>0 到 255</td>
+<td>很小的整数</td>
+</tr>
+<tr>
+<td><code>SMALLINT</code></td>
+<td>2</td>
+<td>-32,768 到 32,767</td>
+<td>0 到 65,535</td>
+<td>小整数</td>
+</tr>
+<tr>
+<td><code>MEDIUMINT</code></td>
+<td>3</td>
+<td>-8,388,608 到 8,388,607</td>
+<td>0 到 16,777,215</td>
+<td>中等大小的整数</td>
+</tr>
+<tr>
+<td><code>INT</code> 或 <code>INTEGER</code></td>
+<td>4</td>
+<td>-2,147,483,648 到 2,147,483,647</td>
+<td>0 到 4,294,967,295</td>
+<td>常用整数类型</td>
+</tr>
+<tr>
+<td><code>BIGINT</code></td>
+<td>8</td>
+<td>-9,223,372,036,854,775,808 到 9,223,372,036,854,775,807</td>
+<td>0 到 18,446,744,073,709,551,615</td>
+<td>大整数</td>
+</tr>
+</tbody></table>
+<p>可加上 <code>UNSIGNED</code> 修饰符来存储更大的非负整数</p>
+<p>age INT(9)：整型占用内存的大小是固定的，和具体的类型是强相关的。(M)只是代表整数显示的宽度</p>
+<h4 id="浮点与定点类型（Floating-Point-and-Fixed-Point-Types）"><a href="#浮点与定点类型（Floating-Point-and-Fixed-Point-Types）" class="headerlink" title="浮点与定点类型（Floating-Point and Fixed-Point Types）"></a><strong>浮点与定点类型（Floating-Point and Fixed-Point Types）</strong></h4><p><strong>推荐DECIMAL,FLOAT和DOUBLE数据越界不会报错，DECIMAL会报错</strong></p>
+<table>
+<thead>
+<tr>
+<th>类型</th>
+<th>描述</th>
+<th>范围和精度</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>FLOAT(M,D)</code></td>
+<td>单精度浮点数</td>
+<td>近似值，4字节，M是总位数，D是小数位数 7位精度</td>
+</tr>
+<tr>
+<td><code>DOUBLE(M,D)</code> 或 <code>REAL(M,D)</code></td>
+<td>双精度浮点数</td>
+<td>近似值，8字节，M是总位数，D是小数位数  15位精度</td>
+</tr>
+<tr>
+<td><code>DECIMAL(M,D)</code> 或 <code>NUMERIC(M,D)</code></td>
+<td>定点数</td>
+<td>精确值，适合存储货币等对精度要求高的场景</td>
+</tr>
+</tbody></table>
+<ul>
+<li><code>M</code>: 精度（总位数），<code>D</code>: 小数位数</li>
+<li><code>DECIMAL</code> 使用字符串进行存储，防止浮点误差</li>
+<li>如果 <code>M</code> 和 <code>D</code> 不指定，MySQL 默认为 <code>DECIMAL(10,0)</code></li>
+</ul>
+<h4 id="字符型类型"><a href="#字符型类型" class="headerlink" title="字符型类型"></a><strong>字符型类型</strong></h4><table>
+<thead>
+<tr>
+<th>类型</th>
+<th>最大长度</th>
+<th>是否定长</th>
+<th>是否可设默认值</th>
+<th>特点说明</th>
+<th>典型用途</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>CHAR(M)</code></td>
+<td>最多 255 字符</td>
+<td>✅</td>
+<td>✅</td>
+<td>固定长度，右侧自动补空格</td>
+<td>固定长度：手机号、身份证</td>
+</tr>
+<tr>
+<td><code>VARCHAR(M)</code></td>
+<td>取决于字符集（如 utf8mb4 最多 21844）</td>
+<td>❌</td>
+<td>✅</td>
+<td>变长字符串，节省空间，需额外1-2字节</td>
+<td>姓名、标题、备注</td>
+</tr>
+<tr>
+<td><code>TINYTEXT</code></td>
+<td>255 字节</td>
+<td>❌</td>
+<td>❌</td>
+<td>极短文本，不能设默认值</td>
+<td>简短评论、小段文字</td>
+</tr>
+<tr>
+<td><code>TEXT</code></td>
+<td>64 KB</td>
+<td>❌</td>
+<td>❌</td>
+<td>常用文本类型，不能设默认值</td>
+<td>文章正文、用户简介</td>
+</tr>
+<tr>
+<td><code>MEDIUMTEXT</code></td>
+<td>16 MB</td>
+<td>❌</td>
+<td>❌</td>
+<td>中大型文本</td>
+<td>博文、报告内容</td>
+</tr>
+<tr>
+<td><code>LONGTEXT</code></td>
+<td>4 GB</td>
+<td>❌</td>
+<td>❌</td>
+<td>超大文本</td>
+<td>大文档、日志</td>
+</tr>
+</tbody></table>
+<table>
+<thead>
+<tr>
+<th>类型</th>
+<th>最大长度</th>
+<th>特点说明</th>
+<th>用途举例</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>BINARY(M)</code></td>
+<td>最多 255 字节</td>
+<td>类似 <code>CHAR</code>，存储二进制数据，定长</td>
+<td>加密哈希、固定密钥存储</td>
+</tr>
+<tr>
+<td><code>VARBINARY(M)</code></td>
+<td>最多 65535 字节</td>
+<td>类似 <code>VARCHAR</code>，变长二进制字符串</td>
+<td>二进制令牌、签名</td>
+</tr>
+<tr>
+<td><code>TINYBLOB</code></td>
+<td>255 字节</td>
+<td>与 <code>TINYTEXT</code> 类似，但用于二进制数据</td>
+<td>小图标、缩略图</td>
+</tr>
+<tr>
+<td><code>BLOB</code></td>
+<td>64 KB</td>
+<td>与 <code>TEXT</code> 类似，用于二进制内容</td>
+<td>图像、音频、文件</td>
+</tr>
+<tr>
+<td><code>MEDIUMBLOB</code></td>
+<td>16 MB</td>
+<td>中等大小二进制对象</td>
+<td>视频、音频中等资源</td>
+</tr>
+<tr>
+<td><code>LONGBLOB</code></td>
+<td>4 GB</td>
+<td>超大二进制对象</td>
+<td>文件存储、大附件</td>
+</tr>
+</tbody></table>
+<h4 id="日期和时间类型"><a href="#日期和时间类型" class="headerlink" title="日期和时间类型"></a><strong>日期和时间类型</strong></h4><table>
+<thead>
+<tr>
+<th>类型</th>
+<th>占用空间</th>
+<th>范围&#x2F;格式</th>
+<th>精度</th>
+<th>用途示例</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>DATE</code></td>
+<td>3 字节</td>
+<td><code>1000-01-01</code> 到 <code>9999-12-31</code></td>
+<td>到“日”</td>
+<td>出生日期、订单日期</td>
+</tr>
+<tr>
+<td><code>TIME</code></td>
+<td>3 字节</td>
+<td><code>-838:59:59</code> 到 <code>838:59:59</code></td>
+<td>到“秒”</td>
+<td>持续时间、工时</td>
+</tr>
+<tr>
+<td><code>DATETIME</code></td>
+<td>8 字节</td>
+<td><code>1000-01-01 00:00:00</code> 到 <code>9999-12-31 23:59:59</code></td>
+<td>到“秒”</td>
+<td>记录某一精确时刻</td>
+</tr>
+<tr>
+<td><code>TIMESTAMP</code></td>
+<td>4 字节</td>
+<td><code>1970-01-01 00:00:01</code> UTC 到 <code>2038-01-19 03:14:07</code></td>
+<td>到“秒”</td>
+<td>创建时间、修改时间</td>
+</tr>
+<tr>
+<td><code>YEAR</code></td>
+<td>1 字节</td>
+<td><code>1901</code> 到 <code>2155</code></td>
+<td>到“年”</td>
+<td>出厂年份、学年</td>
+</tr>
+</tbody></table>
+<h4 id="枚举与集合类型（可存储预定义字符串）"><a href="#枚举与集合类型（可存储预定义字符串）" class="headerlink" title="枚举与集合类型（可存储预定义字符串）"></a>枚举与集合类型（可存储预定义字符串）</h4><table>
+<thead>
+<tr>
+<th>类型</th>
+<th>特点说明</th>
+<th>示例用途</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>ENUM(...)</code></td>
+<td>从固定字符串列表中选一个值，实际存储为整数索引（1字节）</td>
+<td>性别、状态（如 <code>&#39;男&#39;,&#39;女&#39;</code>、<code>&#39;启用&#39;,&#39;禁用&#39;</code>）</td>
+</tr>
+<tr>
+<td><code>SET(...)</code></td>
+<td>可多选，存储为位图（1~8字节），最多支持 64 个选项</td>
+<td>标签、用户权限、兴趣爱好</td>
+</tr>
+</tbody></table>
+<h3 id="MySQL运算符"><a href="#MySQL运算符" class="headerlink" title="MySQL运算符"></a>MySQL运算符</h3><h4 id="算数运算符"><a href="#算数运算符" class="headerlink" title="算数运算符"></a>算数运算符</h4><table>
+<thead>
+<tr>
+<th>运算符</th>
+<th>含义</th>
+<th>示例</th>
+<th>结果</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>+</code></td>
+<td>加法</td>
+<td><code>5 + 3</code></td>
+<td><code>8</code></td>
+</tr>
+<tr>
+<td><code>-</code></td>
+<td>减法</td>
+<td><code>5 - 3</code></td>
+<td><code>2</code></td>
+</tr>
+<tr>
+<td><code>*</code></td>
+<td>乘法</td>
+<td><code>5 * 3</code></td>
+<td><code>15</code></td>
+</tr>
+<tr>
+<td><code>/</code></td>
+<td>除法</td>
+<td><code>5 / 2</code></td>
+<td><code>2.5</code></td>
+</tr>
+<tr>
+<td><code>DIV</code></td>
+<td>整除</td>
+<td><code>5 DIV 2</code></td>
+<td><code>2</code></td>
+</tr>
+<tr>
+<td><code>%</code></td>
+<td>取模（余数）</td>
+<td><code>5 % 2</code> 或 <code>5 MOD 2</code></td>
+<td><code>1</code></td>
+</tr>
+<tr>
+<td><code>MOD</code></td>
+<td>同 <code>%</code></td>
+<td><code>5 MOD 3</code></td>
+<td><code>2</code></td>
+</tr>
+</tbody></table>
+<h4 id="逻辑运算符"><a href="#逻辑运算符" class="headerlink" title="逻辑运算符"></a>逻辑运算符</h4><table>
+<thead>
+<tr>
+<th>运算符</th>
+<th>名称</th>
+<th>示例</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>AND</code></td>
+<td>逻辑与</td>
+<td><code>age &gt; 18 AND gender = &#39;M&#39;</code></td>
+<td>两个条件都为真，结果才为真</td>
+</tr>
+<tr>
+<td><code>OR</code></td>
+<td>逻辑或</td>
+<td><code>score &gt; 90 OR grade = &#39;A&#39;</code></td>
+<td>至少一个条件为真，结果为真</td>
+</tr>
+<tr>
+<td><code>NOT</code></td>
+<td>逻辑非</td>
+<td><code>NOT (age &lt; 18)</code></td>
+<td>取反，原来为真变为假，反之亦然</td>
+</tr>
+<tr>
+<td><code>XOR</code></td>
+<td>逻辑异或</td>
+<td><code>TRUE XOR FALSE</code></td>
+<td>仅当两个值不同，结果才为真</td>
+</tr>
+<tr>
+<td><code>!</code></td>
+<td>逻辑非（简写）</td>
+<td><code>!is_deleted</code></td>
+<td>等价于 <code>NOT is_deleted</code></td>
+</tr>
+<tr>
+<td><code>&amp;&amp;</code></td>
+<td>与（MySQL兼容）</td>
+<td><code>a &gt; 5 &amp;&amp; b &lt; 10</code></td>
+<td>等价于 <code>AND</code></td>
+</tr>
+<tr>
+<td>&#96;</td>
+<td></td>
+<td>&#96;</td>
+<td>逻辑或</td>
+</tr>
+</tbody></table>
+<h4 id="比较运算符"><a href="#比较运算符" class="headerlink" title="比较运算符"></a>比较运算符</h4><table>
+<thead>
+<tr>
+<th>运算符</th>
+<th>含义</th>
+<th>示例</th>
+<th>结果</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>=</code></td>
+<td>等于</td>
+<td><code>age = 18</code></td>
+<td><code>true</code> 或 <code>false</code></td>
+</tr>
+<tr>
+<td><code>!=</code> 或 <code>&lt;&gt;</code></td>
+<td>不等于</td>
+<td><code>name != &#39;Tom&#39;</code></td>
+<td><code>true</code> 或 <code>false</code></td>
+</tr>
+<tr>
+<td><code>&gt;</code></td>
+<td>大于</td>
+<td><code>score &gt; 60</code></td>
+<td><code>true</code> 或 <code>false</code></td>
+</tr>
+<tr>
+<td><code>&lt;</code></td>
+<td>小于</td>
+<td><code>score &lt; 60</code></td>
+<td><code>true</code> 或 <code>false</code></td>
+</tr>
+<tr>
+<td><code>&gt;=</code></td>
+<td>大于等于</td>
+<td><code>score &gt;= 90</code></td>
+<td><code>true</code> 或 <code>false</code></td>
+</tr>
+<tr>
+<td><code>&lt;=</code></td>
+<td>小于等于</td>
+<td><code>score &lt;= 100</code></td>
+<td><code>true</code> 或 <code>false</code></td>
+</tr>
+<tr>
+<td><code>&lt;=&gt;</code></td>
+<td>安全等于（支持 NULL）</td>
+<td><code>a &lt;=&gt; NULL</code></td>
+<td><code>true</code> if both NULL</td>
+</tr>
+<tr>
+<td><code>IS NULL</code></td>
+<td>判断是否为 NULL</td>
+<td><code>birthday IS NULL</code></td>
+<td><code>true</code> 或 <code>false</code></td>
+</tr>
+<tr>
+<td><code>IS NOT NULL</code></td>
+<td>非 NULL</td>
+<td><code>email IS NOT NULL</code></td>
+<td><code>true</code> 或 <code>false</code></td>
+</tr>
+<tr>
+<td><code>BETWEEN ... AND ...</code></td>
+<td>在区间内</td>
+<td><code>score BETWEEN 60 AND 90</code></td>
+<td>含头尾：<code>60 ≤ score ≤ 90</code></td>
+</tr>
+<tr>
+<td><code>NOT BETWEEN ... AND ...</code></td>
+<td>不在区间</td>
+<td><code>age NOT BETWEEN 18 AND 25</code></td>
+<td><code>true</code> 或 <code>false</code></td>
+</tr>
+<tr>
+<td><code>IN (...)</code></td>
+<td>属于集合</td>
+<td><code>city IN (&#39;Beijing&#39;, &#39;Shanghai&#39;)</code></td>
+<td>是否存在于集合中</td>
+</tr>
+<tr>
+<td><code>NOT IN (...)</code></td>
+<td>不属于集合</td>
+<td><code>status NOT IN (&#39;A&#39;, &#39;B&#39;)</code></td>
+<td><code>true</code> 或 <code>false</code></td>
+</tr>
+<tr>
+<td><code>LIKE</code></td>
+<td>模糊匹配（单行）</td>
+<td><code>name LIKE &#39;J%&#39;</code></td>
+<td><code>J</code>开头的字符串</td>
+</tr>
+<tr>
+<td><code>NOT LIKE</code></td>
+<td>非匹配</td>
+<td><code>email NOT LIKE &#39;%.com&#39;</code></td>
+<td>不以<code>.com</code>结尾</td>
+</tr>
+<tr>
+<td><code>REGEXP</code> 或 <code>RLIKE</code></td>
+<td>正则匹配</td>
+<td><code>name REGEXP &#39;^A.*&#39;</code></td>
+<td>匹配正则表达式</td>
+</tr>
+</tbody></table>
+<h3 id="MySQL常用函数"><a href="#MySQL常用函数" class="headerlink" title="MySQL常用函数"></a>MySQL常用函数</h3><table>
+<thead>
+<tr>
+<th>分类</th>
+<th>函数名</th>
+<th>功能描述</th>
+<th>示例</th>
+<th>示例结果</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>字符串函数</td>
+<td><code>CONCAT(str1, str2, ...)</code></td>
+<td>字符串连接</td>
+<td><code>CONCAT(&#39;Hello&#39;, &#39;World&#39;)</code></td>
+<td><code>&#39;HelloWorld&#39;</code></td>
+</tr>
+<tr>
+<td></td>
+<td><code>LENGTH(str)</code></td>
+<td>字节长度（utf8中一个汉字3字节）</td>
+<td><code>LENGTH(&#39;abc&#39;)</code></td>
+<td><code>3</code></td>
+</tr>
+<tr>
+<td></td>
+<td><code>CHAR_LENGTH(str)</code></td>
+<td>字符长度（汉字算1个字符）</td>
+<td><code>CHAR_LENGTH(&#39;你好&#39;)</code></td>
+<td><code>2</code></td>
+</tr>
+<tr>
+<td></td>
+<td><code>UPPER(str)</code></td>
+<td>转大写</td>
+<td><code>UPPER(&#39;abc&#39;)</code></td>
+<td><code>&#39;ABC&#39;</code></td>
+</tr>
+<tr>
+<td></td>
+<td><code>LOWER(str)</code></td>
+<td>转小写</td>
+<td><code>LOWER(&#39;ABC&#39;)</code></td>
+<td><code>&#39;abc&#39;</code></td>
+</tr>
+<tr>
+<td></td>
+<td><code>REPLACE(str, from_str, to_str)</code></td>
+<td>字符串替换</td>
+<td><code>REPLACE(&#39;abcabc&#39;, &#39;a&#39;, &#39;x&#39;)</code></td>
+<td><code>&#39;xbcxbc&#39;</code></td>
+</tr>
+<tr>
+<td></td>
+<td><code>SUBSTRING(str, pos, len)</code></td>
+<td>截取字符串</td>
+<td><code>SUBSTRING(&#39;abcdef&#39;, 2, 3)</code></td>
+<td><code>&#39;bcd&#39;</code></td>
+</tr>
+<tr>
+<td></td>
+<td><code>TRIM(str)</code></td>
+<td>去除字符串首尾空格</td>
+<td><code>TRIM(&#39;  abc &#39;)</code></td>
+<td><code>&#39;abc&#39;</code></td>
+</tr>
+<tr>
+<td>数值函数</td>
+<td><code>ABS(n)</code></td>
+<td>绝对值</td>
+<td><code>ABS(-10)</code></td>
+<td><code>10</code></td>
+</tr>
+<tr>
+<td></td>
+<td><code>ROUND(n, d)</code></td>
+<td>四舍五入到小数点后 d 位</td>
+<td><code>ROUND(3.14159, 2)</code></td>
+<td><code>3.14</code></td>
+</tr>
+<tr>
+<td></td>
+<td><code>CEIL(n)</code></td>
+<td>向上取整</td>
+<td><code>CEIL(2.3)</code></td>
+<td><code>3</code></td>
+</tr>
+<tr>
+<td></td>
+<td><code>FLOOR(n)</code></td>
+<td>向下取整</td>
+<td><code>FLOOR(2.7)</code></td>
+<td><code>2</code></td>
+</tr>
+<tr>
+<td></td>
+<td><code>MOD(a, b)</code></td>
+<td>取模</td>
+<td><code>MOD(10, 3)</code></td>
+<td><code>1</code></td>
+</tr>
+<tr>
+<td></td>
+<td><code>RAND()</code></td>
+<td>生成0到1之间随机数</td>
+<td><code>RAND()</code></td>
+<td><code>0.123456789</code>（示例）</td>
+</tr>
+<tr>
+<td></td>
+<td><code>TRUNCATE(n, d)</code></td>
+<td>截断数字到小数点后 d 位</td>
+<td><code>TRUNCATE(3.4567, 2)</code></td>
+<td><code>3.45</code></td>
+</tr>
+<tr>
+<td>日期时间函数</td>
+<td><code>NOW()</code></td>
+<td>当前日期时间</td>
+<td><code>NOW()</code></td>
+<td><code>&#39;2025-07-25 20:30:00&#39;</code></td>
+</tr>
+<tr>
+<td></td>
+<td><code>CURDATE()</code></td>
+<td>当前日期</td>
+<td><code>CURDATE()</code></td>
+<td><code>&#39;2025-07-25&#39;</code></td>
+</tr>
+<tr>
+<td></td>
+<td><code>CURTIME()</code></td>
+<td>当前时间</td>
+<td><code>CURTIME()</code></td>
+<td><code>&#39;20:30:00&#39;</code></td>
+</tr>
+<tr>
+<td></td>
+<td><code>DATE_FORMAT(date, fmt)</code></td>
+<td>格式化日期</td>
+<td><code>DATE_FORMAT(NOW(), &#39;%Y-%m-%d&#39;)</code></td>
+<td><code>&#39;2025-07-25&#39;</code></td>
+</tr>
+<tr>
+<td></td>
+<td><code>DATEDIFF(a, b)</code></td>
+<td>计算日期差（a - b）天数</td>
+<td><code>DATEDIFF(&#39;2025-08-01&#39;, &#39;2025-07-25&#39;)</code></td>
+<td><code>7</code></td>
+</tr>
+<tr>
+<td></td>
+<td><code>TIMESTAMPDIFF(unit, a, b)</code></td>
+<td>计算两时间差，单位可选</td>
+<td><code>TIMESTAMPDIFF(DAY, &#39;2025-07-25&#39;, &#39;2025-08-01&#39;)</code></td>
+<td><code>7</code></td>
+</tr>
+<tr>
+<td></td>
+<td><code>ADDDATE(date, n)</code></td>
+<td>日期加n天</td>
+<td><code>ADDDATE(&#39;2025-07-25&#39;, 5)</code></td>
+<td><code>&#39;2025-07-30&#39;</code></td>
+</tr>
+<tr>
+<td></td>
+<td><code>SUBDATE(date, n)</code></td>
+<td>日期减n天</td>
+<td><code>SUBDATE(&#39;2025-07-25&#39;, 5)</code></td>
+<td><code>&#39;2025-07-20&#39;</code></td>
+</tr>
+<tr>
+<td>聚合函数</td>
+<td><code>COUNT(*)</code></td>
+<td>统计行数</td>
+<td><code>SELECT COUNT(*) FROM users</code></td>
+<td><code>100</code></td>
+</tr>
+<tr>
+<td></td>
+<td><code>SUM(col)</code></td>
+<td>求和</td>
+<td><code>SUM(price)</code></td>
+<td><code>12345.67</code></td>
+</tr>
+<tr>
+<td></td>
+<td><code>AVG(col)</code></td>
+<td>平均值</td>
+<td><code>AVG(score)</code></td>
+<td><code>87.5</code></td>
+</tr>
+<tr>
+<td></td>
+<td><code>MAX(col)</code></td>
+<td>最大值</td>
+<td><code>MAX(age)</code></td>
+<td><code>60</code></td>
+</tr>
+<tr>
+<td></td>
+<td><code>MIN(col)</code></td>
+<td>最小值</td>
+<td><code>MIN(created_at)</code></td>
+<td><code>&#39;2020-01-01&#39;</code></td>
+</tr>
+<tr>
+<td>条件判断函数</td>
+<td><code>IF(expr, a, b)</code></td>
+<td>条件判断，类似三元运算符</td>
+<td><code>IF(score &gt; 60, &#39;及格&#39;, &#39;不及格&#39;)</code></td>
+<td><code>&#39;及格&#39;</code></td>
+</tr>
+<tr>
+<td></td>
+<td><code>IFNULL(expr, val)</code></td>
+<td>如果 expr 为 NULL，返回 val</td>
+<td><code>IFNULL(name, &#39;未知&#39;)</code></td>
+<td><code>&#39;未知&#39;</code></td>
+</tr>
+<tr>
+<td></td>
+<td><code>NULLIF(a, b)</code></td>
+<td>若 a &#x3D; b，则返回 NULL，否则 a</td>
+<td><code>NULLIF(1,1)</code> → <code>NULL</code></td>
+<td><code>NULL</code></td>
+</tr>
+<tr>
+<td></td>
+<td><code>CASE WHEN ... THEN ... ELSE ... END</code></td>
+<td>多条件判断</td>
+<td>参见下方示例</td>
+<td></td>
+</tr>
+</tbody></table>
+<h3 id="MySQL完整性约束"><a href="#MySQL完整性约束" class="headerlink" title="MySQL完整性约束"></a>MySQL完整性约束</h3><h4 id="主键约束"><a href="#主键约束" class="headerlink" title="主键约束"></a>主键约束</h4><p><strong>primary key</strong>(<strong>唯一且不为空</strong>)</p>
+<h4 id="自增键约束"><a href="#自增键约束" class="headerlink" title="自增键约束"></a>自增键约束</h4><p><strong>auto_increment(整型自增)</strong></p>
+<h4 id="唯一键约束"><a href="#唯一键约束" class="headerlink" title="唯一键约束"></a>唯一键约束</h4><p><strong>unique(不可以重复但是可以为空)</strong></p>
+<h4 id="非空约束"><a href="#非空约束" class="headerlink" title="非空约束"></a>非空约束</h4><p><strong>not null</strong></p>
+<h4 id="默认值约束"><a href="#默认值约束" class="headerlink" title="默认值约束"></a>默认值约束</h4><p><strong>default</strong></p>
+<h4 id="外键约束"><a href="#外键约束" class="headerlink" title="外键约束"></a>外键约束</h4><p><strong>foreign key</strong> </p>
+<pre class="language-mysql" data-language="mysql"><code class="language-mysql">CREATE TABLE USER(
+id INT UNSIGNED PRIMARY KEY AUTO_INCREMENT COMMENT &#39;用户的主键id&#39;,
+nickname varchar(50) UNIQUE NOT NULL COMMENT &#39;用户的昵称&#39;,
+age TINYINT UNSIGNED NOT NULL DEFAULT 18,
+sex ENUM(&#39;male&#39;,&#39;female&#39;));</code></pre>
+
+<pre class="language-mysql" data-language="mysql"><code class="language-mysql">+----------+-----------------------+------+-----+---------+----------------+
+| Field    | Type                  | Null | Key | Default | Extra          |
++----------+-----------------------+------+-----+---------+----------------+
+| id       | int unsigned          | NO   | PRI | NULL    | auto_increment |
+| nickname | varchar(50)           | NO   | UNI | NULL    |                |
+| age      | tinyint unsigned      | NO   |     | 18      |                |
+| sex      | enum(&#39;male&#39;,&#39;female&#39;) | YES  |     | NULL    |                |
++----------+-----------------------+------+-----+---------+----------------+
+4 rows in set (0.03 sec)</code></pre>
+
+<h3 id="关系型数据库表设计"><a href="#关系型数据库表设计" class="headerlink" title="关系型数据库表设计"></a>关系型数据库表设计</h3><h4 id="一对一"><a href="#一对一" class="headerlink" title="一对一"></a>一对一</h4><h4 id="一对多"><a href="#一对多" class="headerlink" title="一对多"></a>一对多</h4><h4 id="多对多"><a href="#多对多" class="headerlink" title="多对多"></a>多对多</h4></div></section><div id="reward-container"><span class="hty-icon-button button-glow" id="reward-button" title="打赏" onclick="var qr = document.getElementById(&quot;qr&quot;); qr.style.display = (qr.style.display === &quot;none&quot;) ? &quot;block&quot; : &quot;none&quot;;"><span class="icon iconify" data-icon="ri:hand-coin-line"></span></span><div id="reward-comment">能白嫖就白嫖</div><div id="qr" style="display:none;"><div style="display:inline-block"><a href="/images/wechatpay.png"><img loading="lazy" src="/images/wechatpay.png" alt="微信支付" title="微信支付"></a><div><span style="color:#2DC100"><span class="icon iconify" data-icon="ri:wechat-pay-line"></span></span></div></div></div></div><ul class="post-copyright"><li class="post-copyright-author"><strong>本文作者：</strong>YuStone</li><li class="post-copyright-link"><strong>本文链接：</strong><a href="http://yustonerain.top/2025/07/25/MYSQL%20learning.html" title="MYSQL learning">http://yustonerain.top/2025/07/25/MYSQL%20learning.html</a></li><li class="post-copyright-license"><strong>版权声明：</strong>本博客所有文章除特别声明外，均默认采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh" target="_blank" rel="noopener" title="CC BY-NC-SA 4.0 "><span class="icon iconify" data-icon="ri:creative-commons-line"></span><span class="icon iconify" data-icon="ri:creative-commons-by-line"></span><span class="icon iconify" data-icon="ri:creative-commons-nc-line"></span><span class="icon iconify" data-icon="ri:creative-commons-sa-line"></span></a> 许可协议。</li></ul></article><div class="post-nav"><div class="post-nav-item"></div><div class="post-nav-item"><a class="post-nav-next" href="/2025/07/16/Linux%20Network%20Programming.html" rel="next" title="Linux网络编程"><span class="post-nav-text">Linux网络编程</span><span class="icon iconify" data-icon="ri:arrow-right-s-line"></span></a></div></div></div><div class="hty-card" id="comment"><div class="comment-tooltip text-center"><span>若您想及时得到回复提醒，可以直接联系我</span><br></div><style>.utterances {
+  max-width: 100%;
+}</style><script src="https://utteranc.es/client.js" repo="YuStone0416/YuStone0416.github.io" issue-term="pathname" theme="github-light" crossorigin="anonymous" async></script></div></main><footer class="sidebar-translate" id="footer"><div class="copyright"><span>&copy; 2025 </span><a class="with-love" id="animate" href="http://yustonerain.top" title="YuStone Blog"><span class="icon iconify" data-icon="ri:cloud-line"></span></a><span class="author"> YuStone</span></div><div class="powered"><span>由 <a href="https://hexo.io" target="_blank" rel="noopener">Hexo</a> 驱动 v7.3.0</span><span class="footer-separator">|</span><span>主题 - <a rel="noopener" href="https://github.com/YunYouJun/hexo-theme-yun" target="_blank"><span>Yun</span></a> v1.10.11</span></div><div class="live-time"><span>感谢陪伴</span><span id="display_live_time"></span><span class="moe-text">(●'◡'●)</span><script>function blog_live_time() {
+  setTimeout(blog_live_time, 1000);
+  const start = new Date('2025-06-02T00:00:00');
+  const now = new Date();
+  const timeDiff = (now.getTime() - start.getTime());
+  const msPerMinute = 60 * 1000;
+  const msPerHour = 60 * msPerMinute;
+  const msPerDay = 24 * msPerHour;
+  const passDay = Math.floor(timeDiff / msPerDay);
+  const passHour = Math.floor((timeDiff % msPerDay) / 60 / 60 / 1000);
+  const passMinute = Math.floor((timeDiff % msPerHour) / 60 / 1000);
+  const passSecond = Math.floor((timeDiff % msPerMinute) / 1000);
+  display_live_time.innerHTML = ` ${passDay} 天 ${passHour} 小时 ${passMinute} 分 ${passSecond} 秒`;
+}
+blog_live_time();
+</script></div><div class="footer-custom-text">YuStoneblog Description</div></footer></div><a class="hty-icon-button" id="back-to-top" aria-label="back-to-top" href="#"><span class="icon iconify" data-icon="ri:arrow-up-s-line"></span><svg class="progress-circle-container" viewBox="0 0 100 100"><circle class="progress-circle" id="progressCircle" cx="50" cy="50" r="48" fill="none" stroke="#0078E7" stroke-width="2" stroke-linecap="round"></circle></svg></a><a class="popup-trigger hty-icon-button icon-search" id="search" href="javascript:;" title="搜索"><span class="site-state-item-icon"><span class="icon iconify" data-icon="ri:search-line"></span></span></a><script>window.addEventListener("DOMContentLoaded", () => {
+  // Handle and trigger popup window
+  document.querySelector(".popup-trigger").addEventListener("click", () => {
+    document.querySelector(".popup").classList.add("show");
+    setTimeout(() => {
+      document.querySelector(".search-input").focus();
+    }, 100);
+  });
+
+  // Monitor main search box
+  const onPopupClose = () => {
+    document.querySelector(".popup").classList.remove("show");
+  };
+
+  document.querySelector(".popup-btn-close").addEventListener("click", () => {
+    onPopupClose();
+  });
+
+  window.addEventListener("keyup", event => {
+    if (event.key === "Escape") {
+      onPopupClose();
+    }
+  });
+});
+</script><script src="https://fastly.jsdelivr.net/npm/hexo-generator-searchdb@1.4.0/dist/search.js"></script><script src="/js/search/local-search.js" defer type="module"></script><div class="popup search-popup"><div class="search-header"><span class="popup-btn-close close-icon hty-icon-button"><span class="icon iconify" data-icon="ri:close-line"></span></span></div><div class="search-input-container"><input class="search-input" id="local-search-input" type="text" placeholder="搜索..." value=""></div><div class="search-result-container"></div></div><script src="https://fastly.jsdelivr.net/npm/medium-zoom@1.0.6/dist/medium-zoom.min.js"></script><script>const images = [...document.querySelectorAll('.markdown-body img')]
+mediumZoom(images)</script><style>.medium-zoom-image {
+  z-index: 99;
+}</style></body></html>
