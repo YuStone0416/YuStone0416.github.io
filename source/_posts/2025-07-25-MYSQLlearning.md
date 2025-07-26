@@ -230,8 +230,400 @@ sex ENUM('male','female'));
 
 ### 关系型数据库表设计
 
-#### 一对一
+好的设计减少数据冗余。
+
+#### 一对一关系
+
+**在子表中增加一列，关联父表的主键**
+
+```mysql
+用户User表：父表
+uid 	name 	age		sex
+1000	zhang	20		M
+1020	liu		21 		W
+2010 	Wang	22		M
+身份信息Info 子表
+uid 	cardid		addrinfo
+1020    112233		aaa
+2010    334455		bbb
+1000	556677		ccc
+```
 
 #### 一对多
 
+**在子表中增加一列，关联父表的主键**
+
+```mysql
+电商系统：
+用户User,商品Product,订单Order
+用户和商品：没有关系
+用户和订单：一对多的关系 User为父表 Order为子表 在子表中增加一列，关联父表的主键
+商品和订单：多对多的关系
+User: 
+uid 	name 	age		sex
+1000	zhang	20		M
+1020	liu		21 		W
+2010 	Wang	22		M
+Product:
+pid		pname	price	amount
+1		手机		600		100
+2		笔记本		2000	50
+3		电池		10		200
+Order:
+orderid		uid		pid		number		money	totalprice	addrinfo
+O1000		1000	1		1			600		4640		海定区
+O1000		1000	2		2			4000	4640		海定区
+O1000		1000	3		5			40		4640		海定区
+O2000		2010	2		1			2000	2000		平谷区
+```
+
 #### 多对多
+
+**增加一个中间表**
+
+```mysql
+电商系统：
+用户User,商品Product,订单Order
+用户和商品：没有关系
+用户和订单：一对多的关系 User为父表 Order为子表 在子表中增加一列，关联父表的主键
+商品和订单：多对多的关系 
+User: 
+uid 	name 	age		sex
+1000	zhang	20		M
+1020	liu		21 		W
+2010 	Wang	22		M
+Product:
+pid		pname	price	amount
+1		手机		600		100
+2		笔记本		2000	50
+3		电池		10		200
+Order:
+orderid		uid		pid		number		money	totalprice	addrinfo
+O1000		1000	1		1			600		4640		海定区
+O1000		1000	2		2			4000	4640		海定区
+O1000		1000	3		5			40		4640		海定区
+O2000		2010	2		1			2000	2000		平谷区
+商品和订单：多对多的关系 
+发现Order表太过冗余了，所以增加一个中间表
+订单内容表
+OrderList:
+orderid		pid		number	money
+O1000		1		1		600
+O1000		2		2		4000
+O1000		3		4		40
+O2000  		2		1		2000
+这里中间表可以orderid,pid为联合主键。
+所以Order表改变
+Order:
+orderid		uid		totalprice	addrinfo
+O1000		1000		4640		海定区
+O2000		2010		2000		平谷区
+```
+
+### 关系型数据库范式
+
+**应用数据库范式可以带来许多好处，最重要的到处归结为三点：**
+
+1. **减少数据冗余(这是最主要的好处，其他好处都是由此而附带的)**
+2. **消除异常(插入异常，更新异常，删除异常)**
+3. **让数据组织的更加和谐**
+
+**但是数据库范式绝对不是越高越好，范式越高，意味着表越多，多表联合查询的机率就越大，SQL的效率就越低。**
+
+#### 第一范式（1NF）
+
+**每一列保持原子特性**
+
+列都是基本数据项，不能够再进行分割，否则设计成一对多的实体关系。例如表中的地址字段，可以再细分为省，市，区等不可再分割的字段。**不符合第一范式不能称作关系型数据库。**
+
+#### 第二范式（2NF）
+
+**属性完全依赖于主键，主要针对联合主键**
+
+非主属性完全依赖于主关键字，如果不是完全依赖主键，应该拆分成新的实体，设计成一对多的实体关系。
+
+例如：选课关系表为SelectCourse(学号，姓名，年龄，课程名称，成绩，学分),(学号，课程名称)是联合主键，但是学分字段只和课程名称有关，和学号无关，相当于只依赖联合主键的其中一个字段，不符合第二范式。姓名，年龄不符合第二范式
+
+```mysql
+所以这里需要拆分
+学生表
+学号		姓名		年龄
+
+课程表
+课程id	课程名称	学分
+
+中间表：选课情况
+学号 课程id 成绩
+```
+
+#### 第三范式（3NF）
+
+**属性不依赖于其他非主属性**
+
+示例：学生关系表为Student(学号，姓名，年龄，所在学院，学院地点，学院电话)，学号是主键，但是学院电话只依赖于所在学院，并不依赖于主键学号，所以不符合第三范式，应该把学院专门设计成一张表，学生表和学院表，两个是一对多的关系。
+
+**一般关系型数据库满足第三范式就可以了。**
+
+#### BC范式（BCNF）
+
+**每个表中只有一个候选键**
+
+#### 第四范式（4NF）
+
+**消除表中的多值依赖**
+
+## MySQL核心SQL
+
+### 结构化查询语句SQL
+
+SQL是结构化查询语言，它是关系型数据库的通用语言。
+
+SQL主要可以划分三个类别：
+
+1. DDL语句：数据定义语言，这些语句定义了不同的数据库，表，列，索引等数据库对象的定义。通常的语句关键字主要包括**create,drop,alter**等。
+2. DML语句：数据操纵语句，用于添加，删除，更新和查询数据库记录，并检查数据完整性，常用的语句关键字主要包括**insert,delete,update和select**等。
+3. DCL语句：数据控制语句，用于控制不同的许可和访问级别的语句。这些语句定义了数据库，表，字段，用户的访问权限和安全级别。主要的语句关键字包括**grant,revoke**等。
+
+### 库操作
+
+```mysql
+#查询数据库
+show databases;
+#创建数据库
+create database ChatDB;
+#删除数据库
+drop database ChatDB;
+#选择数据库
+use ChatDB;
+```
+
+### 表操作
+
+查看表
+
+```mysql
+show tables;
+```
+
+创建表
+
+```mysql
+create table user(
+    id int unsigned primary key not null auto_increment,
+    name varchar(50) unique not null,
+    age tinyint not null,
+    sex enum('M','W') not null)engine=INNODB default charset=utf8;
+```
+
+查看表结构
+
+```mysql
+desc user;
+```
+
+查看建表sql
+
+```mysql
+show create table user\G
+```
+
+删除表
+
+```mysql
+drop table user;
+```
+
+### CRUD操作
+
+#### insert增加
+
+```mysql
+insert into user(nickname,name,age,sex) values('fixbug','zhangsan',22,'M');
+insert into user(nickname,name,age,sex) values('666','li si',21,'W'),('888','gao yang',20,'M');
+```
+
+**这里有个问题：就是一次全插入和多次插入最后结果都是相同的，那么他们有什么区别。**
+
+![2](2.png)
+
+**由上图，多次插入会导致tcp连接次数增多，消耗资源。**
+
+#### update修改
+
+```mysql
+update user set age=23 where name='zhangsan';
+update user set age=age+1 where id=3;
+```
+
+#### delete删除
+
+```mysql
+delete from user where age=23;
+delete from user where age between 20 and 22;
+delete from user;
+```
+
+#### select查询
+
+```mysql
+select * from user;
+select id,nickname,name,age,sex from user;
+select id,name from user;
+select id,nickname,name,age,sex from user where sex='M' and age>=20 and age<=25;
+select id,nickname,name,age,sex from user where sex='M' and age between 20 and 25;
+select id,nickname,name,age,sex from user where sex='W' or age>=22;
+```
+
+**去重distinct**
+
+```mysql
+select distinct name from user;
+```
+
+**空值查询**
+
+**is [not] null**
+
+```mysql
+select * from user where name is null;
+```
+
+**union合并查询**
+
+**把两个结果合并起来，union默认去重，不用修饰distinct，all表示显示所有重复值。**
+
+```mysql
+select country from websites union all select country from apps order by country;
+```
+
+**带in子查询**
+
+**[不]包含这些元素**
+
+**[not] in(元素1，元素2，...，元素3)**
+
+```mysql
+select * from user where id in(10,20,30,40,50);
+select * from user where id not in(10,20,30,40,50);
+select * from user where id in(select stu_id from grade where average>=60.0);
+```
+
+**分页查询**
+
+```mysql
+select id,nickname,name,age,sex from user limit 10;
+select id,nickname,name,age,sex from user limit 2000,10#偏移2000，再取10个
+```
+
+```mysql
+explain select * from user where name='zhangsan';
+explain:查看SQL语句的执行计划(但是MySQL的自身优化检测不到，可能体现的数据不对)，主键会注册主键索引，唯一键会注册索引，通过索引查询，直接查到（查一次），不需要遍历去查。如果通过没有注册索引的字段去查询的话，就可能变成整表查询（查很多次）。
+```
+
+```mysql
+select id,nickname,name,age,sex from user limit 10;#没有设计limit 10，它是查完整表返回结果，设计了limit 10 查到10个符合条件的数据就返回。
+所以这就可以利用这个特性
+在通过一些非注册索引的字段查找时，可以通过limit,提高查询速度。
+select * from t_user where email ='1000001@fixbug.com';
++---------+--------------------+----------+
+| id      | email              | password |
++---------+--------------------+----------+
+| 1000001 | 1000001@fixbug.com | 1000001  |
++---------+--------------------+----------+
+1 row in set (0.66 sec)
+
+mysql> select * from t_user where email ='1000001@fixbug.com' limit 1;
++---------+--------------------+----------+
+| id      | email              | password |
++---------+--------------------+----------+
+| 1000001 | 1000001@fixbug.com | 1000001  |
++---------+--------------------+----------+
+1 row in set (0.33 sec)
+```
+
+```mysql
+分页查询优化
+select * from t_user limit 1000000,20;
++---------+--------------------+----------+
+| id      | email              | password |
++---------+--------------------+----------+
+| 1000001 | 1000001@fixbug.com | 1000001  |
+| 1000002 | 1000002@fixbug.com | 1000002  |
+| 1000003 | 1000003@fixbug.com | 1000003  |
+| 1000004 | 1000004@fixbug.com | 1000004  |
+| 1000005 | 1000005@fixbug.com | 1000005  |
+| 1000006 | 1000006@fixbug.com | 1000006  |
+| 1000007 | 1000007@fixbug.com | 1000007  |
+| 1000008 | 1000008@fixbug.com | 1000008  |
+| 1000009 | 1000009@fixbug.com | 1000009  |
+| 1000010 | 1000010@fixbug.com | 1000010  |
+| 1000011 | 1000011@fixbug.com | 1000011  |
+| 1000012 | 1000012@fixbug.com | 1000012  |
+| 1000013 | 1000013@fixbug.com | 1000013  |
+| 1000014 | 1000014@fixbug.com | 1000014  |
+| 1000015 | 1000015@fixbug.com | 1000015  |
+| 1000016 | 1000016@fixbug.com | 1000016  |
+| 1000017 | 1000017@fixbug.com | 1000017  |
+| 1000018 | 1000018@fixbug.com | 1000018  |
+| 1000019 | 1000019@fixbug.com | 1000019  |
+| 1000020 | 1000020@fixbug.com | 1000020  |
++---------+--------------------+----------+
+20 rows in set (0.27 sec)
+select * from t_user where id>1000000 limit 20;
++---------+--------------------+----------+
+| id      | email              | password |
++---------+--------------------+----------+
+| 1000001 | 1000001@fixbug.com | 1000001  |
+| 1000002 | 1000002@fixbug.com | 1000002  |
+| 1000003 | 1000003@fixbug.com | 1000003  |
+| 1000004 | 1000004@fixbug.com | 1000004  |
+| 1000005 | 1000005@fixbug.com | 1000005  |
+| 1000006 | 1000006@fixbug.com | 1000006  |
+| 1000007 | 1000007@fixbug.com | 1000007  |
+| 1000008 | 1000008@fixbug.com | 1000008  |
+| 1000009 | 1000009@fixbug.com | 1000009  |
+| 1000010 | 1000010@fixbug.com | 1000010  |
+| 1000011 | 1000011@fixbug.com | 1000011  |
+| 1000012 | 1000012@fixbug.com | 1000012  |
+| 1000013 | 1000013@fixbug.com | 1000013  |
+| 1000014 | 1000014@fixbug.com | 1000014  |
+| 1000015 | 1000015@fixbug.com | 1000015  |
+| 1000016 | 1000016@fixbug.com | 1000016  |
+| 1000017 | 1000017@fixbug.com | 1000017  |
+| 1000018 | 1000018@fixbug.com | 1000018  |
+| 1000019 | 1000019@fixbug.com | 1000019  |
+| 1000020 | 1000020@fixbug.com | 1000020  |
++---------+--------------------+----------+
+20 rows in set (0.00 sec)
+可以看出明显的效率不同
+select * from t_user limit 1000000,20;通过limit偏移，是会扫表的，所以耗费效率，所以我们要通过有索引的字段来约束条件，他就不会扫前面的，因为索引。这样效率也提高了
+select * from t_user where id>1000000 limit 20;id>的取值一般为上一页最后一条数据的id值
+```
+
+**排序order by**
+
+```mysql
+select id,nickname,name,age,sex from user where sex='M' and age>=20 and age<=25 order by age asc;(默认为升序)
+select id,nickname,name,age,sex from user where sex='M' and age>=20 and age<=25 order by age desc;(降序)
+select id,nickname,name,age,sex from user where sex='M' and age>=20 and age<=25 order by name,age asc;(先按name升序，当name相同时，再按age升序)
+```
+
+**分组group by**
+
+```mysql
+select sex from user group by sex;
+select count(id) as number,sex from user group by sex;
+select count(id),age from user group by age having age>20;
+select age,sex,count(*) from user group by age,sex;
+```
+
+**在使用 ORDER BY 和 GROUP BY 时，建议对相关字段建立索引。**
+
+**如果排序或分组字段没有索引，MySQL 在执行过程中通常会采用 filesort 或创建临时表，这会导致性能下降。通过 EXPLAIN 分析语句时，可以在 Extra 字段看到 Using filesort，这意味着：**
+
+- **MySQL 首先会读取满足条件的数据；**
+- **将其加载到内存或临时表中；**
+- **然后在内存或磁盘上进行排序；**
+- **最终返回排序后的结果。**
+
+**由于这涉及额外的 CPU 和磁盘 I/O 操作，效率会显著降低，尤其是在数据量较大时。因此，在 ORDER BY 或 GROUP BY 中应尽量使用已经建立索引的字段，以提升查询性能。**
