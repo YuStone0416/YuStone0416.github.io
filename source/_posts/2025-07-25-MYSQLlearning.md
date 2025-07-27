@@ -617,6 +617,8 @@ select count(id),age from user group by age having age>20;
 select age,sex,count(*) from user group by age,sex;
 ```
 
+**group by后面再筛选就不能用where,要使用having。**
+
 **在使用 ORDER BY 和 GROUP BY 时，建议对相关字段建立索引。**
 
 **如果排序或分组字段没有索引，MySQL 在执行过程中通常会采用 filesort 或创建临时表，这会导致性能下降。通过 EXPLAIN 分析语句时，可以在 Extra 字段看到 Using filesort，这意味着：**
@@ -627,3 +629,171 @@ select age,sex,count(*) from user group by age,sex;
 - **最终返回排序后的结果。**
 
 **由于这涉及额外的 CPU 和磁盘 I/O 操作，效率会显著降低，尤其是在数据量较大时。因此，在 ORDER BY 或 GROUP BY 中应尽量使用已经建立索引的字段，以提升查询性能。**
+
+### 连接查询
+
+![3](E:\Desktop\boke\source\_posts\2025-07-25-MYSQLlearning\3.png)
+
+#### 内连接查询
+
+```mysql
+#on a.uid=c.uid 区分大表和小表，按照（where过滤后）数据量来区分，小表永远是整表扫描，然后去大表搜索。所以大表建索引才是最有效的
+#从student小表中取出所有的a.uid，然后拿着这些uid去exame大表搜素。
+#对于inner join内连接，过滤条件写在where的后面和on连接条件里面(会优化成where去过滤)，效果一样的。
+select a.uid,a.name,a.age,a.sex,c.score from student a 
+inner join exame c 
+on a.uid=c.uid 
+where c.uid=1 and c.cid=2;
+
+select a.uid,a.name,a.age,a.sex,b.cid,b.cname,b.credit,c.score from exame c
+inner join student a on c.uid=a.uid
+inner join course b on c.cid=b.cid
+where c.uid=1 and c.cid=2;
+```
+
+**内连接查询解决单张表的limit分页偏移量的消耗，这个问题可以采用有索引的字段来约束条件来使分页偏移量的消耗消失。**
+
+```mysql
+select * from t_user where id>1000000 limit 20;
+```
+
+**可是如果我们不知道这个id的值要取多少，偏移量必须写。又该如何提升效率。可以利用临时表存储所需信息的id，再通过这张表和原表inner join进而查出更多的信息。**
+
+```mysql
+select id,email,password from t_user limit 1500000,10;
++---------+--------------------+----------+
+| id      | email              | password |
++---------+--------------------+----------+
+| 1500001 | 1500001@fixbug.com | 1500001  |
+| 1500002 | 1500002@fixbug.com | 1500002  |
+| 1500003 | 1500003@fixbug.com | 1500003  |
+| 1500004 | 1500004@fixbug.com | 1500004  |
+| 1500005 | 1500005@fixbug.com | 1500005  |
+| 1500006 | 1500006@fixbug.com | 1500006  |
+| 1500007 | 1500007@fixbug.com | 1500007  |
+| 1500008 | 1500008@fixbug.com | 1500008  |
+| 1500009 | 1500009@fixbug.com | 1500009  |
+| 1500010 | 1500010@fixbug.com | 1500010  |
++---------+--------------------+----------+
+10 rows in set (0.71 sec)
+这是正常查的
+select id from t_user limit 1500000,10;
++---------+
+| id      |
++---------+
+| 1500001 |
+| 1500002 |
+| 1500003 |
+| 1500004 |
+| 1500005 |
+| 1500006 |
+| 1500007 |
+| 1500008 |
+| 1500009 |
+| 1500010 |
++---------+
+10 rows in set (0.20 sec)
+#我们发现查单个字段效率会提高
+#所以我们建立临时表（小表）存储带索引的字段，再通过inner join查出相同的结果
+select a.id,a.email,a.password from t_user a inner join (select id from t_user limit 1500000,10) b on a.id=b.id;
++---------+--------------------+----------+
+| id      | email              | password |
++---------+--------------------+----------+
+| 1500001 | 1500001@fixbug.com | 1500001  |
+| 1500002 | 1500002@fixbug.com | 1500002  |
+| 1500003 | 1500003@fixbug.com | 1500003  |
+| 1500004 | 1500004@fixbug.com | 1500004  |
+| 1500005 | 1500005@fixbug.com | 1500005  |
+| 1500006 | 1500006@fixbug.com | 1500006  |
+| 1500007 | 1500007@fixbug.com | 1500007  |
+| 1500008 | 1500008@fixbug.com | 1500008  |
+| 1500009 | 1500009@fixbug.com | 1500009  |
+| 1500010 | 1500010@fixbug.com | 1500010  |
++---------+--------------------+----------+
+10 rows in set (0.18 sec)
+#肉眼可见的效率提高了。
+```
+
+#### 外连接查询
+
+**左连接查询**
+
+```mysql
+#把left这边的表所有的数据显示出来，在右表中不存在相应数据，则显示NULL，这里就不存在大小表的区分了，左表整表扫描。
+select a.* from User a left join orderlist b on a.uid=b.uid where a.orderid is null;
+```
+
+**右连接查询**
+
+```mysql
+#把right这边的表所有的数据显示出来，在左表中不存在相应数据，则显示NULL，这里就不存在大小表的区分了，右表整表扫描。
+select a.* from User a right join orderlist b on a.uid=b.uid where b.orderid is null;
+```
+
+```mysql
+#外连接经常用于查找某个用户没有，不存在
+#查找没有考试的学生
+select * from student where uid not in (select distinct uid from exame);
+#select distinct uid from exame 会产生一张中间表存储结果供外面的sql来查询
+#not in对于索引的命中并不高
+#可以看出用上述方法效率不是很高
+select a.* from student a left join exame b on a.uid=b.uid where b.cid is null;
+#这样也可以实现效果
+```
+
+```mysql
+select a.* from student a left join exame b on a.uid=b.uid where b.cid=3;
+select a.* from student a inner join exame b on a.uid=b.uid where b.cid=3;
+#上述两句效果是一样的，为什么呢，这时候我们用explain查看左连接，先查b表，再查a表，这就和左连接的查表顺序不符，和内连接相符。
+#原因在于where筛选数据后b为小表，所以又成了内连接了。所以在外连接查找时，where不要跟具体的筛选，放在on后，where后跟判断null.
+select a.* from student a left join exame b on a.uid=b.uid and b.cid=3 where b.cid is null;
+#带有一定条件的查询某个用户没有做什么要像上述写的。
+```
+
+## MySQL存储引擎
+
+```bash
+一张表，MySQL一般如何存储
+表的结构，数据，索引
+存储引擎直接影响上面内容的存储方式
+```
+
+**MyISAM不支持事务，也不支持外键，索引采用非聚集索引，其优势是访问的速度快，对事务完整性没有要求，以select,insert为主的应用基本上都可以使用这个引擎来创建表。MyISAM的表在磁盘上存储三个文件，其文件名都和表名相同，扩展名分别是：**
+
+**.frm(存储表定义)**
+
+**.MYD(MYData，存储数据)**
+
+**.MYI(MYIndex，存储索引)**
+
+**InnoDB存储引擎提供了具有提交，回滚和崩溃恢复能力的事务安全，支持自动增长列，外键等功能，索引采用聚集索引，索引和数据存储在同一个文件，所以InnoDB的表在磁盘上有两个文件，其文件名都和表名相同，扩展名分别是：**
+
+**.frm(存储表定义)**
+
+**.ibd(存储数据和索引)**
+
+**MEMORY存储引擎使用存在内存中的内容创建表。每个MEMORY表实际只对应一个磁盘文件，格式是.frm(表结构定义)。MEMORY类型的表访问非常快，因为它的数据是放在内存中的，并且默认使用HASH索引（不适合做范围查询），但是一旦服务关闭，表中的数据就会丢失掉。**
+
+### 各存储引擎区别
+
+### MySQL 存储引擎对比
+
+| 特性/存储引擎 | **InnoDB**                                                 | **MyISAM**                                     | **Memory**                                     |
+| ------------- | ---------------------------------------------------------- | ---------------------------------------------- | ---------------------------------------------- |
+| 🔒 锁机制      | ✅ 行级锁 + 表级锁混合（默认行锁，支持多版本并发控制 MVCC） | ❌ 仅支持表级锁，写入或更新时整个表被锁定       | ❌ 仅支持表级锁                                 |
+| 🌳 B-树索引    | ✅ 支持，**聚簇索引（主键）**存储数据，辅助索引存主键       | ✅ 支持，**非聚簇索引**，索引与数据分离         | ✅ 支持（基于哈希或 B-Tree，可设置）            |
+| 🔗 哈希索引    | ⚠️ 不支持（只有 Adaptive Hash Index，InnoDB 内部使用）      | ❌ 不支持                                       | ✅ 默认使用哈希索引，**也支持 BTree（可配置）** |
+| 🔐 外键支持    | ✅ 支持（定义级联删除、更新等外键约束）                     | ❌ 不支持                                       | ❌ 不支持                                       |
+| 🔁 事务支持    | ✅ 支持完整事务（ACID），回滚、提交、一致性恢复             | ❌ 不支持事务机制                               | ❌ 不支持事务                                   |
+| 📚 索引缓存    | ✅ 支持（通过 Buffer Pool 缓存索引和数据）                  | ✅ 支持（**只缓存索引，不缓存数据**）           | ❌ 不缓存索引（数据在内存中，系统重启即失）     |
+| 💾 数据缓存    | ✅ 支持（Buffer Pool 中同时缓存数据和索引）                 | ❌ 不支持数据缓存（每次查询都需从磁盘读取数据） | ✅ 所有数据在内存中，速度极快                   |
+
+**锁机制：表示数据库在并发请求访问的时候，多个事务在操作时，并发操作的粒度。**
+
+**B-树索引和哈希索引：主要是加速SQL的查询速度。**
+
+**外键：子表的字段依赖父表的主键，设置两张表的依赖关系。**
+
+**事务：多个SQL语句，保证他们共同执行的原子操作，要么成功，要么失败，不能只成功一部分，失败需回滚事务。**
+
+**索引缓存和数据缓存：和MySQL Server的查询缓存相关，在没有对数据和索引做修改之前，重复查询可以不用进行磁盘I/O(数据库的性能提升，目的是为了减少磁盘I/O操作来提升数据库访问效率)，读取上一次内存中查询的缓存即可。**
