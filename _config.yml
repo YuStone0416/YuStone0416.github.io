@@ -5,16 +5,17 @@
 # Site
 title: YuStone Blogs
 subtitle: 'the world'
-description: '圭璋学习总结'
+description: ''
 keywords: YuStoneblog 
 author: YuStone
 language: zh-CN
 timezone: 'Asia/Shanghai'
-
+avatar: /images/avatar.jpg
+favicon: /favicon1.ico
 # URL
 ## Set your site url here. For example, if you use GitHub Page, set url as 'https://username.github.io/project'
 url: http://yustonerain.top
-permalink: :year/:month/:day/:urlname.html
+permalink: :year/:month/:day/:title/
 permalink_defaults:
 pretty_urls:
   trailing_index: true # Set to false to remove trailing 'index.html' from permalinks
@@ -43,20 +44,17 @@ render_drafts: false
 post_asset_folder: true
 relative_link: false
 future: true
-syntax_highlighter: prismjs
+syntax_highlighter: highlight.js
 highlight:
-  enable: false
-  line_number: false
+  line_number: true
   auto_detect: false
   tab_replace: ''
-  wrap: false
+  wrap: true
   hljs: false
 prismjs:
-  enable: true
   preprocess: true
-  line_number: false
+  line_number: true
   tab_replace: ''
-  theme: okaidia
 # Home page setting
 # path: Root path for your blogs index page. (default = '')
 # per_page: Posts displayed per page. (0 = disable pagination)
@@ -98,7 +96,7 @@ ignore:
 # Extensions
 ## Plugins: https://hexo.io/plugins/
 ## Themes: https://hexo.io/themes/
-theme: yun
+theme: stellar
 
 # Deployment
 ## Docs: https://hexo.io/docs/one-command-deployment
@@ -107,13 +105,3 @@ theme: yun
 #   type: git
 #   repo: git@github.com:YuStone0416/YuStone0416.github.io.git
 #   branch: gh-pages
-
-
-feed:
-  type: atom       # 或 rss2，也可以用 json
-  path: atom.xml   # 对应链接为 /atom.xml
-  limit: 20        # 显示最近 20 篇文章
-
-
-sitemap:
-  path: sitemap.xml
