@@ -1,0 +1,1374 @@
+
+<!DOCTYPE html><html lang="zh-CN">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="hexo-theme" content="https://github.com/xaoxuu/hexo-theme-stellar/tree/1.33.1" theme-name="Stellar" theme-version="1.33.1">
+  
+  
+  <meta name="generator" content="Hexo 7.3.0">
+  <meta http-equiv='x-dns-prefetch-control' content='on' />
+  
+  <meta name="renderer" content="webkit">
+  <meta name="force-rendering" content="webkit">
+  <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+  <meta name="HandheldFriendly" content="True" >
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#000">
+  <meta name="theme-color" content="#f9fafb">
+  <title>数据结构100题 - YuStone Blogs</title>
+
+  
+    <meta name="description" content="两数之和题目描述​		 给定一个整数数组 nums 和一个整数目标值 target，请你在该数组中找出 和为目标值 target 的那 两个 整数，并返回它们的数组下标。 你可以假设每种输入只会对应一个答案，并且你不能使用两次相同的元素。 你可以按任意顺序返回答案。 示例 1： 123输入：nums &#x3D; [2,7,11,15], target &#x3D; 9输出：[0,1]解释：因为 nums[0] +">
+<meta property="og:type" content="article">
+<meta property="og:title" content="数据结构100题">
+<meta property="og:url" content="http://yustonerain.top/2025/06/03/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84100%E9%A2%98/">
+<meta property="og:site_name" content="YuStone Blogs">
+<meta property="og:description" content="两数之和题目描述​		 给定一个整数数组 nums 和一个整数目标值 target，请你在该数组中找出 和为目标值 target 的那 两个 整数，并返回它们的数组下标。 你可以假设每种输入只会对应一个答案，并且你不能使用两次相同的元素。 你可以按任意顺序返回答案。 示例 1： 123输入：nums &#x3D; [2,7,11,15], target &#x3D; 9输出：[0,1]解释：因为 nums[0] +">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://yustonerain.top/images/avatar.jpg">
+<meta property="article:published_time" content="2025-06-03T00:02:57.000Z">
+<meta property="article:modified_time" content="2025-06-23T15:30:00.000Z">
+<meta property="article:author" content="YuStone">
+<meta property="article:tag" content="data structure">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://yustonerain.top/images/avatar.jpg">
+  
+  
+  
+  <meta name="keywords" content="data structure">
+
+  <!-- feed -->
+  
+    <link rel="alternate" href="/atom.xml" title="YuStone Blogs" type="application/atom+xml">
+  
+
+  <link rel="stylesheet" href="/css/main.css?v=1.33.1">
+
+
+  
+    <link rel="shortcut icon" href="/favicon1.ico">
+  
+
+  
+
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"YuStone","sameAs":[],"image":"/images/avatar.jpg"},"dateCreated":"2025-06-03T08:02:57+08:00","dateModified":"2025-06-23T23:30:00+08:00","datePublished":"2025-06-03T08:02:57+08:00","description":"","headline":"数据结构100题","mainEntityOfPage":{"@type":"WebPage","@id":"http://yustonerain.top/2025/06/03/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84100%E9%A2%98/"},"publisher":{"@type":"Organization","name":"YuStone","sameAs":[],"image":"/images/avatar.jpg","logo":{"@type":"ImageObject","url":"/images/avatar.jpg"}},"url":"http://yustonerain.top/2025/06/03/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84100%E9%A2%98/","keywords":"data structure","image":[]}</script>
+  
+</head>
+<body>
+
+<div class="l_body content" id="start" layout="post" type="tech" ><aside class="l_left"><div class="sidebg"></div><div class="leftbar-container">
+
+
+<header class="header"><div class="logo-wrap"><a class="avatar" href="/about/"><div class="bg" style="opacity:0;background-image:url(https://gcore.jsdelivr.net/gh/cdn-x/placeholder@1.0.12/avatar/round/rainbow64@3x.webp);"></div><img no-lazy class="avatar" src="/images/avatar.jpg" onerror="javascript:this.classList.add('error');this.src='https://gcore.jsdelivr.net/gh/cdn-x/placeholder@1.0.12/image/2659360.svg';"></a><a class="title" href="/"><div class="main">YuStone Blogs</div><div class="sub cap">the world</div></a></div></header>
+
+<div class="nav-area">
+
+<nav class="menu dis-select"><a class="nav-item active" title="博客" href="/" style="color:#1BCDFC"><svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24"><path fill="currentColor" fill-rule="evenodd" d="M5.879 2.879C5 3.757 5 5.172 5 8v8c0 2.828 0 4.243.879 5.121C6.757 22 8.172 22 11 22h2c2.828 0 4.243 0 5.121-.879C19 20.243 19 18.828 19 16V8c0-2.828 0-4.243-.879-5.121C17.243 2 15.828 2 13 2h-2c-2.828 0-4.243 0-5.121.879M8.25 17a.75.75 0 0 1 .75-.75h3a.75.75 0 0 1 0 1.5H9a.75.75 0 0 1-.75-.75M9 12.25a.75.75 0 0 0 0 1.5h6a.75.75 0 0 0 0-1.5zM8.25 9A.75.75 0 0 1 9 8.25h6a.75.75 0 0 1 0 1.5H9A.75.75 0 0 1 8.25 9" clip-rule="evenodd"/><path fill="currentColor" d="M5.235 4.058C5 4.941 5 6.177 5 8v8c0 1.823 0 3.058.235 3.942L5 19.924c-.975-.096-1.631-.313-2.121-.803C2 18.243 2 16.828 2 14v-4c0-2.829 0-4.243.879-5.121c.49-.49 1.146-.707 2.121-.803zm13.53 15.884C19 19.058 19 17.822 19 16V8c0-1.823 0-3.059-.235-3.942l.235.018c.975.096 1.631.313 2.121.803C22 5.757 22 7.17 22 9.999v4c0 2.83 0 4.243-.879 5.122c-.49.49-1.146.707-2.121.803z" opacity=".5"/></svg></a><a class="nav-item" title="更多" href="/more/"><span>更多</span></a></nav>
+</div>
+<div class="widgets">
+<div class="search-wrapper" id="search-wrapper"><form class="search-form"><a class="search-button" onclick="document.getElementById(&quot;search-input&quot;).focus();"><svg t="1705074644177" viewBox="0 0 1025 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="1560" width="200" height="200"><path d="M1008.839137 935.96571L792.364903 719.491476a56.783488 56.783488 0 0 0-80.152866 0 358.53545 358.53545 0 1 1 100.857314-335.166073 362.840335 362.840335 0 0 1-3.689902 170.145468 51.248635 51.248635 0 1 0 99.217358 26.444296 462.057693 462.057693 0 1 0-158.255785 242.303546l185.930047 185.725053a51.248635 51.248635 0 0 0 72.568068 0 51.248635 51.248635 0 0 0 0-72.978056z" p-id="1561"></path><path d="M616.479587 615.969233a50.428657 50.428657 0 0 0-61.498362-5.534852 174.655348 174.655348 0 0 1-177.525271 3.484907 49.403684 49.403684 0 0 0-58.833433 6.76482l-3.074918 2.869923a49.403684 49.403684 0 0 0 8.609771 78.10292 277.767601 277.767601 0 0 0 286.992355-5.739847 49.403684 49.403684 0 0 0 8.404776-76.667958z" p-id="1562"></path></svg></a><input type="text" class="search-input" id="search-input" placeholder="站内搜索"></form><div id="search-result"></div><div class="search-no-result">没有找到内容！</div></div>
+
+
+
+<widget class="widget-wrapper recent post-list"><div class="widget-header dis-select"><span class="name">最近更新</span></div><div class="widget-body fs14"><a class="item title" href="/2025/07/25/MYSQLlearning/"><span class="title">MYSQL learning</span></a><a class="item title" href="/2025/07/16/Linux%E7%BD%91%E7%BB%9C%E7%BC%96%E7%A8%8B/"><span class="title">Linux网络编程</span></a><a class="item title" href="/2025/06/20/Linux%E7%B3%BB%E7%BB%9F%E7%BC%96%E7%A8%8B/"><span class="title">Linux系统编程</span></a><a class="item title" href="/2025/07/03/mysql%E8%BF%9E%E6%8E%A5%E6%B1%A0/"><span class="title">mysql连接池</span></a><a class="item title" href="/2025/06/03/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84100%E9%A2%98/"><span class="title">数据结构100题</span></a><a class="item title" href="/2025/06/02/c-%E5%AE%9E%E7%8E%B0%E9%9B%86%E7%BE%A4%E8%81%8A%E5%A4%A9%E6%9C%8D%E5%8A%A1%E5%99%A8/"><span class="title">c++实现集群聊天服务器</span></a></div></widget>
+</div>
+<footer class="footer dis-select"><div class="social-wrap"><a class="social" href="https://" target="_blank" rel="external nofollow noopener noreferrer"><img src="https://gcore.jsdelivr.net/gh/cdn-x/placeholder/social/08a41b181ce68.svg"/></a><a class="social" href="https://" target="_blank" rel="external nofollow noopener noreferrer"><img src="https://gcore.jsdelivr.net/gh/cdn-x/placeholder/social/3845874.svg"/></a><a class="social" href="https://" target="_blank" rel="external nofollow noopener noreferrer"><img src="https://gcore.jsdelivr.net/gh/cdn-x/placeholder/social/3616429.svg"/></a><a class="social" href="https://" target="_blank" rel="external nofollow noopener noreferrer"><img src="https://gcore.jsdelivr.net/gh/cdn-x/placeholder/social/942ebbf1a4b91.svg"/></a></div></footer>
+</div></aside><div class="l_main" id="main">
+
+
+
+
+
+<div class="article banner top">
+  <div class="content">
+    <div class="top bread-nav footnote"><div class="left"><div class="flex-row" id="breadcrumb"><a class="cap breadcrumb" href="/">主页</a>
+<span class="sep"></span><a class="cap breadcrumb" href="/">文章</a><span class="sep"></span><a class="cap breadcrumb-link" href="/categories/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84100%E9%A2%98/">数据结构100题</a></div>
+<div class="flex-row" id="post-meta"><span class="text created">发布于：<time datetime="2025-06-03T00:02:57.000Z">2025-06-03</time></span><span class="sep updated"></span><span class="text updated">更新于：<time datetime="2025-06-23T15:30:00.000Z">2025-06-23</time></span></div></div></div>
+    
+    <div class="bottom only-title">
+      
+      <div class="text-area">
+        <h1 class="text title"><span>数据结构100题</span></h1>
+        
+      </div>
+    </div>
+    
+  </div>
+  </div><article class="md-text content"><h2 id="两数之和"><a href="#两数之和" class="headerlink" title="两数之和"></a><a target="_blank" rel="noopener" href="https://leetcode.cn/problems/two-sum/">两数之和</a></h2><h3 id="题目描述"><a href="#题目描述" class="headerlink" title="题目描述"></a>题目描述</h3><p>​		 给定一个整数数组 <code>nums</code> 和一个整数目标值 <code>target</code>，请你在该数组中找出 <strong>和为目标值</strong> <em><code>target</code></em> 的那 <strong>两个</strong> 整数，并返回它们的数组下标。</p>
+<p>你可以假设每种输入只会对应一个答案，并且你不能使用两次相同的元素。</p>
+<p>你可以按任意顺序返回答案。</p>
+<p><strong>示例 1：</strong></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">输入：nums = [2,7,11,15], target = 9</span><br><span class="line">输出：[0,1]</span><br><span class="line">解释：因为 nums[0] + nums[1] == 9 ，返回 [0, 1] 。</span><br></pre></td></tr></table></figure>
+
+<p><strong>示例 2：</strong></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">输入：nums = [3,2,4], target = 6</span><br><span class="line">输出：[1,2]</span><br></pre></td></tr></table></figure>
+
+<p><strong>示例 3：</strong></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">输入：nums = [3,3], target = 6</span><br><span class="line">输出：[0,1]</span><br></pre></td></tr></table></figure>
+
+<h3 id="思路："><a href="#思路：" class="headerlink" title="思路："></a><strong>思路：</strong></h3><h4 id="具体思路："><a href="#具体思路：" class="headerlink" title="具体思路："></a>具体思路：</h4><p>首先使用unordered_map，在遍历原数组时，边查边找。</p>
+<p>如果没找到，就把当前值的值和下标存入unordered_map，以便下次寻找可以搜素以前的键值对，看是否有满足情况（target-nums[i]）的key,若有，取出对应的value(iter-&gt;second)和当前的数组下标一起返回。当然最坏的情况，遍历完了，也没有符合情况的出现。可以直接返回空。</p>
+<h4 id="std-unordered-map的核心特性："><a href="#std-unordered-map的核心特性：" class="headerlink" title="std::unordered_map的核心特性："></a>std::unordered_map的核心特性：</h4><p><strong>1. 基于哈希表实现（Hash Table）</strong></p>
+<ul>
+<li><code>unordered_map</code> 通过哈希函数（<code>std::hash</code>）将键（key）映射到一个桶（bucket）中，实现<strong>常数时间复杂度（O(1)）</strong>的查找、插入和删除操作（平均情况）。</li>
+<li>哈希冲突通过链表（或更优化的结构）解决。</li>
+</ul>
+<hr>
+<ol start="2">
+<li><strong>键唯一（Key is Unique）</strong></li>
+</ol>
+<ul>
+<li>每个键（key）在 <code>unordered_map</code> 中必须是唯一的，如果插入相同键，会覆盖原有值或插入失败（取决于操作方式）。</li>
+</ul>
+<hr>
+<p><strong>3. 无序（Unordered）</strong></p>
+<ul>
+<li>元素的存储顺序<strong>不保证稳定性或有序性</strong>，与插入顺序无关。</li>
+<li>如果需要有序容器，应使用 <code>std::map</code>。</li>
+</ul>
+<hr>
+<p><strong>4. 自动扩容</strong></p>
+<ul>
+<li><code>unordered_map</code> 会根据负载因子（load factor）自动扩展桶的数量，以保持操作效率。</li>
+<li>用户可以手动调整负载因子和桶数量（如 <code>rehash()</code> 或 <code>reserve()</code> 函数）。</li>
+</ul>
+<hr>
+<p><strong>5. 允许自定义哈希函数与相等比较器</strong></p>
+<ul>
+<li>支持用户为自定义类型指定哈希函数（通过模板参数 <code>Hash</code> 和 <code>KeyEqual</code>）。</li>
+</ul>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">cpp</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">复制编辑</span><br><span class="line">std::unordered_map&lt;MyType, int, MyHash, MyEqual&gt;</span><br></pre></td></tr></table></figure>
+
+<p> <strong>6. 快速访问接口</strong></p>
+<ul>
+<li><code>operator[]</code>：快速访问键对应的值，如果键不存在，则自动插入默认值。</li>
+<li><code>find()</code>：返回一个迭代器，指向查找到的键值对，否则为 <code>end()</code>。</li>
+</ul>
+<hr>
+<p><strong>7. 不支持排序算法</strong></p>
+<ul>
+<li>由于无序存储，标准排序算法（如 <code>sort</code>）不能直接应用于 <code>unordered_map</code>，但可以通过将其内容复制到 <code>vector&lt;pair&lt;&gt;&gt;</code> 后排序实现。</li>
+</ul>
+<hr>
+<p><strong>8. 多线程下非线程安全</strong></p>
+<ul>
+<li>多线程环境下访问 <code>unordered_map</code> 必须加锁或使用线程安全容器。</li>
+</ul>
+<h4 id="代码块"><a href="#代码块" class="headerlink" title="代码块"></a>代码块</h4><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">Solution</span> &#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="function">vector&lt;<span class="type">int</span>&gt; <span class="title">twoSum</span><span class="params">(vector&lt;<span class="type">int</span>&gt;&amp; nums, <span class="type">int</span> target)</span> </span>&#123;</span><br><span class="line">        std::unordered_map&lt;<span class="type">int</span>,<span class="type">int</span>&gt; map;</span><br><span class="line">        <span class="keyword">for</span>(<span class="type">int</span> i=<span class="number">0</span>;i&lt;nums.<span class="built_in">size</span>();i++)&#123;</span><br><span class="line">            <span class="keyword">auto</span> iter =map.<span class="built_in">find</span>(target-nums[i]);</span><br><span class="line">            <span class="keyword">if</span>(iter!=map.<span class="built_in">end</span>())&#123;</span><br><span class="line">                <span class="keyword">return</span> &#123;i,iter-&gt;second&#125;;</span><br><span class="line">            &#125;</span><br><span class="line">            map.<span class="built_in">insert</span>(<span class="built_in">pair</span>&lt;<span class="type">int</span>,<span class="type">int</span>&gt;(nums[i],i));</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> &#123;&#125;;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
+
+
+<h4 id="时间复杂度："><a href="#时间复杂度：" class="headerlink" title="时间复杂度："></a>时间复杂度：</h4><ul>
+<li>一次遍历 <code>nums</code> 数组，时间是 <code>O(n)</code>。</li>
+<li>对于每个元素：<ul>
+<li><code>map.find(...)</code> 查找操作的平均时间复杂度是 **O(1)**。</li>
+<li><code>map.insert(...)</code> 插入操作的平均时间复杂度也是 **O(1)**。</li>
+</ul>
+</li>
+</ul>
+<p>因此，总体时间复杂度是：</p>
+<p>**O(n)**（n 是数组中元素的数量）</p>
+<h4 id="空间复杂度："><a href="#空间复杂度：" class="headerlink" title="空间复杂度："></a>空间复杂度：</h4><ul>
+<li>最多会向 <code>unordered_map</code> 中插入 <code>n</code> 个元素（每个 <code>nums[i]</code> 和其索引 <code>i</code>）。</li>
+<li>所以空间复杂度与 <code>nums</code> 的大小成正比。</li>
+</ul>
+<p>**O(n)**（额外使用了哈希表来存储 n 个键值对）</p>
+<h2 id="字母异位词分组"><a href="#字母异位词分组" class="headerlink" title="字母异位词分组"></a><a target="_blank" rel="noopener" href="https://leetcode.cn/problems/group-anagrams/">字母异位词分组</a></h2><h3 id="题目描述："><a href="#题目描述：" class="headerlink" title="题目描述："></a>题目描述：</h3><p>给你一个字符串数组，请你将 <strong>字母异位词</strong> 组合在一起。可以按任意顺序返回结果列表。</p>
+<p><strong>字母异位词</strong> 是由重新排列源单词的所有字母得到的一个新单词。</p>
+<p><strong>示例 1:</strong></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">输入: strs = [&quot;eat&quot;, &quot;tea&quot;, &quot;tan&quot;, &quot;ate&quot;, &quot;nat&quot;, &quot;bat&quot;]</span><br><span class="line">输出: [[&quot;bat&quot;],[&quot;nat&quot;,&quot;tan&quot;],[&quot;ate&quot;,&quot;eat&quot;,&quot;tea&quot;]]</span><br></pre></td></tr></table></figure>
+
+<p><strong>示例 2:</strong></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">输入: strs = [&quot;&quot;]</span><br><span class="line">输出: [[&quot;&quot;]]</span><br></pre></td></tr></table></figure>
+
+<p><strong>示例 3:</strong></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">输入: strs = [&quot;a&quot;]</span><br><span class="line">输出: [[&quot;a&quot;]]</span><br></pre></td></tr></table></figure>
+
+<p><strong>提示：</strong></p>
+<ul>
+<li><code>1 &lt;= strs.length &lt;= 104</code></li>
+<li><code>0 &lt;= strs[i].length &lt;= 100</code></li>
+<li><code>strs[i]</code> 仅包含小写字母</li>
+</ul>
+<h3 id="思路"><a href="#思路" class="headerlink" title="思路"></a>思路</h3><h4 id="具体思路：-1"><a href="#具体思路：-1" class="headerlink" title="具体思路："></a>具体思路：</h4><p>​		首先使用std::unordered_map结构，当然不用再介绍了。这个题的意思是把那些排序之后相同的单词放在一个组合。</p>
+<p>所以我们可以先使用unordered_map&lt;string,vector<string>&gt;存储键值对，键就是排序之后的单词，毕竟排序之后都一样。</string></p>
+<p>键对应的值就是对应的单词（排序相同的单词），最后再遍历这个unordered_map，输出结果。</p>
+<h4 id="代码块："><a href="#代码块：" class="headerlink" title="代码块："></a>代码块：</h4><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">Solution</span> &#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    vector&lt;vector&lt;string&gt;&gt; <span class="built_in">groupAnagrams</span>(vector&lt;string&gt;&amp; strs) &#123;</span><br><span class="line">        <span class="comment">//做这道题首先对于字母异位词 排序之后是相同的，所以可以用一个哈希表，键存储排序后的结果，值为结果集</span></span><br><span class="line">        std::unordered_map&lt;string,vector&lt;string&gt;&gt; record;</span><br><span class="line">        <span class="keyword">for</span>(<span class="type">int</span> i=<span class="number">0</span>;i&lt;strs.<span class="built_in">size</span>();i++)&#123;</span><br><span class="line">            string temp=strs[i];</span><br><span class="line">            <span class="built_in">sort</span>(temp.<span class="built_in">begin</span>(),temp.<span class="built_in">end</span>());</span><br><span class="line">            record[temp].<span class="built_in">emplace_back</span>(strs[i]);</span><br><span class="line"></span><br><span class="line">        &#125;</span><br><span class="line">        vector&lt;vector&lt;string&gt;&gt; ans;</span><br><span class="line">        <span class="keyword">for</span>(<span class="keyword">auto</span> it=record.<span class="built_in">begin</span>();it!=record.<span class="built_in">end</span>();it++)&#123;</span><br><span class="line">            ans.<span class="built_in">emplace_back</span>(it-&gt;second);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> ans;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
+<h4 id="时间复杂度：-1"><a href="#时间复杂度：-1" class="headerlink" title="时间复杂度："></a>时间复杂度：</h4><p>假设：</p>
+<ul>
+<li><code>n</code> 是字符串数组 <code>strs</code> 的长度。</li>
+<li><code>k</code> 是每个字符串的平均长度。</li>
+</ul>
+<ol>
+<li>遍历 <code>strs</code> 中的每个字符串，共 <code>n</code> 次。</li>
+<li>对每个字符串排序：<code>O(k log k)</code></li>
+<li>哈希表插入&#x2F;查找键值对：<code>O(1)</code> 平均时间。</li>
+</ol>
+<p>所以总时间复杂度为：</p>
+<p><strong>O(n * k log k)</strong></p>
+<h4 id="空间复杂度：-1"><a href="#空间复杂度：-1" class="headerlink" title="空间复杂度："></a>空间复杂度：</h4><ul>
+<li>哈希表 <code>record</code> 最多存 <code>n</code> 个键，每个键存一个 <code>vector&lt;string&gt;</code>，整体字符串内容不变，只是重新组织。</li>
+<li>排序后的中间变量 <code>temp</code> 的开销为 <code>O(k)</code>，共用一次。</li>
+<li>最终结果 <code>ans</code> 存储所有原字符串内容。</li>
+</ul>
+<p>所以额外空间主要包括：</p>
+<ol>
+<li>哈希表键（排序后的字符串）：最多 <code>n</code> 个，每个长度为 <code>k</code>：<code>O(n * k)</code></li>
+<li>哈希表值（字符串集合）：整体还是输入的字符串，只是重新组织，<strong>不算重复存储</strong></li>
+<li>排序的临时变量（重复使用）：忽略不计</li>
+</ol>
+<p>因此总空间复杂度为：</p>
+<p><strong>O(n * k)</strong></p>
+<h2 id="最长连续序列"><a href="#最长连续序列" class="headerlink" title="最长连续序列"></a><a target="_blank" rel="noopener" href="https://leetcode.cn/problems/longest-consecutive-sequence/">最长连续序列</a></h2><h3 id="题目描述：-1"><a href="#题目描述：-1" class="headerlink" title="题目描述："></a>题目描述：</h3><p>给定一个未排序的整数数组 <code>nums</code> ，找出数字连续的最长序列（不要求序列元素在原数组中连续）的长度。</p>
+<p>请你设计并实现时间复杂度为 <code>O(n)</code> 的算法解决此问题。</p>
+<p><strong>示例 1：</strong></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">输入：nums = [100,4,200,1,3,2]</span><br><span class="line">输出：4</span><br><span class="line">解释：最长数字连续序列是 [1, 2, 3, 4]。它的长度为 4。</span><br></pre></td></tr></table></figure>
+
+<p><strong>示例 2：</strong></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">输入：nums = [0,3,7,2,5,8,4,6,0,1]</span><br><span class="line">输出：9</span><br></pre></td></tr></table></figure>
+
+<p><strong>示例 3：</strong></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">输入：nums = [1,0,1,2]</span><br><span class="line">输出：3</span><br></pre></td></tr></table></figure>
+
+<h3 id="思路：-1"><a href="#思路：-1" class="headerlink" title="思路："></a>思路：</h3><h4 id="具体思路：-2"><a href="#具体思路：-2" class="headerlink" title="具体思路："></a>具体思路：</h4><p>​		首先将数组存入unordered_set中避免重复，为什么用unordered_set，因为找元素它是O(1)。</p>
+<p>接下来遍历unordered_set，先判断当前元素有没有前一个连续的元素（例子：当前元素为5，查是否有4），有则跳过，没有则进行下一步，并且这个节点是作为开始节点。</p>
+<p>然后先保存当前节点的值和连续序列的长度（这个时候为1），然后循环查找连续序列，最后获得连续序列的长度，再和历史最长连续序</p>
+<p>列比较，更新历史最长连续序列。遍历完unordered_set，返回历史最长连续序列即可。</p>
+<h4 id="std-unordered-set的特性："><a href="#std-unordered-set的特性：" class="headerlink" title="std::unordered_set的特性："></a>std::unordered_set的特性：</h4><p><code>std::unordered_set</code> 是 C++ 标准库中提供的 <strong>无序集合容器</strong>，它内部基于哈希表实现，主要用于快速判断一个元素是否存在，并确保元素唯一。下面是它的详细特性：</p>
+<hr>
+<p><strong>1. 元素唯一（Unique Elements）</strong></p>
+<ul>
+<li>它是一个 <strong>集合（set）</strong>，<strong>不允许重复元素</strong>。</li>
+<li>插入相同元素将失败，已有的不会被替换。</li>
+</ul>
+<hr>
+<p><strong>2. 基于哈希表（Hash Table）</strong></p>
+<ul>
+<li>内部使用哈希表存储元素。</li>
+<li>插入、查找、删除的**平均时间复杂度是 O(1)**，非常高效。</li>
+<li>如果发生大量哈希冲突，最坏情况会退化为 O(n)，但 STL 默认哈希函数表现良好，一般不会发生。</li>
+</ul>
+<hr>
+<p><strong>3. 元素无序（Unordered）</strong></p>
+<ul>
+<li>和 <code>std::set</code>（基于红黑树，有序）不同，<code>unordered_set</code> 中的元素<strong>存储顺序不固定</strong>。</li>
+<li>遍历时元素的顺序是哈希桶顺序，<strong>不可预测</strong>。</li>
+</ul>
+<hr>
+<p><strong>4. 可自定义哈希函数（支持自定义类型）</strong></p>
+<ul>
+<li>可以为自定义类型提供哈希函数和等价比较函数。</li>
+</ul>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">std::unordered_set&lt;MyType, MyHash, MyEqual&gt;</span><br></pre></td></tr></table></figure>
+
+<hr>
+<p><strong>5. 常用操作和函数</strong></p>
+<table>
+<thead>
+<tr>
+<th>函数</th>
+<th>功能</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>insert(val)</code></td>
+<td>插入元素，若已存在则不插入</td>
+</tr>
+<tr>
+<td><code>erase(val)</code></td>
+<td>删除元素</td>
+</tr>
+<tr>
+<td><code>find(val)</code></td>
+<td>查找元素，返回迭代器</td>
+</tr>
+<tr>
+<td><code>count(val)</code></td>
+<td>判断元素是否存在（返回 0 或 1）</td>
+</tr>
+<tr>
+<td><code>size()</code></td>
+<td>元素个数</td>
+</tr>
+<tr>
+<td><code>empty()</code></td>
+<td>是否为空</td>
+</tr>
+<tr>
+<td><code>clear()</code></td>
+<td>清空所有元素</td>
+</tr>
+<tr>
+<td><code>begin()</code>, <code>end()</code></td>
+<td>返回迭代器（可用于范围遍历）</td>
+</tr>
+</tbody></table>
+<hr>
+<p><strong>5.与 <code>std::set</code> 的区别</strong></p>
+<table>
+<thead>
+<tr>
+<th>特性</th>
+<th><code>std::set</code>（有序）</th>
+<th align="center"><code>std::unordered_set</code>（无序）</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>底层结构</td>
+<td>红黑树（平衡 BST）</td>
+<td align="center">哈希表</td>
+</tr>
+<tr>
+<td>元素是否有序</td>
+<td>是</td>
+<td align="center">否</td>
+</tr>
+<tr>
+<td>查找&#x2F;插入效率</td>
+<td><code>O(log n)</code></td>
+<td align="center">平均 <code>O(1)</code></td>
+</tr>
+<tr>
+<td>内存使用</td>
+<td>较少</td>
+<td align="center">较多（需额外存哈希结构）</td>
+</tr>
+<tr>
+<td>自定义排序</td>
+<td>支持</td>
+<td align="center">不支持</td>
+</tr>
+</tbody></table>
+<h4 id="代码块：-1"><a href="#代码块：-1" class="headerlink" title="代码块："></a>代码块：</h4><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">Solution</span> &#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="function"><span class="type">int</span> <span class="title">longestConsecutive</span><span class="params">(vector&lt;<span class="type">int</span>&gt;&amp; nums)</span> </span>&#123;</span><br><span class="line">        unordered_set&lt;<span class="type">int</span>&gt; num_set;</span><br><span class="line">        <span class="comment">//使用unordered_set存储nums的所有值</span></span><br><span class="line">        <span class="keyword">for</span>(<span class="type">const</span> <span class="type">int</span> &amp;num:nums)&#123;</span><br><span class="line">            num_set.<span class="built_in">insert</span>(num);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="type">int</span> longSum=<span class="number">0</span>;</span><br><span class="line">        <span class="keyword">for</span>(<span class="type">const</span> <span class="type">int</span> &amp;num:num_set)&#123;</span><br><span class="line">            <span class="comment">//上述遍历用nums和num_set有什么区别，在leetcode一个能过一个不能过</span></span><br><span class="line">            <span class="comment">//以遍历的每个元素为起点，满足才进行下一步操作</span></span><br><span class="line">            <span class="keyword">if</span>(!num_set.<span class="built_in">count</span>(num<span class="number">-1</span>))&#123;</span><br><span class="line">                <span class="comment">//满足条件后，存储当前节点的信息</span></span><br><span class="line">                <span class="type">int</span> currentNum=num;</span><br><span class="line">                <span class="type">int</span> currentSum=<span class="number">1</span>;</span><br><span class="line">                <span class="comment">//寻找该节点的最长连续序列</span></span><br><span class="line">                <span class="keyword">while</span>(num_set.<span class="built_in">count</span>(currentNum<span class="number">+1</span>))&#123;</span><br><span class="line">                    currentNum=currentNum<span class="number">+1</span>;</span><br><span class="line">                    currentSum+=<span class="number">1</span>;</span><br><span class="line">                &#125;</span><br><span class="line">                <span class="comment">//最后与longSum比较，更新历史最长连续序列</span></span><br><span class="line">                longSum=<span class="built_in">max</span>(currentSum,longSum);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> longSum;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
+<h4 id="编写代码产生的问题："><a href="#编写代码产生的问题：" class="headerlink" title="编写代码产生的问题："></a>编写代码产生的问题：</h4><p>上述遍历用nums和num_set有什么区别，在leetcode一个能过一个不能过</p>
+<p><strong>遍历 <code>num_set</code>：</strong></p>
+<ul>
+<li>每个元素最多只被作为“起点”处理一次。</li>
+<li>例如：对于序列 <code>[100, 101, 102, 103]</code>，只有 <code>100</code> 会进入 while 循环处理。</li>
+<li>其他如 <code>101</code>、<code>102</code> 在 <code>if (!num_set.count(num - 1))</code> 时会被跳过（因为 <code>100</code> 已经处理了它们）。</li>
+<li>所以是 <strong>O(n)</strong> 时间复杂度。</li>
+</ul>
+<p><strong>遍历 <code>nums</code>：</strong></p>
+<ul>
+<li><code>nums</code> 可能包含重复值，也可能无序。</li>
+<li>比如你在 <code>nums</code> 中遇到 <code>102</code>，它不是起点，但你仍会试图查找连续数字，造成<strong>重复计算</strong>。</li>
+<li>重复调用 <code>count()</code>，浪费性能，导致 <strong>超时</strong> 或 <strong>错误结果</strong>（重复统计）。</li>
+</ul>
+<h4 id="时间复杂度：-2"><a href="#时间复杂度：-2" class="headerlink" title="时间复杂度："></a>时间复杂度：</h4><p>设输入数组 <code>nums</code> 的长度为 <code>n</code>。</p>
+<ol>
+<li><code>unordered_set</code> 插入 <code>n</code> 个元素：**O(n)**（平均时间，插入是 O(1)）。</li>
+<li>第二个循环遍历 <code>num_set</code> 中的每个元素，<strong>每个连续序列只处理一次</strong>。</li>
+</ol>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">if (!num_set.count(num - 1))</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>这个判断确保每个序列的起点只会被处理一次。</li>
+<li>例如序列 <code>[100, 101, 102, 103]</code> 只会从 <code>100</code> 开始处理一次，不会在遍历到 <code>101</code> 时重复处理。</li>
+</ul>
+<p>因此：</p>
+<p>**总时间复杂度：O(n)**（哈希表操作均为 O(1) 平均时间）</p>
+<h4 id="空间复杂度：-2"><a href="#空间复杂度：-2" class="headerlink" title="空间复杂度："></a>空间复杂度：</h4><ul>
+<li>使用了一个 <code>unordered_set</code> 存储 <code>n</code> 个整数，占用 O(n) 的空间。</li>
+<li>其他变量如 <code>currentNum</code>, <code>currentSum</code> 等为常数空间。</li>
+</ul>
+<p>因此：</p>
+<p><strong>总空间复杂度：O(n)</strong></p>
+<h2 id="移动零"><a href="#移动零" class="headerlink" title="移动零"></a><a target="_blank" rel="noopener" href="https://leetcode.cn/problems/move-zeroes/">移动零</a></h2><h3 id="题目描述：-2"><a href="#题目描述：-2" class="headerlink" title="题目描述："></a>题目描述：</h3><p>给定一个数组 <code>nums</code>，编写一个函数将所有 <code>0</code> 移动到数组的末尾，同时保持非零元素的相对顺序。</p>
+<p><strong>请注意</strong> ，必须在不复制数组的情况下原地对数组进行操作。</p>
+<p><strong>示例 1:</strong></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">输入: nums = [0,1,0,3,12]</span><br><span class="line">输出: [1,3,12,0,0]</span><br></pre></td></tr></table></figure>
+
+<p><strong>示例 2:</strong></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">输入: nums = [0]</span><br><span class="line">输出: [0]</span><br></pre></td></tr></table></figure>
+
+<h3 id="思路：-2"><a href="#思路：-2" class="headerlink" title="思路："></a>思路：</h3><h4 id="具体思路：-3"><a href="#具体思路：-3" class="headerlink" title="具体思路："></a>具体思路：</h4><p>​		我们可以采用双指针的方法，先left,right同时指向起始点，right到最后位置结束。当right找到非零节点，与left进行值交换，left只有交换结束才left++;这样最后非零节点都在前面，0都在末尾。</p>
+<h4 id="代码块：-2"><a href="#代码块：-2" class="headerlink" title="代码块："></a>代码块：</h4><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">Solution</span> &#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="function"><span class="type">void</span> <span class="title">moveZeroes</span><span class="params">(vector&lt;<span class="type">int</span>&gt;&amp; nums)</span> </span>&#123;</span><br><span class="line">        <span class="type">int</span> n=nums.<span class="built_in">size</span>(),left=<span class="number">0</span>,right=<span class="number">0</span>;</span><br><span class="line">        <span class="keyword">while</span>(right&lt;n)&#123;</span><br><span class="line">            <span class="keyword">if</span>(nums[right])&#123;</span><br><span class="line">                <span class="built_in">swap</span>(nums[left],nums[right]);</span><br><span class="line">                left++;</span><br><span class="line">            &#125;</span><br><span class="line">            right++;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
+
+
+<h4 id="时间复杂度：-3"><a href="#时间复杂度：-3" class="headerlink" title="时间复杂度："></a>时间复杂度：</h4><ul>
+<li><code>right</code> 从 <code>0</code> 遍历到 <code>n-1</code>，每个元素访问一次。</li>
+<li>最多发生 <code>n</code> 次 <code>swap</code> 操作（每个非零元素最多被交换一次）。</li>
+<li>所以：</li>
+</ul>
+<p><strong>总时间复杂度：O(n)</strong></p>
+<h4 id="空间复杂度：-3"><a href="#空间复杂度：-3" class="headerlink" title="空间复杂度："></a>空间复杂度：</h4><ul>
+<li>只使用了常量级别的辅助变量 <code>left</code> 和 <code>right</code>。</li>
+<li>所有操作都在原数组上进行，<strong>原地修改</strong>，没有开辟额外数组。</li>
+</ul>
+<p><strong>总空间复杂度：O(1)</strong></p>
+<h2 id="盛最多水的容器"><a href="#盛最多水的容器" class="headerlink" title="盛最多水的容器"></a><a target="_blank" rel="noopener" href="https://leetcode.cn/problems/container-with-most-water/">盛最多水的容器</a></h2><h3 id="题目描述：-3"><a href="#题目描述：-3" class="headerlink" title="题目描述："></a>题目描述：</h3><p>给定一个长度为 <code>n</code> 的整数数组 <code>height</code> 。有 <code>n</code> 条垂线，第 <code>i</code> 条线的两个端点是 <code>(i, 0)</code> 和 <code>(i, height[i])</code> 。</p>
+<p>找出其中的两条线，使得它们与 <code>x</code> 轴共同构成的容器可以容纳最多的水。</p>
+<p>返回容器可以储存的最大水量。</p>
+<p><strong>说明：</strong>你不能倾斜容器。</p>
+<p><strong>示例 1：</strong></p>
+<p><img src="https://aliyun-lc-upload.oss-cn-hangzhou.aliyuncs.com/aliyun-lc-upload/uploads/2018/07/25/question_11.jpg" alt="img"></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">输入：[1,8,6,2,5,4,8,3,7]</span><br><span class="line">输出：49 </span><br><span class="line">解释：图中垂直线代表输入数组 [1,8,6,2,5,4,8,3,7]。在此情况下，容器能够容纳水（表示为蓝色部分）的最大值为 49。</span><br></pre></td></tr></table></figure>
+
+<p><strong>示例 2：</strong></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">输入：height = [1,1]</span><br><span class="line">输出：1</span><br></pre></td></tr></table></figure>
+
+<h3 id="思路：-3"><a href="#思路：-3" class="headerlink" title="思路："></a>思路：</h3><h4 id="具体思路：-4"><a href="#具体思路：-4" class="headerlink" title="具体思路："></a>具体思路：</h4><p>​		我们采用双指针的方式求解。这个题目的是求解柱子之间的最大面积。我们可以采用将两个指针放在两端，如果左边的柱子高度大于或等于右边的柱子高度，我们先算出容器对应的面积（高度以低柱子为准）。算出后更新历史最大面积。执行完，将右边的柱子向左移动。同时，还有一种情况，左边的柱子高度小于右边的柱子高度，先算出容器对应的面积（高度以低柱子为准）。算出后更新历史最大面积。执行完，将左边的柱子向右移动。直到当前的左柱子和右柱子重合。</p>
+<h4 id="代码块：-3"><a href="#代码块：-3" class="headerlink" title="代码块："></a>代码块：</h4><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">Solution</span> &#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="function"><span class="type">int</span> <span class="title">maxArea</span><span class="params">(vector&lt;<span class="type">int</span>&gt;&amp; height)</span> </span>&#123;</span><br><span class="line">        <span class="type">int</span> ans=<span class="number">0</span>;</span><br><span class="line">        <span class="comment">//采用双指针的方式求解</span></span><br><span class="line">        <span class="type">int</span> left=<span class="number">0</span>;</span><br><span class="line">        <span class="type">int</span> right=height.<span class="built_in">size</span>()<span class="number">-1</span>;</span><br><span class="line">        <span class="keyword">while</span>(left&lt;right)&#123;</span><br><span class="line">            <span class="keyword">if</span>(height[left]&gt;=height[right])&#123;</span><br><span class="line">                ans=<span class="built_in">max</span>(ans,(right-left)*height[right]);</span><br><span class="line">                right--;</span><br><span class="line">            &#125;<span class="keyword">else</span>&#123;</span><br><span class="line">                ans=<span class="built_in">max</span>(ans,(right-left)*height[left]);</span><br><span class="line">                left++;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> ans;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
+
+
+<h4 id="时间复杂度：-4"><a href="#时间复杂度：-4" class="headerlink" title="时间复杂度："></a>时间复杂度：</h4><p>时间复杂度：<code>O(n)</code></p>
+<ul>
+<li>解释：使用的是<strong>双指针</strong>方法，从两端向中间遍历整个数组，每一次迭代都会<strong>移动左指针或右指针之一</strong>，因此总共最多移动 <code>n-1</code> 次。</li>
+<li>所以时间复杂度是 **线性的 O(n)**，其中 <code>n</code> 是 <code>height</code> 数组的长度。</li>
+</ul>
+<h4 id="空间复杂度：-4"><a href="#空间复杂度：-4" class="headerlink" title="空间复杂度："></a>空间复杂度：</h4><p>空间复杂度：<code>O(1)</code></p>
+<ul>
+<li>解释：只使用了常数个额外变量（如 <code>ans</code>, <code>left</code>, <code>right</code>, <code>h</code>, <code>w</code>），不依赖于输入数据的大小。</li>
+<li>因此空间复杂度是 **常数级 O(1)**。</li>
+</ul>
+<h2 id="三数之和"><a href="#三数之和" class="headerlink" title="三数之和"></a><a target="_blank" rel="noopener" href="https://leetcode.cn/problems/3sum/">三数之和</a></h2><h3 id="题目描述：-4"><a href="#题目描述：-4" class="headerlink" title="题目描述："></a>题目描述：</h3><p>给你一个整数数组 <code>nums</code> ，判断是否存在三元组 <code>[nums[i], nums[j], nums[k]]</code> 满足 <code>i != j</code>、<code>i != k</code> 且 <code>j != k</code> ，同时还满足 <code>nums[i] + nums[j] + nums[k] == 0</code> 。请你返回所有和为 <code>0</code> 且不重复的三元组。</p>
+<p><strong>注意：</strong>答案中不可以包含重复的三元组。</p>
+<p><strong>示例 1：</strong></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">输入：nums = [-1,0,1,2,-1,-4]</span><br><span class="line">输出：[[-1,-1,2],[-1,0,1]]</span><br><span class="line">解释：</span><br><span class="line">nums[0] + nums[1] + nums[2] = (-1) + 0 + 1 = 0 。</span><br><span class="line">nums[1] + nums[2] + nums[4] = 0 + 1 + (-1) = 0 。</span><br><span class="line">nums[0] + nums[3] + nums[4] = (-1) + 2 + (-1) = 0 。</span><br><span class="line">不同的三元组是 [-1,0,1] 和 [-1,-1,2] 。</span><br><span class="line">注意，输出的顺序和三元组的顺序并不重要。</span><br></pre></td></tr></table></figure>
+
+<p><strong>示例 2：</strong></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">输入：nums = [0,1,1]</span><br><span class="line">输出：[]</span><br><span class="line">解释：唯一可能的三元组和不为 0 。</span><br></pre></td></tr></table></figure>
+
+<p><strong>示例 3：</strong></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">输入：nums = [0,0,0]</span><br><span class="line">输出：[[0,0,0]]</span><br><span class="line">解释：唯一可能的三元组和为 0 。 </span><br></pre></td></tr></table></figure>
+
+<h3 id="思路：-4"><a href="#思路：-4" class="headerlink" title="思路："></a>思路：</h3><h4 id="具体思路：-5"><a href="#具体思路：-5" class="headerlink" title="具体思路："></a>具体思路：</h4><p>​		这题的目标是在在整数数组中，找到所有三个数满足和为零，最后结果不可以重复。这个题我们可以先定下一个值，剩下两个值用双指针法遍历，找到符合结果的。还有一些细节，还要考虑不能重复的问题，对于这个问题，我们可以先排序（升序）这个数组，从小到大定第一个值，首先如果这第一个值大于0，这个可以结束了，这个数组就不会存在符合条件的三元组。当然如果当前元素与上一个元素相同，也跳过，这样执行，首先我想的是定第一个元素，当当前元素和下一个元素相同直接跳过，后来发现，[-1,-1,2]这种情况没有考虑。当然那你为甚么还是要写当前元素与上一个元素相同，也跳过，我完全可以不管嘛，那不行，我的思路是当第一个元素是-1时，这一次直接找出所有符合第一个元素是-1的情况，要不然会十分混乱，所以我会说如果当前元素与上一个元素相同，也跳过。因为上一个元素已经找完了第一个元素为-1的三元组了，当避免找完-1还会再出现，我们用了排序。这样第一个元素的逻辑就结束了，接下来找剩下两个，用双指针，左指针指向当前元素的下一个元素，右指针指向末尾元素。我们是要找到所有符合情况，当三元组的值大于0，将右指针左移。当三元组的值小于0，将左指针右移。当三元组的值等于0，将三元组的值加入结果集。接下来再判断找到的左元素是否与后面的元素重复（因为是排序的，相同的元素就在身边）。跳过这些元素，找到的右元素是否与后面的元素重复（因为是排序的，相同的元素就在身边）。跳过这些元素。只要左指针和右指针没有重合，就一直找，找完符合情况的三元组。</p>
+<h4 id="代码块：-4"><a href="#代码块：-4" class="headerlink" title="代码块："></a>代码块：</h4><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">Solution</span> &#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    vector&lt;vector&lt;<span class="type">int</span>&gt;&gt; <span class="built_in">threeSum</span>(vector&lt;<span class="type">int</span>&gt;&amp; nums) &#123;</span><br><span class="line">        vector&lt;vector&lt;<span class="type">int</span>&gt;&gt; ans;</span><br><span class="line">        <span class="comment">//先升序排序</span></span><br><span class="line">        <span class="built_in">sort</span>(nums.<span class="built_in">begin</span>(),nums.<span class="built_in">end</span>());</span><br><span class="line">        <span class="comment">//遍历排序后的数组</span></span><br><span class="line">        <span class="keyword">for</span>(<span class="type">int</span> i=<span class="number">0</span>;i&lt;nums.<span class="built_in">size</span>();i++)&#123;</span><br><span class="line">            <span class="comment">//先定第一个元素</span></span><br><span class="line">            <span class="comment">//第一个元素大于0,因为是升序排序，后面都大于零，那没有满足条件的结果了</span></span><br><span class="line">            <span class="keyword">if</span>(nums[i]&gt;<span class="number">0</span>) <span class="keyword">break</span>;</span><br><span class="line">            <span class="comment">//如果上一个元素相同，跳过当前，用下一个</span></span><br><span class="line">            <span class="keyword">if</span>(i&gt;<span class="number">0</span> &amp;&amp; nums[i]==nums[i<span class="number">-1</span>]) <span class="keyword">continue</span>;</span><br><span class="line">            <span class="comment">//采用双指针定剩下两个</span></span><br><span class="line">            <span class="type">int</span> left=i<span class="number">+1</span>;</span><br><span class="line">            <span class="type">int</span> right=nums.<span class="built_in">size</span>()<span class="number">-1</span>;</span><br><span class="line">            <span class="keyword">while</span>(left&lt;right)&#123;</span><br><span class="line">                <span class="keyword">if</span>(nums[i]+nums[left]+nums[right]&gt;<span class="number">0</span>) right--;</span><br><span class="line">                <span class="keyword">else</span> <span class="keyword">if</span>(nums[i]+nums[left]+nums[right]&lt;<span class="number">0</span>) left++;</span><br><span class="line">                <span class="keyword">else</span> <span class="keyword">if</span>(nums[i]+nums[left]+nums[right]==<span class="number">0</span>)&#123;</span><br><span class="line">                    ans.<span class="built_in">push_back</span>(&#123;nums[i],nums[left],nums[right]&#125;);</span><br><span class="line">                    <span class="comment">//下面判断是否有相同的，避免重复</span></span><br><span class="line">                    <span class="keyword">while</span>(left&lt;right &amp;&amp; nums[left]==nums[left<span class="number">+1</span>])left++;</span><br><span class="line">                    <span class="keyword">while</span>(left&lt;right &amp;&amp; nums[right]==nums[right<span class="number">-1</span>]) right--;</span><br><span class="line">                    left++;</span><br><span class="line">                    right--;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> ans;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
+
+
+<h4 id="时间复杂度：-5"><a href="#时间复杂度：-5" class="headerlink" title="时间复杂度："></a>时间复杂度：</h4><p> 时间复杂度：<code>O(n^2)</code></p>
+<p>详细分析：</p>
+<ol>
+<li><p>外层循环遍历数组中的每个数作为固定值 <code>nums[i]</code>，这部分是 <code>O(n)</code>。</p>
+</li>
+<li><p>内层使用双指针 <code>left</code> 和 <code>right</code> 来查找另外两个数，最坏情况下每次都需要遍历一次剩余数组，即 <code>O(n)</code>。</p>
+</li>
+<li><p>所以总的时间复杂度是：</p>
+<p>O(n^2)</p>
+</li>
+</ol>
+<p>去重操作的影响：</p>
+<ul>
+<li>去重操作使用的是 <code>while(left &lt; right &amp;&amp; nums[left] == nums[left + 1])</code> 这类逻辑，在最坏情况下最多也只是跳过相同元素，不改变主导复杂度。</li>
+</ul>
+<h4 id="空间复杂度：-5"><a href="#空间复杂度：-5" class="headerlink" title="空间复杂度："></a>空间复杂度：</h4><p>空间复杂度：<code>O(1)</code>（不计输出）</p>
+<p>解释：</p>
+<ul>
+<li>如果<strong>不考虑返回结果 <code>ans</code> 所占用的空间</strong>（即题目允许将返回值空间复杂度忽略），则使用的额外空间为：<ul>
+<li>排序使用的可能是原地排序（如 <code>std::sort</code>），**空间复杂度为常数级 <code>O(1)</code>**。</li>
+<li>其他仅使用了一些指针和变量，都是常数级空间。</li>
+</ul>
+</li>
+<li>如果 <strong>将返回结果的空间也算入</strong>，最坏情况是 <code>O(k)</code>，其中 <code>k</code> 是满足条件的三元组个数。</li>
+</ul>
+<h2 id="接雨水"><a href="#接雨水" class="headerlink" title="接雨水"></a><a target="_blank" rel="noopener" href="https://leetcode.cn/problems/trapping-rain-water/">接雨水</a></h2><h3 id="题目描述：-5"><a href="#题目描述：-5" class="headerlink" title="题目描述："></a>题目描述：</h3><p>给定 <code>n</code> 个非负整数表示每个宽度为 <code>1</code> 的柱子的高度图，计算按此排列的柱子，下雨之后能接多少雨水。</p>
+<p><strong>示例 1：</strong></p>
+<p><img src="https://assets.leetcode-cn.com/aliyun-lc-upload/uploads/2018/10/22/rainwatertrap.png" alt="img"></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">输入：height = [0,1,0,2,1,0,1,3,2,1,2,1]</span><br><span class="line">输出：6</span><br><span class="line">解释：上面是由数组 [0,1,0,2,1,0,1,3,2,1,2,1] 表示的高度图，在这种情况下，可以接 6 个单位的雨水（蓝色部分表示雨水）。 </span><br></pre></td></tr></table></figure>
+
+<p><strong>示例 2：</strong></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">输入：height = [4,2,0,3,2,5]</span><br><span class="line">输出：9</span><br></pre></td></tr></table></figure>
+
+<h3 id="思路：-5"><a href="#思路：-5" class="headerlink" title="思路："></a>思路：</h3><h4 id="具体思路：-6"><a href="#具体思路：-6" class="headerlink" title="具体思路："></a>具体思路：</h4><p>这里采用的是动态规划解法，还有其他方法。动态规划解法，需要构造两个数组分别储存各个节点的左边最大高度和右边最大高度，便于计算当前节点所积水高度。问题在于左边和右边最大高度该如何获取。最左边的左边最大高度就是它自身，最右边的右边最大高度就是它自身，以这两个边界条件，左边最大高度就是当前节点的左边节点的左边最大高度和当前节点的高度的最大值，右边最大高度也是一样。求解出放入之前的两个数组中。已知这两个数组，可以遍历这两个数组，把当前节点的积水量算出，再累加一起，就是所求的雨水量。</p>
+<h4 id="代码块-1"><a href="#代码块-1" class="headerlink" title="代码块"></a>代码块</h4><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">Solution</span> &#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="function"><span class="type">int</span> <span class="title">trap</span><span class="params">(vector&lt;<span class="type">int</span>&gt;&amp; height)</span> </span>&#123;</span><br><span class="line">        <span class="comment">//这题采用动态规划</span></span><br><span class="line">        <span class="type">int</span> n=height.<span class="built_in">size</span>();</span><br><span class="line">        <span class="keyword">if</span>(n==<span class="number">0</span>)&#123;</span><br><span class="line">            <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="function">vector&lt;<span class="type">int</span>&gt; <span class="title">leftMax</span><span class="params">(n)</span></span>;</span><br><span class="line">        <span class="function">vector&lt;<span class="type">int</span>&gt; <span class="title">rightMax</span><span class="params">(n)</span></span>;</span><br><span class="line">        leftMax[<span class="number">0</span>]=height[<span class="number">0</span>];</span><br><span class="line">        rightMax[n<span class="number">-1</span>]=height[n<span class="number">-1</span>];</span><br><span class="line"></span><br><span class="line">        <span class="keyword">for</span>(<span class="type">int</span> i=<span class="number">1</span>;i&lt;n;i++)&#123;</span><br><span class="line">            leftMax[i]=<span class="built_in">max</span>(leftMax[i<span class="number">-1</span>],height[i]);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">for</span>(<span class="type">int</span> i=n<span class="number">-2</span>;i&gt;=<span class="number">0</span>;i--)&#123;</span><br><span class="line">            rightMax[i]=<span class="built_in">max</span>(rightMax[i<span class="number">+1</span>],height[i]);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="type">int</span> ans=<span class="number">0</span>;</span><br><span class="line">        <span class="keyword">for</span>(<span class="type">int</span> i=<span class="number">0</span>;i&lt;n;i++)&#123;</span><br><span class="line">            ans+=<span class="built_in">min</span>(leftMax[i],rightMax[i])-height[i];</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> ans;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
+
+
+<h4 id="时间复杂度：-6"><a href="#时间复杂度：-6" class="headerlink" title="时间复杂度："></a>时间复杂度：</h4><p>时间复杂度：<code>O(n)</code></p>
+<ul>
+<li><p>遍历了三次数组：</p>
+<ol>
+<li>构造 <code>leftMax</code>：<code>O(n)</code></li>
+<li>构造 <code>rightMax</code>：<code>O(n)</code></li>
+<li>遍历一次计算总雨水量：<code>O(n)</code></li>
+</ol>
+</li>
+<li><p>所以总时间复杂度是：</p>
+<p>O(n)</p>
+</li>
+</ul>
+<h4 id="空间复杂度：-6"><a href="#空间复杂度：-6" class="headerlink" title="空间复杂度："></a>空间复杂度：</h4><p>空间复杂度：<code>O(n)</code></p>
+<ul>
+<li>使用了两个辅助数组：<ul>
+<li><code>leftMax</code>：大小为 <code>n</code></li>
+<li><code>rightMax</code>：大小为 <code>n</code></li>
+</ul>
+</li>
+<li>所以额外空间是 <code>2n</code>，即 <strong><code>O(n)</code> 空间复杂度</strong>。</li>
+</ul>
+<h2 id="无重复字符的最长子串"><a href="#无重复字符的最长子串" class="headerlink" title="无重复字符的最长子串"></a><a target="_blank" rel="noopener" href="https://leetcode.cn/problems/longest-substring-without-repeating-characters/">无重复字符的最长子串</a></h2><h3 id="题目描述：-6"><a href="#题目描述：-6" class="headerlink" title="题目描述："></a>题目描述：</h3><p>给定一个字符串 <code>s</code> ，请你找出其中不含有重复字符的 <strong>最长 子串</strong> 的长度。</p>
+<p><strong>示例 1:</strong></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">输入: s = &quot;abcabcbb&quot;</span><br><span class="line">输出: 3 </span><br><span class="line">解释: 因为无重复字符的最长子串是 &quot;abc&quot;，所以其长度为 3。</span><br></pre></td></tr></table></figure>
+
+<p><strong>示例 2:</strong></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">输入: s = &quot;bbbbb&quot;</span><br><span class="line">输出: 1</span><br><span class="line">解释: 因为无重复字符的最长子串是 &quot;b&quot;，所以其长度为 1。</span><br></pre></td></tr></table></figure>
+
+<p><strong>示例 3:</strong></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">输入: s = &quot;pwwkew&quot;</span><br><span class="line">输出: 3</span><br><span class="line">解释: 因为无重复字符的最长子串是 &quot;wke&quot;，所以其长度为 3。</span><br><span class="line">     请注意，你的答案必须是 子串 的长度，&quot;pwke&quot; 是一个子序列，不是子串。</span><br></pre></td></tr></table></figure>
+
+
+
+<h3 id="思路：-6"><a href="#思路：-6" class="headerlink" title="思路："></a>思路：</h3><h4 id="具体思路：-7"><a href="#具体思路：-7" class="headerlink" title="具体思路："></a>具体思路：</h4><p>我们使用滑动窗口和哈希表实现这个题目。哈希表存储枚举值的下标，初始值为-1，j值在没有重合的情况下，会在每次循环+1，但是如果遇到重合，j值会跑到对应的下标位置之后的位置（下标位置存储在哈希表中）。只要有重合就调整窗口。</p>
+<h4 id="代码块：-5"><a href="#代码块：-5" class="headerlink" title="代码块："></a>代码块：</h4><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">Solution</span> &#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="function"><span class="type">int</span> <span class="title">lengthOfLongestSubstring</span><span class="params">(string s)</span> </span>&#123;</span><br><span class="line">        <span class="comment">//滑动窗口和哈希表</span></span><br><span class="line">        <span class="function">vector&lt;<span class="type">int</span>&gt; <span class="title">pos</span><span class="params">(<span class="number">128</span>,<span class="number">-1</span>)</span></span>;</span><br><span class="line">        <span class="type">int</span> ans=<span class="number">0</span>;</span><br><span class="line">        <span class="comment">//j为滑动窗口的起始节点</span></span><br><span class="line">        <span class="keyword">for</span>(<span class="type">int</span> i=<span class="number">0</span>,j=<span class="number">0</span>;i&lt;s.<span class="built_in">size</span>();i++)&#123;</span><br><span class="line">            j=<span class="built_in">max</span>(j,pos[s[i]]<span class="number">+1</span>);</span><br><span class="line">            ans=<span class="built_in">max</span>(ans,i-j<span class="number">+1</span>);</span><br><span class="line">            pos[s[i]]=i;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> ans;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
+
+
+<h4 id="时间复杂度：-7"><a href="#时间复杂度：-7" class="headerlink" title="时间复杂度："></a>时间复杂度：</h4><p>时间复杂度：<code>O(n)</code></p>
+<ul>
+<li>其中 <code>n</code> 是字符串 <code>s</code> 的长度。</li>
+<li>每个字符最多访问两次（一次作为右指针扩展窗口，一次作为左指针缩小窗口）。</li>
+<li>所以整体是线性时间复杂度 <code>O(n)</code>。</li>
+</ul>
+<h4 id="空间复杂度：-7"><a href="#空间复杂度：-7" class="headerlink" title="空间复杂度："></a>空间复杂度：</h4><p>空间复杂度：<code>O(1)</code></p>
+<ul>
+<li>使用了一个 <code>pos</code> 数组来记录 ASCII 字符上次出现的位置，长度是固定的 128（ASCII 字符集）。</li>
+<li>即使改成 <code>256</code>（扩展 ASCII）或 <code>100,000</code>（Unicode 范围），只要是<strong>定长的字符集</strong>，空间复杂度都是 <strong><code>O(1)</code> 常数级</strong>。</li>
+<li>如果字符集不固定，比如用 <code>unordered_map&lt;char, int&gt;</code>，那空间复杂度是 <code>O(k)</code>，其中 <code>k</code> 是字符集大小。</li>
+</ul>
+<h2 id="找到字符串中所有字母异位词"><a href="#找到字符串中所有字母异位词" class="headerlink" title="找到字符串中所有字母异位词"></a><a target="_blank" rel="noopener" href="https://leetcode.cn/problems/find-all-anagrams-in-a-string/">找到字符串中所有字母异位词</a></h2><h3 id="题目描述：-7"><a href="#题目描述：-7" class="headerlink" title="题目描述："></a>题目描述：</h3><p>给定两个字符串 <code>s</code> 和 <code>p</code>，找到 <code>s</code> 中所有 <code>p</code> 的 <strong>异位词</strong> 的子串，返回这些子串的起始索引。不考虑答案输出的顺序。</p>
+<p><strong>示例 1:</strong></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">输入: s = &quot;cbaebabacd&quot;, p = &quot;abc&quot;</span><br><span class="line">输出: [0,6]</span><br><span class="line">解释:</span><br><span class="line">起始索引等于 0 的子串是 &quot;cba&quot;, 它是 &quot;abc&quot; 的异位词。</span><br><span class="line">起始索引等于 6 的子串是 &quot;bac&quot;, 它是 &quot;abc&quot; 的异位词。</span><br></pre></td></tr></table></figure>
+
+<p> <strong>示例 2:</strong></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">输入: s = &quot;abab&quot;, p = &quot;ab&quot;</span><br><span class="line">输出: [0,1,2]</span><br><span class="line">解释:</span><br><span class="line">起始索引等于 0 的子串是 &quot;ab&quot;, 它是 &quot;ab&quot; 的异位词。</span><br><span class="line">起始索引等于 1 的子串是 &quot;ba&quot;, 它是 &quot;ab&quot; 的异位词。</span><br><span class="line">起始索引等于 2 的子串是 &quot;ab&quot;, 它是 &quot;ab&quot; 的异位词。</span><br></pre></td></tr></table></figure>
+
+<h3 id="思路：-7"><a href="#思路：-7" class="headerlink" title="思路："></a>思路：</h3><h4 id="具体思路：-8"><a href="#具体思路：-8" class="headerlink" title="具体思路："></a>具体思路：</h4><p>这道题的整体思路是让我找到对应字符串的所有异位词在一个陌生的字符串里。这里要解决两个问题，首先是异位词问题，找异位词可以通过枚举法，总共26个字母，我们通过数组存储使用字母的个数，最后对比，如果数组相等，就说明是异位词。还有一个问题：在陌生字符串找到所有的异位词，并且返回索引，找异位词是一个范围问题，所以我要使用流动窗口，大小就是对应字符串的大小。在陌生字符串扫描。最后返回结果。</p>
+<h4 id="代码块：-6"><a href="#代码块：-6" class="headerlink" title="代码块："></a>代码块：</h4><figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">Solution</span> &#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="function">vector&lt;<span class="type">int</span>&gt; <span class="title">findAnagrams</span><span class="params">(string s, string p)</span> </span>&#123;</span><br><span class="line">        <span class="comment">//首先记录两字符串的长度</span></span><br><span class="line">        <span class="type">int</span> sLen=s.<span class="built_in">size</span>(),pLen=p.<span class="built_in">size</span>();</span><br><span class="line">        <span class="comment">//如果字符串s的长度还不比p字符串长</span></span><br><span class="line">        <span class="keyword">if</span>(sLen&lt;pLen)&#123;</span><br><span class="line">            <span class="keyword">return</span> <span class="built_in">vector</span>&lt;<span class="type">int</span>&gt;();</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="comment">//记录结果</span></span><br><span class="line">        vector&lt;<span class="type">int</span>&gt; ans;</span><br><span class="line">        <span class="comment">//记录s字符串和p字符串的字母对应的个数，枚举法</span></span><br><span class="line">        <span class="function">vector&lt;<span class="type">int</span>&gt; <span class="title">sletter</span><span class="params">(<span class="number">26</span>)</span></span>;</span><br><span class="line">        <span class="function">vector&lt;<span class="type">int</span>&gt; <span class="title">pletter</span><span class="params">(<span class="number">26</span>)</span></span>;</span><br><span class="line">        <span class="comment">//先试试索引为0的</span></span><br><span class="line">        <span class="keyword">for</span>(<span class="type">int</span> i=<span class="number">0</span>;i&lt;pLen;i++)&#123;</span><br><span class="line">            ++sletter[s[i]-<span class="string">&#x27;a&#x27;</span>];</span><br><span class="line">            ++pletter[p[i]-<span class="string">&#x27;a&#x27;</span>];</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="comment">//如果符合，说明索引为0符合情况</span></span><br><span class="line">        <span class="keyword">if</span>(sletter==pletter)&#123;</span><br><span class="line">            ans.<span class="built_in">emplace_back</span>(<span class="number">0</span>);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="comment">//之后按照索引为1往后遍历，采取流动窗口,把前一次的流动窗口的第一个去掉，再往后补一个，形成新的流动窗口.</span></span><br><span class="line">        <span class="comment">//注意这里是按流动窗口为整体，上面的循环是为了形成流动窗口。</span></span><br><span class="line">        <span class="keyword">for</span>(<span class="type">int</span> i=<span class="number">0</span>;i&lt;sLen-pLen;i++)&#123;</span><br><span class="line">            --sletter[s[i]-<span class="string">&#x27;a&#x27;</span>];</span><br><span class="line">            ++sletter[s[i+pLen]-<span class="string">&#x27;a&#x27;</span>];</span><br><span class="line"></span><br><span class="line">            <span class="keyword">if</span>(sletter==pletter)&#123;</span><br><span class="line">            ans.<span class="built_in">emplace_back</span>(i<span class="number">+1</span>);</span><br><span class="line">        &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        </span><br><span class="line">        <span class="keyword">return</span> ans;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
+
+
+<h4 id="时间复杂度：-8"><a href="#时间复杂度：-8" class="headerlink" title="时间复杂度："></a>时间复杂度：</h4><ul>
+<li>初始化部分：O(p)</li>
+<li>滑动窗口：O(n)</li>
+</ul>
+<p>由于通常 <code>p</code> 比 <code>n</code> 小，所以总时间复杂度是：O(n)</p>
+<h4 id="空间复杂度：-8"><a href="#空间复杂度：-8" class="headerlink" title="空间复杂度："></a>空间复杂度：</h4><ul>
+<li>使用了两个长度为 26 的数组：<code>sletter</code>, <code>pletter</code>；</li>
+<li>还使用了一个结果数组 <code>ans</code>，最坏情况下长度也是 O(n)；</li>
+</ul>
+<p>因此：</p>
+<p>空间复杂度是 O(1) + O(k)，其中 k 是结果中异位词的数量，通常最多为 O(n)。</p>
+<h2 id="和为-K-的子数组"><a href="#和为-K-的子数组" class="headerlink" title="和为 K 的子数组"></a><a target="_blank" rel="noopener" href="https://leetcode.cn/problems/subarray-sum-equals-k/">和为 K 的子数组</a></h2><h3 id="题目描述：-8"><a href="#题目描述：-8" class="headerlink" title="题目描述："></a>题目描述：</h3><p>给你一个整数数组 <code>nums</code> 和一个整数 <code>k</code> ，请你统计并返回 <em>该数组中和为 <code>k</code> 的子数组的个数</em> 。</p>
+<p>子数组是数组中元素的连续非空序列。</p>
+<p><strong>示例 1：</strong></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">输入：nums = [1,1,1], k = 2</span><br><span class="line">输出：2</span><br></pre></td></tr></table></figure>
+
+<p><strong>示例 2：</strong></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">输入：nums = [1,2,3], k = 3</span><br><span class="line">输出：2</span><br></pre></td></tr></table></figure>
+
+<h3 id="思路：-8"><a href="#思路：-8" class="headerlink" title="思路："></a>思路：</h3><h4 id="具体思路：-9"><a href="#具体思路：-9" class="headerlink" title="具体思路："></a>具体思路：</h4><p>这里采取两个方法，第一种方法就是枚举法，暴力轮询。（为什莫要两种，因为我第一种leetcode超时了）。</p>
+<p>方法二：首先通过前缀和这个点，定义 pre[i] 为 [0..i] 里所有数的和，则 pre[i] 可以由 pre[i−1] 递推而来，即：pre[i]&#x3D;pre[i−1]+nums[i]<br>那么[j..i] 这个子数组和为 k 这个条件我们可以转化为pre[i]−pre[j−1]&#x3D;&#x3D;k<br>简单移项可得符合条件的下标 j 需要满足pre[j−1]&#x3D;&#x3D;pre[i]−k<br>所以我们考虑以 i 结尾的和为 k 的连续子数组个数时只要统计有多少个前缀和为 pre[i]−k 的 pre[j] 即可。建立以上条件，我们的问题就简化为寻找有多少个符合条件的pre[j]即可，我们建立哈希表，键是前缀和，值是前缀和重复的个数。在遍历的过程中，pre存储当前的前缀和，先不放进哈希表中，先在哈希表中查找是否有键pre-k,有的话，就取出对应的值加到count里，不管找没找到，都要将当前的前缀和存到哈希表中。这代码的逻辑是基于前缀和得出的只要统计有多少个前缀和为 pre[i]−k 的 pre[j] 即可。</p>
+<h4 id="代码块：-7"><a href="#代码块：-7" class="headerlink" title="代码块："></a>代码块：</h4><p>方法一：枚举法</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">Solution</span> &#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="function"><span class="type">int</span> <span class="title">subarraySum</span><span class="params">(vector&lt;<span class="type">int</span>&gt;&amp; nums, <span class="type">int</span> k)</span> </span>&#123;</span><br><span class="line">        <span class="comment">//这题我们采用枚举法</span></span><br><span class="line">        <span class="type">int</span> count=<span class="number">0</span>;<span class="comment">//返回的结果值</span></span><br><span class="line">        <span class="type">int</span> n=nums.<span class="built_in">size</span>();</span><br><span class="line">        <span class="keyword">for</span>(<span class="type">int</span> start=<span class="number">0</span>;start&lt;n;++start)&#123;</span><br><span class="line">            <span class="type">int</span> sum=<span class="number">0</span>;</span><br><span class="line">            <span class="keyword">for</span>(<span class="type">int</span> end=start;end&lt;n;++end)&#123;</span><br><span class="line">                sum+=nums[end];</span><br><span class="line">                <span class="keyword">if</span>(sum==k)&#123;</span><br><span class="line">                    count++;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> count;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
+<p>方法二：前缀和+哈希表优化</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">Solution</span> &#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="function"><span class="type">int</span> <span class="title">subarraySum</span><span class="params">(vector&lt;<span class="type">int</span>&gt;&amp; nums, <span class="type">int</span> k)</span> </span>&#123;</span><br><span class="line">        <span class="comment">//前缀和+哈希表优化</span></span><br><span class="line">        unordered_map&lt;<span class="type">int</span>,<span class="type">int</span>&gt; mp;</span><br><span class="line">        mp[<span class="number">0</span>]=<span class="number">1</span>;<span class="comment">//初始前缀和的个数为1</span></span><br><span class="line">        <span class="type">int</span> count=<span class="number">0</span>,pre=<span class="number">0</span>;<span class="comment">//count是返回结果的，pre是前缀和</span></span><br><span class="line">        <span class="keyword">for</span>(<span class="keyword">auto</span> &amp;temp:nums)&#123;</span><br><span class="line">            pre+=temp;</span><br><span class="line">            <span class="keyword">if</span>(mp.<span class="built_in">find</span>(pre-k)!=mp.<span class="built_in">end</span>())&#123;</span><br><span class="line">                count+=mp[pre-k];</span><br><span class="line">            &#125;</span><br><span class="line">            mp[pre]++;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> count;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
+<h4 id="时间复杂度：-9"><a href="#时间复杂度：-9" class="headerlink" title="时间复杂度："></a>时间复杂度：</h4><p>方法一：</p>
+<p>时间复杂度：<strong>O(n²)</strong></p>
+<p>方法二：</p>
+<p>O(n) 时间</p>
+<h4 id="空间复杂度：-9"><a href="#空间复杂度：-9" class="headerlink" title="空间复杂度："></a>空间复杂度：</h4><p>方法一：</p>
+<p>空间复杂度：<strong>O(1)</strong></p>
+<p>方法二：</p>
+<p>**O(n)**（最坏情况下所有前缀和都不相同，哈希表大小为 n）</p>
+</article>
+<div class="article-footer">
+    <section id="license">
+      <div class="header"><span>许可协议</span></div>
+      <div class="body"><p>本文采用 <a target="_blank" rel="noopener" href="https://creativecommons.org/licenses/by-nc-sa/4.0/">署名-非商业性使用-相同方式共享 4.0 国际</a> 许可协议，转载请注明出处。</p>
+</div>
+    </section>
+    
+
+
+    <section id="share">
+      <div class="header"><span>分享文章</span></div>
+      <div class="body">
+        <div class="link"><input class="copy-area" readonly="true" id="copy-link" value="http://yustonerain.top/2025/06/03/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84100%E9%A2%98/" /></div>
+        <div class="social-wrap dis-select"><a class="social share-item wechat" onclick="util.toggle(&quot;qrcode-wechat&quot;)"><img  src="https://gcore.jsdelivr.net/gh/cdn-x/placeholder@1.0.12/social/b32ef3da1162a.svg" /></a><a class="social share-item weibo" target="_blank" rel="external nofollow noopener noreferrer" href="https://service.weibo.com/share/share.php?url=http://yustonerain.top/2025/06/03/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84100%E9%A2%98/&title=数据结构100题 - YuStone Blogs&summary=两数之和题目描述​		 给定一个整数数组 nums 和一个整数目标值 target，请你在该数组中找出 和为目标值 target 的那 两个 整数，并返回它们的数组下标。
+你可以假设每种输入只会对应一个答案，并且你不能使用两次相同的元..."><img  src="https://gcore.jsdelivr.net/gh/cdn-x/placeholder@1.0.12/social/80c07e4dbb303.svg" /></a><a class="social share-item email" href="mailto:?subject=数据结构100题 - YuStone Blogs&amp;body=http://yustonerain.top/2025/06/03/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84100%E9%A2%98/"><img  src="https://gcore.jsdelivr.net/gh/cdn-x/placeholder@1.0.12/social/a1b00e20f425d.svg" /></a><a class="social share-item link" onclick="util.copy(&quot;copy-link&quot;, &quot;复制成功&quot;)"><img  src="https://gcore.jsdelivr.net/gh/cdn-x/placeholder@1.0.12/social/8411ed322ced6.svg" /></a></div>
+        
+        <div class="qrcode" id="qrcode-wechat" style="opacity:0;height:0">
+          <img src="https://api.qrserver.com/v1/create-qr-code/?size=256x256&data=http://yustonerain.top/2025/06/03/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84100%E9%A2%98/"/>
+        </div>
+        
+      </div>
+    </section>
+    </div>
+
+<div class="related-wrap" id="read-next"><section class="body"><div class="item" id="prev"><div class="note">较新文章</div><a href="/2025/06/20/Linux%E7%B3%BB%E7%BB%9F%E7%BC%96%E7%A8%8B/">Linux系统编程</a></div><div class="item" id="next"><div class="note">较早文章</div><a href="/2025/06/02/c-%E5%AE%9E%E7%8E%B0%E9%9B%86%E7%BE%A4%E8%81%8A%E5%A4%A9%E6%9C%8D%E5%8A%A1%E5%99%A8/">c++实现集群聊天服务器</a></div></section></div>
+
+<div class="related-wrap" id="related-posts"></div>
+
+
+  <div class="related-wrap md-text" id="comments">
+    <section class='header cmt-title cap theme'>
+      <p>快来参与讨论吧~</p>
+
+    </section>
+    <section class='body cmt-body utterances'>
+      
+
+<svg class="loading" style="vertical-align:middle;fill:currentColor;overflow:hidden;" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="2709"><path d="M832 512c0-176-144-320-320-320V128c211.2 0 384 172.8 384 384h-64zM192 512c0 176 144 320 320 320v64C300.8 896 128 723.2 128 512h64z" p-id="2710"></path></svg>
+
+<div id="utterances" repo="YuStone0416/YuStone0416.github.io" issue-term="pathname" theme="preferred-color-scheme"></div>
+
+    </section>
+  </div>
+
+
+
+<footer class="page-footer footnote"><hr><div class="text"><p>本站由 <a href="/">YuStone</a> 使用 <a target="_blank" rel="noopener" href="https://github.com/xaoxuu/hexo-theme-stellar/tree/1.33.1">Stellar 1.33.1</a> 主题创建。<br>本博客所有文章除特别声明外，均采用 <a target="_blank" rel="noopener" href="https://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a> 许可协议，转载请注明出处。</p>
+</div></footer>
+<div class="main-mask" onclick="sidebar.dismiss()"></div></div><aside class="l_right">
+<div class="widgets">
+
+
+
+<widget class="widget-wrapper toc" id="data-toc" collapse="false"><div class="widget-header dis-select"><span class="name">本文目录</span><a class="cap-action" onclick="sidebar.toggleTOC()" ><svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6h11m-11 6h11m-11 6h11M4 6h1v4m-1 0h2m0 8H4c0-1 2-2 2-3s-1-1.5-2-1"/></svg></a></div><div class="widget-body"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%A4%E6%95%B0%E4%B9%8B%E5%92%8C"><span class="toc-text">两数之和</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%A2%98%E7%9B%AE%E6%8F%8F%E8%BF%B0"><span class="toc-text">题目描述</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%80%9D%E8%B7%AF%EF%BC%9A"><span class="toc-text">思路：</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%85%B7%E4%BD%93%E6%80%9D%E8%B7%AF%EF%BC%9A"><span class="toc-text">具体思路：</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#std-unordered-map%E7%9A%84%E6%A0%B8%E5%BF%83%E7%89%B9%E6%80%A7%EF%BC%9A"><span class="toc-text">std::unordered_map的核心特性：</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E4%BB%A3%E7%A0%81%E5%9D%97"><span class="toc-text">代码块</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%97%B6%E9%97%B4%E5%A4%8D%E6%9D%82%E5%BA%A6%EF%BC%9A"><span class="toc-text">时间复杂度：</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E7%A9%BA%E9%97%B4%E5%A4%8D%E6%9D%82%E5%BA%A6%EF%BC%9A"><span class="toc-text">空间复杂度：</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%AD%97%E6%AF%8D%E5%BC%82%E4%BD%8D%E8%AF%8D%E5%88%86%E7%BB%84"><span class="toc-text">字母异位词分组</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%A2%98%E7%9B%AE%E6%8F%8F%E8%BF%B0%EF%BC%9A"><span class="toc-text">题目描述：</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%80%9D%E8%B7%AF"><span class="toc-text">思路</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%85%B7%E4%BD%93%E6%80%9D%E8%B7%AF%EF%BC%9A-1"><span class="toc-text">具体思路：</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E4%BB%A3%E7%A0%81%E5%9D%97%EF%BC%9A"><span class="toc-text">代码块：</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%97%B6%E9%97%B4%E5%A4%8D%E6%9D%82%E5%BA%A6%EF%BC%9A-1"><span class="toc-text">时间复杂度：</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E7%A9%BA%E9%97%B4%E5%A4%8D%E6%9D%82%E5%BA%A6%EF%BC%9A-1"><span class="toc-text">空间复杂度：</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%9C%80%E9%95%BF%E8%BF%9E%E7%BB%AD%E5%BA%8F%E5%88%97"><span class="toc-text">最长连续序列</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%A2%98%E7%9B%AE%E6%8F%8F%E8%BF%B0%EF%BC%9A-1"><span class="toc-text">题目描述：</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%80%9D%E8%B7%AF%EF%BC%9A-1"><span class="toc-text">思路：</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%85%B7%E4%BD%93%E6%80%9D%E8%B7%AF%EF%BC%9A-2"><span class="toc-text">具体思路：</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#std-unordered-set%E7%9A%84%E7%89%B9%E6%80%A7%EF%BC%9A"><span class="toc-text">std::unordered_set的特性：</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E4%BB%A3%E7%A0%81%E5%9D%97%EF%BC%9A-1"><span class="toc-text">代码块：</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E7%BC%96%E5%86%99%E4%BB%A3%E7%A0%81%E4%BA%A7%E7%94%9F%E7%9A%84%E9%97%AE%E9%A2%98%EF%BC%9A"><span class="toc-text">编写代码产生的问题：</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%97%B6%E9%97%B4%E5%A4%8D%E6%9D%82%E5%BA%A6%EF%BC%9A-2"><span class="toc-text">时间复杂度：</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E7%A9%BA%E9%97%B4%E5%A4%8D%E6%9D%82%E5%BA%A6%EF%BC%9A-2"><span class="toc-text">空间复杂度：</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%A7%BB%E5%8A%A8%E9%9B%B6"><span class="toc-text">移动零</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%A2%98%E7%9B%AE%E6%8F%8F%E8%BF%B0%EF%BC%9A-2"><span class="toc-text">题目描述：</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%80%9D%E8%B7%AF%EF%BC%9A-2"><span class="toc-text">思路：</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%85%B7%E4%BD%93%E6%80%9D%E8%B7%AF%EF%BC%9A-3"><span class="toc-text">具体思路：</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E4%BB%A3%E7%A0%81%E5%9D%97%EF%BC%9A-2"><span class="toc-text">代码块：</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%97%B6%E9%97%B4%E5%A4%8D%E6%9D%82%E5%BA%A6%EF%BC%9A-3"><span class="toc-text">时间复杂度：</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E7%A9%BA%E9%97%B4%E5%A4%8D%E6%9D%82%E5%BA%A6%EF%BC%9A-3"><span class="toc-text">空间复杂度：</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%9B%9B%E6%9C%80%E5%A4%9A%E6%B0%B4%E7%9A%84%E5%AE%B9%E5%99%A8"><span class="toc-text">盛最多水的容器</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%A2%98%E7%9B%AE%E6%8F%8F%E8%BF%B0%EF%BC%9A-3"><span class="toc-text">题目描述：</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%80%9D%E8%B7%AF%EF%BC%9A-3"><span class="toc-text">思路：</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%85%B7%E4%BD%93%E6%80%9D%E8%B7%AF%EF%BC%9A-4"><span class="toc-text">具体思路：</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E4%BB%A3%E7%A0%81%E5%9D%97%EF%BC%9A-3"><span class="toc-text">代码块：</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%97%B6%E9%97%B4%E5%A4%8D%E6%9D%82%E5%BA%A6%EF%BC%9A-4"><span class="toc-text">时间复杂度：</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E7%A9%BA%E9%97%B4%E5%A4%8D%E6%9D%82%E5%BA%A6%EF%BC%9A-4"><span class="toc-text">空间复杂度：</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%89%E6%95%B0%E4%B9%8B%E5%92%8C"><span class="toc-text">三数之和</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%A2%98%E7%9B%AE%E6%8F%8F%E8%BF%B0%EF%BC%9A-4"><span class="toc-text">题目描述：</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%80%9D%E8%B7%AF%EF%BC%9A-4"><span class="toc-text">思路：</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%85%B7%E4%BD%93%E6%80%9D%E8%B7%AF%EF%BC%9A-5"><span class="toc-text">具体思路：</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E4%BB%A3%E7%A0%81%E5%9D%97%EF%BC%9A-4"><span class="toc-text">代码块：</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%97%B6%E9%97%B4%E5%A4%8D%E6%9D%82%E5%BA%A6%EF%BC%9A-5"><span class="toc-text">时间复杂度：</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E7%A9%BA%E9%97%B4%E5%A4%8D%E6%9D%82%E5%BA%A6%EF%BC%9A-5"><span class="toc-text">空间复杂度：</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%8E%A5%E9%9B%A8%E6%B0%B4"><span class="toc-text">接雨水</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%A2%98%E7%9B%AE%E6%8F%8F%E8%BF%B0%EF%BC%9A-5"><span class="toc-text">题目描述：</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%80%9D%E8%B7%AF%EF%BC%9A-5"><span class="toc-text">思路：</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%85%B7%E4%BD%93%E6%80%9D%E8%B7%AF%EF%BC%9A-6"><span class="toc-text">具体思路：</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E4%BB%A3%E7%A0%81%E5%9D%97-1"><span class="toc-text">代码块</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%97%B6%E9%97%B4%E5%A4%8D%E6%9D%82%E5%BA%A6%EF%BC%9A-6"><span class="toc-text">时间复杂度：</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E7%A9%BA%E9%97%B4%E5%A4%8D%E6%9D%82%E5%BA%A6%EF%BC%9A-6"><span class="toc-text">空间复杂度：</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%97%A0%E9%87%8D%E5%A4%8D%E5%AD%97%E7%AC%A6%E7%9A%84%E6%9C%80%E9%95%BF%E5%AD%90%E4%B8%B2"><span class="toc-text">无重复字符的最长子串</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%A2%98%E7%9B%AE%E6%8F%8F%E8%BF%B0%EF%BC%9A-6"><span class="toc-text">题目描述：</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%80%9D%E8%B7%AF%EF%BC%9A-6"><span class="toc-text">思路：</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%85%B7%E4%BD%93%E6%80%9D%E8%B7%AF%EF%BC%9A-7"><span class="toc-text">具体思路：</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E4%BB%A3%E7%A0%81%E5%9D%97%EF%BC%9A-5"><span class="toc-text">代码块：</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%97%B6%E9%97%B4%E5%A4%8D%E6%9D%82%E5%BA%A6%EF%BC%9A-7"><span class="toc-text">时间复杂度：</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E7%A9%BA%E9%97%B4%E5%A4%8D%E6%9D%82%E5%BA%A6%EF%BC%9A-7"><span class="toc-text">空间复杂度：</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%89%BE%E5%88%B0%E5%AD%97%E7%AC%A6%E4%B8%B2%E4%B8%AD%E6%89%80%E6%9C%89%E5%AD%97%E6%AF%8D%E5%BC%82%E4%BD%8D%E8%AF%8D"><span class="toc-text">找到字符串中所有字母异位词</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%A2%98%E7%9B%AE%E6%8F%8F%E8%BF%B0%EF%BC%9A-7"><span class="toc-text">题目描述：</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%80%9D%E8%B7%AF%EF%BC%9A-7"><span class="toc-text">思路：</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%85%B7%E4%BD%93%E6%80%9D%E8%B7%AF%EF%BC%9A-8"><span class="toc-text">具体思路：</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E4%BB%A3%E7%A0%81%E5%9D%97%EF%BC%9A-6"><span class="toc-text">代码块：</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%97%B6%E9%97%B4%E5%A4%8D%E6%9D%82%E5%BA%A6%EF%BC%9A-8"><span class="toc-text">时间复杂度：</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E7%A9%BA%E9%97%B4%E5%A4%8D%E6%9D%82%E5%BA%A6%EF%BC%9A-8"><span class="toc-text">空间复杂度：</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%92%8C%E4%B8%BA-K-%E7%9A%84%E5%AD%90%E6%95%B0%E7%BB%84"><span class="toc-text">和为 K 的子数组</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%A2%98%E7%9B%AE%E6%8F%8F%E8%BF%B0%EF%BC%9A-8"><span class="toc-text">题目描述：</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%80%9D%E8%B7%AF%EF%BC%9A-8"><span class="toc-text">思路：</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%85%B7%E4%BD%93%E6%80%9D%E8%B7%AF%EF%BC%9A-9"><span class="toc-text">具体思路：</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E4%BB%A3%E7%A0%81%E5%9D%97%EF%BC%9A-7"><span class="toc-text">代码块：</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%97%B6%E9%97%B4%E5%A4%8D%E6%9D%82%E5%BA%A6%EF%BC%9A-9"><span class="toc-text">时间复杂度：</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E7%A9%BA%E9%97%B4%E5%A4%8D%E6%9D%82%E5%BA%A6%EF%BC%9A-9"><span class="toc-text">空间复杂度：</span></a></li></ol></li></ol></li></ol></div><div class="widget-footer"><a class="top" onclick="util.scrollTop()"><svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24"><!-- Icon from Solar by 480 Design - https://creativecommons.org/licenses/by/4.0/ --><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-width="1.5"><path stroke-linejoin="round" d="m9 15.5l3-3l3 3m-6-4l3-3l3 3"/><path d="M7 3.338A9.95 9.95 0 0 1 12 2c5.523 0 10 4.477 10 10s-4.477 10-10 10S2 17.523 2 12c0-1.821.487-3.53 1.338-5"/></g></svg><span>回到顶部</span></a><a class="buttom" onclick="util.scrollComment()"><svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24"><!-- Icon from Solar by 480 Design - https://creativecommons.org/licenses/by/4.0/ --><path fill="none" stroke="currentColor" stroke-linecap="round" stroke-width="1.5" d="M8 10.5h8M8 14h5.5M17 3.338A9.95 9.95 0 0 0 12 2C6.477 2 2 6.477 2 12c0 1.6.376 3.112 1.043 4.453c.178.356.237.763.134 1.148l-.595 2.226a1.3 1.3 0 0 0 1.591 1.592l2.226-.596a1.63 1.63 0 0 1 1.149.133A9.96 9.96 0 0 0 12 22c5.523 0 10-4.477 10-10c0-1.821-.487-3.53-1.338-5"/></svg><span>参与讨论</span></a></div></widget>
+</div></aside><div class='float-panel'>
+  <button type='button' style='display:none' class='laptop-only rightbar-toggle mobile' onclick='sidebar.rightbar()'>
+    <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6h11m-11 6h11m-11 6h11M4 6h1v4m-1 0h2m0 8H4c0-1 2-2 2-3s-1-1.5-2-1"/></svg>
+  </button>
+  <button type='button' style='display:none' class='mobile-only leftbar-toggle mobile' onclick='sidebar.leftbar()'>
+    <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 11c0-3.771 0-5.657 1.172-6.828C4.343 3 6.229 3 10 3h4c3.771 0 5.657 0 6.828 1.172C22 5.343 22 7.229 22 11v2c0 3.771 0 5.657-1.172 6.828C19.657 21 17.771 21 14 21h-4c-3.771 0-5.657 0-6.828-1.172C2 18.657 2 16.771 2 13z"/><path id="sep" stroke-linecap="round" d="M5.5 10h6m-5 4h4m4.5 7V3"/></g></svg>
+  </button>
+</div>
+</div><div class="scripts">
+
+
+<script type="text/javascript">
+  window.canonical = {"originalHost":null,"officialHosts":["localhost"],"encoded":""};
+  const ctx = {
+    date_suffix: {
+      just: `刚刚`,
+      min: `分钟前`,
+      hour: `小时前`,
+      day: `天前`,
+    },
+    root : `/`,
+    tag_plugins: {
+      chat: Object.assign({"api":"https://siteinfo.listentothewind.cn/api/v1"}),
+    }
+  };
+
+  // required plugins (only load if needs)
+  if (`local_search`) {
+    ctx.search = {};
+    ctx.search.service = `local_search`;
+    if (ctx.search.service == 'local_search') {
+      let service_obj = Object.assign({}, `{"field":"all","path":"/search.json","content":true,"skip_search":null,"sort":"-date"}`);
+      ctx.search[ctx.search.service] = service_obj;
+    }
+  }
+  const def = {
+    avatar: `https://gcore.jsdelivr.net/gh/cdn-x/placeholder@1.0.12/avatar/round/3442075.svg`,
+    cover: `https://gcore.jsdelivr.net/gh/cdn-x/placeholder@1.0.12/cover/76b86c0226ffd.svg`,
+    loading: `https://api.iconify.design/eos-icons:three-dots-loading.svg?color=%231cd0fd`,
+  };
+  const deps = {
+    jquery: `https://gcore.jsdelivr.net/npm/jquery@3.7/dist/jquery.min.js`,
+    marked: `https://gcore.jsdelivr.net/npm/marked@13.0/lib/marked.umd.min.js`,
+    lazyload: `/%5Bobject%20Object%5D`
+  }
+  
+
+</script>
+
+<script type="text/javascript">
+  
+  function RunItem() {
+    this.list = []; // 存放回调函数
+    this.start = () => {
+      for (var i = 0; i < this.list.length; i++) {
+        this.list[i].run();
+      }
+    };
+    this.push = (fn, name, setRequestAnimationFrame = true) => {
+      let myfn = fn
+      if (setRequestAnimationFrame) {
+        myfn = () => {
+          utils.requestAnimationFrame(fn)
+        }
+      }
+      var f = new Item(myfn, name);
+      this.list.push(f);
+    };
+    this.remove = (name) => {
+      for (let index = 0; index < this.list.length; index++) {
+        const e = this.list[index];
+        if (e.name == name) {
+          this.list.splice(index, 1);
+        }
+      }
+    }
+    // 构造一个可以run的对象
+    function Item(fn, name) {
+      // 函数名称
+      this.name = name || fn.name;
+      // run方法
+      this.run = () => {
+        try {
+          fn()
+        } catch (error) {
+          console.log(error);
+        }
+      };
+    }
+  }
+
+  const utils = {
+    // 懒加载 css https://github.com/filamentgroup/loadCSS
+    css: (href, before, media, attributes) => {
+      var doc = window.document;
+      var ss = doc.createElement("link");
+      var ref;
+      if (before) {
+        ref = before;
+      } else {
+        var refs = (doc.body || doc.getElementsByTagName("head")[0]).childNodes;
+        ref = refs[refs.length - 1];
+      }
+      var sheets = doc.styleSheets;
+      if (attributes) {
+        for (var attributeName in attributes) {
+          if (attributes.hasOwnProperty(attributeName)) {
+            ss.setAttribute(attributeName, attributes[attributeName]);
+          }
+        }
+      }
+      ss.rel = "stylesheet";
+      ss.href = href;
+      ss.media = "only x";
+      function ready(cb) {
+        if (doc.body) {
+          return cb();
+        }
+        setTimeout(function () {
+          ready(cb);
+        });
+      }
+      ready(function () {
+        ref.parentNode.insertBefore(ss, before ? ref : ref.nextSibling);
+      });
+      var onloadcssdefined = function (cb) {
+        var resolvedHref = ss.href;
+        var i = sheets.length;
+        while (i--) {
+          if (sheets[i].href === resolvedHref) {
+            return cb();
+          }
+        }
+        setTimeout(function () {
+          onloadcssdefined(cb);
+        });
+      };
+      function loadCB() {
+        if (ss.addEventListener) {
+          ss.removeEventListener("load", loadCB);
+        }
+        ss.media = media || "all";
+      }
+      if (ss.addEventListener) {
+        ss.addEventListener("load", loadCB);
+      }
+      ss.onloadcssdefined = onloadcssdefined;
+      onloadcssdefined(loadCB);
+      return ss;
+    },
+
+    js: (src, opt) => new Promise((resolve, reject) => {
+      var script = document.createElement('script');
+      if (src.startsWith('/')) {
+        src = ctx.root + src.substring(1);
+      }
+      script.src = src;
+      if (opt) {
+        for (let key of Object.keys(opt)) {
+          script[key] = opt[key]
+        }
+      } else {
+        // 默认异步，如果需要同步，第二个参数传入 {} 即可
+        script.async = true
+      }
+      script.onerror = reject
+      script.onload = script.onreadystatechange = function () {
+        const loadState = this.readyState
+        if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+        script.onload = script.onreadystatechange = null
+        resolve()
+      }
+      document.head.appendChild(script)
+    }),
+
+    jq: (fn) => {
+      if (typeof jQuery === 'undefined') {
+        utils.js(deps.jquery).then(fn)
+      } else {
+        fn()
+      }
+    },
+
+    onLoading: (el) => {
+      if (el) {
+        $(el).append('<div class="loading-wrap"><svg xmlns="http://www.w3.org/2000/svg" width="2em" height="2em" preserveAspectRatio="xMidYMid meet" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-width="2"><path stroke-dasharray="60" stroke-dashoffset="60" stroke-opacity=".3" d="M12 3C16.9706 3 21 7.02944 21 12C21 16.9706 16.9706 21 12 21C7.02944 21 3 16.9706 3 12C3 7.02944 7.02944 3 12 3Z"><animate fill="freeze" attributeName="stroke-dashoffset" dur="1.3s" values="60;0"/></path><path stroke-dasharray="15" stroke-dashoffset="15" d="M12 3C16.9706 3 21 7.02944 21 12"><animate fill="freeze" attributeName="stroke-dashoffset" dur="0.3s" values="15;0"/><animateTransform attributeName="transform" dur="1.5s" repeatCount="indefinite" type="rotate" values="0 12 12;360 12 12"/></path></g></svg></div>');
+      }
+    },
+    onLoadSuccess: (el) => {
+      if (el) {
+        $(el).find('.loading-wrap').remove();
+      }
+    },
+    onLoadFailure: (el) => {
+      if (el) {
+        $(el).find('.loading-wrap svg').remove();
+        $(el).find('.loading-wrap').append('<svg xmlns="http://www.w3.org/2000/svg" width="2em" height="2em" preserveAspectRatio="xMidYMid meet" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"><path stroke-dasharray="60" stroke-dashoffset="60" d="M12 3L21 20H3L12 3Z"><animate fill="freeze" attributeName="stroke-dashoffset" dur="0.5s" values="60;0"/></path><path stroke-dasharray="6" stroke-dashoffset="6" d="M12 10V14"><animate fill="freeze" attributeName="stroke-dashoffset" begin="0.6s" dur="0.2s" values="6;0"/></path></g><circle cx="12" cy="17" r="1" fill="currentColor" fill-opacity="0"><animate fill="freeze" attributeName="fill-opacity" begin="0.8s" dur="0.4s" values="0;1"/></circle></svg>');
+        $(el).find('.loading-wrap').addClass('error');
+      }
+    },
+    request: (el, url, callback, onFailure) => {
+      const maxRetry = 3;
+      let retryCount = 0;
+
+      return new Promise((resolve, reject) => {
+        const load = () => {
+          utils.onLoading?.(el);
+
+          let timedOut = false;
+          const timeout = setTimeout(() => {
+            timedOut = true;
+            console.warn('[request] 超时:', url);
+
+            if (++retryCount >= maxRetry) {
+              utils.onLoadFailure?.(el);
+              onFailure?.();
+              reject('请求超时');
+            } else {
+              setTimeout(load, 1000);
+            }
+          }, 5000);
+
+          fetch(url).then(resp => {
+            if (timedOut) return;
+            clearTimeout(timeout);
+
+            if (!resp.ok) throw new Error('响应失败');
+            return resp;
+          }).then(data => {
+            if (timedOut) return;
+            utils.onLoadSuccess?.(el);
+            callback(data);
+            resolve(data);
+          }).catch(err => {
+            clearTimeout(timeout);
+            console.warn('[request] 错误:', err);
+
+            if (++retryCount >= maxRetry) {
+              utils.onLoadFailure?.(el);
+              onFailure?.();
+              reject(err);
+            } else {
+              setTimeout(load, 1000);
+            }
+          });
+        };
+
+        load();
+      });
+    },
+    requestWithoutLoading: (url, options = {}, maxRetry = 2, timeout = 5000) => {
+      return new Promise((resolve, reject) => {
+        let retryCount = 0;
+
+        const tryRequest = () => {
+          let timedOut = false;
+          const timer = setTimeout(() => {
+            timedOut = true;
+            if (++retryCount > maxRetry) reject('timeout');
+            else tryRequest();
+          }, timeout);
+
+          fetch(url, options)
+            .then(resp => {
+              clearTimeout(timer);
+              if (!resp.ok) throw new Error('bad response');
+              resolve(resp);
+            })
+            .catch(err => {
+              clearTimeout(timer);
+              if (++retryCount > maxRetry) reject(err);
+              else setTimeout(tryRequest, 500);
+            });
+        };
+
+        tryRequest();
+      });
+    },
+    /********************** requestAnimationFrame ********************************/
+    // 1、requestAnimationFrame 会把每一帧中的所有 DOM 操作集中起来，在一次重绘或回流中就完成，并且重绘或回流的时间间隔紧紧跟随浏览器的刷新频率，一般来说，这个频率为每秒60帧。
+    // 2、在隐藏或不可见的元素中，requestAnimationFrame 将不会进行重绘或回流，这当然就意味着更少的的 cpu，gpu 和内存使用量。
+    requestAnimationFrame: (fn) => {
+      if (!window.requestAnimationFrame) {
+        window.requestAnimationFrame = window.requestAnimationFrame || window.mozRequestAnimationFrame || window.webkitRequestAnimationFrame;
+      }
+      window.requestAnimationFrame(fn)
+    },
+    dark: {},
+  };
+
+  // utils.dark.mode 当前模式 dark or light
+  // utils.dark.toggle() 暗黑模式触发器
+  // utils.dark.push(callBack[,"callBackName"]) 传入触发器回调函数
+  utils.dark.method = {
+    toggle: new RunItem(),
+  };
+  utils.dark = Object.assign(utils.dark, {
+    push: utils.dark.method.toggle.push,
+  });
+</script>
+<script>
+  const sidebar = {
+    leftbar: () => {
+      if (l_body) {
+        l_body.toggleAttribute('leftbar');
+        l_body.removeAttribute('rightbar');
+      }
+    },
+    rightbar: () => {
+      if (l_body) {
+        l_body.toggleAttribute('rightbar');
+        l_body.removeAttribute('leftbar');
+      }
+    },
+    dismiss: () => {
+      if (l_body) {
+        l_body.removeAttribute('leftbar');
+        l_body.removeAttribute('rightbar');
+      }
+    },
+    toggleTOC: () => {
+      document.querySelector('#data-toc').classList.toggle('collapse');
+    }
+  }
+</script>
+<script type="text/javascript">
+  (() => {
+    const tagSwitchers = document.querySelectorAll('.tag-subtree.parent-tag > a > .tag-switcher-wrapper')
+    for (const tagSwitcher of tagSwitchers) {
+      tagSwitcher.addEventListener('click', (e) => {
+        const parent = e.target.closest('.tag-subtree.parent-tag')
+        parent.classList.toggle('expanded')
+        e.preventDefault()
+      })
+    }
+
+    // Get active tag from query string, then activate it.
+    const urlParams = new URLSearchParams(window.location.search)
+    const activeTag = urlParams.get('tag')
+    if (activeTag) {
+      let tag = document.querySelector(`.tag-subtree[data-tag="${activeTag}"]`)
+      if (tag) {
+        tag.querySelector('a').classList.add('active')
+        
+        while (tag) {
+          tag.classList.add('expanded')
+          tag = tag.parentElement.closest('.tag-subtree.parent-tag')
+        }
+      }
+    }
+  })()
+</script>
+
+<script async src="https://gcore.jsdelivr.net/npm/vanilla-lazyload@19.1/dist/lazyload.min.js"></script>
+<script>
+  // https://www.npmjs.com/package/vanilla-lazyload
+  // Set the options globally
+  // to make LazyLoad self-initialize
+  window.lazyLoadOptions = {
+    elements_selector: ".lazy",
+    callback_loaded: (el) => {
+      el.classList.add('loaded');
+      const wrapper = el.closest('.lazy-box');
+      const icon = wrapper?.querySelector('.lazy-icon');
+      if (icon) icon.remove();
+    }
+  };
+  // Listen to the initialization event
+  // and get the instance of LazyLoad
+  window.addEventListener(
+    "LazyLoad::Initialized",
+    function (event) {
+      window.lazyLoadInstance = event.detail.instance;
+    },
+    false
+  );
+  document.addEventListener('DOMContentLoaded', function () {
+    window.lazyLoadInstance?.update();
+  });
+
+  window.wrapLazyloadImages = (container) => {
+    if (typeof container === 'string') {
+      container = document.querySelector(container);
+    }
+    if (!container) return;
+    
+    const images = container.querySelectorAll('img');
+    images.forEach((img) => {
+      if (img.classList.contains('lazy')) return;
+
+      const src = img.getAttribute('src');
+      if (!src) return;
+
+      const wrapper = document.createElement('div');
+      wrapper.className = 'lazy-box';
+
+      const newImg = img.cloneNode();
+      newImg.removeAttribute('src');
+      newImg.setAttribute('data-src', src);
+      newImg.classList.add('lazy');
+
+      const icon = document.createElement('div');
+      icon.className = 'lazy-icon';
+      if (def.loading) {
+        icon.style.backgroundImage = `url("${def.loading}")`;
+      }
+
+      wrapper.appendChild(newImg);
+      wrapper.appendChild(icon);
+
+      img.replaceWith(wrapper);
+    });
+
+    // 通知 LazyLoad 更新
+    if (window.lazyLoadInstance?.update) {
+      window.lazyLoadInstance.update();
+    }
+  }
+  
+</script>
+
+<!-- required -->
+<script src="/js/main.js?v=1.33.1" defer></script>
+
+<script type="text/javascript">
+  const applyTheme = (theme) => {
+    if (theme === 'auto') {
+      document.documentElement.removeAttribute('data-theme')
+    } else {
+      document.documentElement.setAttribute('data-theme', theme)
+    }
+
+    // applyThemeToGiscus(theme)
+  }
+
+  // FIXME: 这会导致无法使用 preferred_color_scheme 以外的主题
+  const applyThemeToGiscus = (theme) => {
+    // theme = theme === 'auto' ? 'preferred_color_scheme' : theme
+    const cmt = document.getElementById('giscus')
+    if (cmt) {
+      // This works before giscus load.
+      cmt.setAttribute('data-theme', theme)
+    }
+
+    const iframe = document.querySelector('#comments > section.giscus > iframe')
+    if (iframe) {
+      // This works after giscus loaded.
+      const src = iframe.src
+      const newSrc = src.replace(/theme=[\w]+/, `theme=${theme}`)
+      iframe.src = newSrc
+    }
+  }
+
+  const switchTheme = () => {
+    // light -> dark -> auto -> light -> ...
+    const currentTheme = document.documentElement.getAttribute('data-theme')
+    let newTheme;
+    switch (currentTheme) {
+      case 'light':
+        newTheme = 'dark'
+        break
+      case 'dark':
+        newTheme = 'auto'
+        break
+      default:
+        newTheme = 'light'
+    }
+    applyTheme(newTheme)
+    window.localStorage.setItem('Stellar.theme', newTheme)
+    utils.dark.mode = newTheme === 'auto' ? (window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light") : newTheme;
+    utils.dark.method.toggle.start();
+
+    const messages = {
+      light: `切换到浅色模式`,
+      dark: `切换到深色模式`,
+      auto: `切换到跟随系统配色`,
+    }
+    hud?.toast?.(messages[newTheme])
+  }
+
+  (() => {
+    // Apply user's preferred theme, if any.
+    const theme = window.localStorage.getItem('Stellar.theme')
+    if (theme !== null) {
+      applyTheme(theme)
+    } else {
+      utils.dark.mode = window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+    }
+    utils.dark.method.toggle.start();
+  })()
+</script>
+
+
+<!-- optional -->
+
+  <script type="module">
+  const el = document.querySelector("#comments #utterances");
+  util.viewportLazyload(el, load_utterances, false);
+
+  function load_utterances() {
+    if (!el) return;
+    try {
+      el.innerHTML = '';
+    } catch (error) {
+      console.error(error);
+    }
+    const script = document.createElement('script');
+    script.src = 'https://utteranc.es/client.js';
+    script.async = true;
+    for (const key of Object.keys(el.attributes)) {
+      const attr = el.attributes[key];
+      if (['class', 'id'].includes(attr.name) === false) {
+        script.setAttribute(attr.name, attr.value);
+      }
+    }
+    el.appendChild(script);
+  }
+</script>
+
+
+
+
+<script defer>
+  window.addEventListener('DOMContentLoaded', (event) => {
+    ctx.services = Object.assign({}, JSON.parse(`{"mdrender":{"js":"/js/services/mdrender.js"},"siteinfo":{"js":"/js/services/siteinfo.js","api":null},"ghinfo":{"js":"/js/services/ghinfo.js"},"rating":{"js":"/js/services/rating.js","api":"https://star-vote.xaox.cc/api/rating"},"vote":{"js":"/js/services/vote.js","api":"https://star-vote.xaox.cc/api/vote"},"sites":{"js":"/js/services/sites.js"},"friends":{"js":"/js/services/friends.js"},"friends_and_posts":{"js":"/js/services/friends_and_posts.js"},"timeline":{"js":"/js/services/timeline.js"},"fcircle":{"js":"/js/services/fcircle.js"},"weibo":{"js":"/js/services/weibo.js"},"memos":{"js":"/js/services/memos.js"},"voice":{"js":"/js/plugins/voice.js"},"video":{"js":"/js/plugins/video.js"},"download-file":{"js":"/js/plugins/download-file.js"},"twikoo":{"js":"/js/services/twikoo_latest_comment.js"},"waline":{"js":"/js/services/waline_latest_comment.js"},"artalk":{"js":"/js/services/artalk_latest_comment.js"},"giscus":{"js":"/js/services/giscus_latest_comment.js"},"contributors":{"edit_this_page":{"_posts/":null,"wiki/stellar/":"https://github.com/xaoxuu/hexo-theme-stellar-docs/blob/main/"},"js":"/js/services/contributors.js"}}`));
+    for (let id of Object.keys(ctx.services)) {
+      const js = ctx.services[id].js;
+      if (id == 'siteinfo') {
+        ctx.cardlinks = document.querySelectorAll('a.link-card[cardlink]');
+        if (ctx.cardlinks?.length > 0) {
+          utils.js(js, { defer: true }).then(function () {
+            setCardLink(ctx.cardlinks);
+          });
+        }
+      } else if (id == 'voice') {
+        ctx.voiceAudios = document.querySelectorAll('.voice>audio');
+        if (ctx.voiceAudios?.length > 0) {
+          utils.js(js, { defer: true }).then(function () {
+            createVoiceDom(ctx.voiceAudios);
+          });
+        }
+      } else if (id == 'video') {
+        ctx.videos = document.querySelectorAll('.video>video');
+        if (ctx.videos?.length > 0) {
+          utils.js(js, { defer: true }).then(function () {
+            videoEvents(ctx.videos);
+          });
+        }
+      } else if (id == 'download-file') {
+        ctx.files = document.querySelectorAll('.file');
+        if (ctx.files?.length > 0) {
+          utils.js(js, { defer: true }).then(function () {
+            downloadFileEvent(ctx.files);
+          });
+        }
+      } else {
+        const els = document.getElementsByClassName(`ds-${id}`);
+        if (els?.length > 0) {
+          utils.jq(() => {
+            if (id == 'timeline' || 'memos' || 'marked') {
+              utils.js(deps.marked).then(function () {
+                utils.js(js, { defer: true });
+              });
+            } else {
+              utils.js(js, { defer: true });
+            }
+          });
+        }
+      }
+    }
+
+    // chat iphone time
+    let phoneTimes = document.querySelectorAll('.chat .status-bar .time');
+
+    if (phoneTimes.length > 0) {
+      NowTime();
+      var date = new Date();
+      var sec = date.getSeconds();
+      var firstAdjustInterval = setInterval(firstAdjustTime, 1000 * (60 - sec));
+    }
+
+    function firstAdjustTime() {
+      NowTime();
+      clearInterval(firstAdjustInterval);
+      setInterval(NowTime, 1000 * 60);
+    }
+
+    function NowTime() {
+      for (let i = 0; i < phoneTimes.length; ++i) {
+        var timeSpan = phoneTimes[i];
+        var date = new Date();
+        var hour = date.getHours();
+        var min = date.getMinutes();
+        timeSpan.innerHTML = check(hour) + ":" + check(min);
+      }
+    };
+
+    function check(val) {
+      if (val < 10) {
+        return ("0" + val);
+      }
+      return (val);
+    }
+
+    // chat quote
+    const chat_quote_obverser = new IntersectionObserver((entries, observer) => {
+      entries.filter((entry) => { return entry.isIntersecting }).sort((a, b) => a.intersectionRect.y !== b.intersectionRect.y ? a.intersectionRect.y - b.intersectionRect.y : a.intersectionRect.x - b.intersectionRect.x).forEach((entry, index) => {
+          observer.unobserve(entry.target);
+          setTimeout(() => {
+            entry.target.classList.add('quote-blink');
+            setTimeout(() => {
+              entry.target.classList.remove('quote-blink');
+            }, 1000);
+          }, Math.max(100, 16) * (index + 1));
+        });
+    });
+
+    var chatQuotes = document.querySelectorAll(".chat .talk .quote");
+    chatQuotes.forEach((quote) => {
+      quote.addEventListener('click', function () {
+        var chatCellDom = document.getElementById("quote-" + quote.getAttribute("quotedCellTag"));
+        if (chatCellDom) {
+          var chatDiv = chatCellDom.parentElement;
+          var mid = chatDiv.clientHeight / 2;
+          var offsetTop = chatCellDom.offsetTop;
+          if (offsetTop > mid - chatCellDom.clientHeight / 2) {
+            chatDiv.scrollTo({
+              top: chatCellDom.offsetTop - mid + chatCellDom.clientHeight / 2,
+              behavior: "smooth"
+            });
+          } else {
+            chatDiv.scrollTo({
+              top: 0,
+              behavior: "smooth"
+            });
+          }
+          chat_quote_obverser.observe(chatCellDom);
+        }
+      });
+    });
+  });
+</script>
+
+<script>
+  window.addEventListener('DOMContentLoaded', (event) => {
+    ctx.search = {
+      path: `/search.json`,
+    }
+    utils.js('/js/search/local-search.js', { defer: true });
+  });
+</script><script>
+  window.FPConfig = {
+    delay: 0,
+    ignoreKeywords: [],
+    maxRPS: 5,
+    hoverDelay: 25
+  };
+</script>
+<script defer src="https://gcore.jsdelivr.net/npm/flying-pages@2/flying-pages.min.js"></script><script>
+  ctx.fancybox = {
+    selector: `.timenode p>img`,
+    css: `https://gcore.jsdelivr.net/npm/@fancyapps/ui@5.0/dist/fancybox/fancybox.css`,
+    js: `https://gcore.jsdelivr.net/npm/@fancyapps/ui@5.0/dist/fancybox/fancybox.umd.js`
+  };
+  var selector = '[data-fancybox]:not(.error), .with-fancybox .atk-content img:not([atk-emoticon])';
+  if (ctx.fancybox.selector) {
+    selector += `, ${ctx.fancybox.selector}`
+  }
+  var needFancybox = document.querySelectorAll(selector).length !== 0;
+  if (!needFancybox) {
+    const memos = document.getElementsByClassName('ds-memos');
+    if (memos != undefined && memos.length > 0) {
+      needFancybox = true;
+    }
+    const fancybox = document.getElementsByClassName('with-fancybox');
+    if (fancybox != undefined && fancybox.length > 0) {
+      needFancybox = true;
+    }
+  }
+  if (needFancybox) {
+    utils.css(ctx.fancybox.css);
+    utils.js(ctx.fancybox.js, { defer: true }).then(function () {
+      Fancybox.bind(selector, {
+        hideScrollbar: false,
+        Thumbs: {
+          autoStart: false,
+        },
+        caption: (fancybox, slide) => {
+          return slide.triggerEl.alt || slide.triggerEl.dataset.caption || null
+        }
+      });
+    })
+  }
+</script>
+<script>
+  window.addEventListener('DOMContentLoaded', (event) => {
+    const swiper_api = document.getElementById('swiper-api');
+    if (swiper_api != undefined) {
+      utils.css(`https://unpkg.com/swiper@10.3/swiper-bundle.min.css`);
+      utils.js(`https://unpkg.com/swiper@10.3/swiper-bundle.min.js`, { defer: true }).then(function () {
+        const effect = swiper_api.getAttribute('effect') || '';
+        var swiper = new Swiper('.swiper#swiper-api', {
+          slidesPerView: 'auto',
+          spaceBetween: 8,
+          centeredSlides: true,
+          effect: effect,
+          rewind: true,
+          pagination: {
+            el: '.swiper-pagination',
+            clickable: true,
+          },
+          navigation: {
+            nextEl: '.swiper-button-next',
+            prevEl: '.swiper-button-prev',
+          },
+        });
+      })
+    }
+  });
+</script>
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    window.codeElements = document.querySelectorAll('.code');
+    if (window.codeElements.length > 0) {
+      ctx.copycode = {
+        default_text: `Copy`,
+        success_text: `Copied`,
+        toast: `复制成功`,
+      };
+      utils.js('/js/plugins/copycode.js');
+    }
+  });
+</script>
+
+
+<!-- inject -->
+
+</div></body></html>

@@ -1,7 +1,77 @@
-document.addEventListener("DOMContentLoaded",()=>{let a=window.CONFIG.algolia,{indexName:t,appID:n,apiKey:o}=a,s=window.instantsearch({indexName:t,searchClient:window.algoliasearch(n,o),searchFunction:i=>{document.querySelector(".search-input").value&&i.search()}});s.addWidgets([window.instantsearch.widgets.configure({hitsPerPage:a.hits.per_page||8}),window.instantsearch.widgets.searchBox({container:".search-input-container",placeholder:window.CONFIG.i18n.placeholder,showReset:!1,showSubmit:!1,showLoadingIndicator:!1,cssClasses:{input:"search-input"}}),window.instantsearch.widgets.stats({container:"#algolia-stats",templates:{text:i=>`<span>${window.CONFIG.i18n.hits_time.replace(/\$\{hits}/,i.nbHits).replace(/\$\{time}/,i.processingTimeMS)}</span>
-            <span class="algolia-powered">
-              <a href="https://www.algolia.com/" target="_blank"><img src="https://simpleicons.org/icons/algolia.svg" alt="Algolia"></a>
-            </span>
-            <hr>`}}),window.instantsearch.widgets.hits({container:"#algolia-hits",templates:{item:i=>`<a href="${i.permalink?i.permalink:window.CONFIG.root+i.path}" class="algolia-hit-item-link">${i._highlightResult.title.value}</a>`,empty:i=>`<div id="algolia-hits-empty">
-              ${window.CONFIG.i18n.empty.replace(/\$\{query}/,i.query)}
-            </div>`},cssClasses:{item:"algolia-hit-item"}}),window.instantsearch.widgets.pagination({container:"#algolia-pagination",scrollTo:!1,showFirst:!1,showLast:!1,templates:{first:'<span class="icon iconify" data-icon="ri:arrow-left-line"></span>',last:'<span class="icon iconify" data-icon="ri:arrow-right-line"></span>',previous:'<span class="icon iconify" data-icon="ri:arrow-left-s-line"></span>',next:'<span class="icon iconify" data-icon="ri:arrow-right-s-line"></span>'},cssClasses:{root:"pagination",item:"pagination-item",link:"page-number",selectedItem:"current",disabledItem:"disabled-item"}})]),s.start()});
+utils.js(window.searchConfig.js).then(() => {
+  utils.jq(() => {
+    var $inputArea = $("input#search-input");
+    if ($inputArea.length === 0) {
+      return;
+    }
+
+    var $resultArea = $("#search-result");
+    var $searchWrapper = $("#search-wrapper");
+    var client = algoliasearch(window.searchConfig.appId, window.searchConfig.apiKey);
+    var index = client.initIndex(window.searchConfig.indexName);
+
+    function filterResults(hits, filterPath) {
+      if (!filterPath || filterPath === '/') return hits;
+      var regex = new RegExp(filterPath);
+      return hits.filter(hit => regex.test(hit.url));
+    }
+
+    function displayResults(hits) {
+      var $resultList = $("<ul>").addClass("search-result-list");
+      if (hits.length === 0) {
+        $searchWrapper.addClass('noresult');
+      } else {
+        $searchWrapper.removeClass('noresult');
+        hits.forEach(function(hit) {
+          var contentSnippet = hit._snippetResult.content.value;
+          var title = hit.hierarchy.lvl1 || 'Untitled';
+          var $item = $("<li>").html(`<a href="${hit.url}"><span class='search-result-title'>${title}</span><p class="search-result-content">${contentSnippet}</p></a>`);
+          $resultList.append($item);
+        });
+      }
+      $resultArea.html($resultList);
+    }
+
+    $inputArea.on("input", function() {
+      var query = $(this).val().trim();
+      var filterPath = $inputArea.data('filter');
+
+      if (query.length <= 0) {
+        $searchWrapper.attr('searching', 'false');
+        $resultArea.empty();
+        return;
+      }
+
+      $searchWrapper.attr('searching', 'true');
+
+      index.search(query, {
+        hitsPerPage: window.searchConfig.hitsPerPage,
+        attributesToHighlight: ['content'],
+        attributesToSnippet: ['content:30'],
+        highlightPreTag: '<span class="search-keyword">',
+        highlightPostTag: '</span>',
+        restrictSearchableAttributes: ['content']
+      }).then(function(responses) {
+        displayResults(filterResults(responses.hits, filterPath));
+      });
+    });
+
+    $inputArea.on("keydown", function(e) {
+      if (e.which == 13) {
+        e.preventDefault();
+      }
+    });
+
+    var observer = new MutationObserver(function(mutationsList) {
+      if (mutationsList.length === 1) {
+        if (mutationsList[0].addedNodes.length) {
+          $searchWrapper.removeClass('noresult');
+        } else if (mutationsList[0].removedNodes.length) {
+          $searchWrapper.addClass('noresult');
+        }
+      }
+    });
+
+    observer.observe($resultArea[0], { childList: true });
+  });
+});
