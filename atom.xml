@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <feed xmlns="http://www.w3.org/2005/Atom">
-  <title>YuStone Blogs</title>
+  <title>YuStone</title>
   
-  <subtitle>the world</subtitle>
+  
   <link href="http://yustonerain.top/atom.xml" rel="self"/>
   
   <link href="http://yustonerain.top/"/>
