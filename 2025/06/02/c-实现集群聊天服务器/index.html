@@ -181,7 +181,7 @@
 <li><code>cmake ..</code>：执行 CMake，读取上一级目录的 <code>CMakeLists.txt</code>，生成构建系统（默认是 Makefile）</li>
 <li><code>make</code>：使用生成的 Makefile 编译项目</li>
 </ul>
-<h2 id="集群聊天服务器"><a href="#集群聊天服务器" class="headerlink" title="集群聊天服务器"></a>集群聊天服务器</h2><h3 id="项目目录"><a href="#项目目录" class="headerlink" title="项目目录"></a>项目目录</h3><p><img src="/.top//1.png" alt="1"></p>
+<h2 id="集群聊天服务器"><a href="#集群聊天服务器" class="headerlink" title="集群聊天服务器"></a>集群聊天服务器</h2><h3 id="项目目录"><a href="#项目目录" class="headerlink" title="项目目录"></a>项目目录</h3><p><img src="/2025/06/02/c-%E5%AE%9E%E7%8E%B0%E9%9B%86%E7%BE%A4%E8%81%8A%E5%A4%A9%E6%9C%8D%E5%8A%A1%E5%99%A8/1.png" alt="1"></p>
 <p>bin文件夹编译完成后的 <code>.exe</code>（Windows）或无扩展的可执行文件。</p>
 <p>build文件夹通常用于存放 <strong>构建过程中产生的所有中间文件</strong>，它是整个编译流程的“临时工作区”。</p>
 <p>include文件夹存放头文件（Header Files），src文件夹是 C++ 项目中最常见也最核心的目录之一，用于存放 <strong>源代码实现文件（source files）</strong>，主要是 <code>.cpp</code> 文件（也包括 <code>.c</code>, <code>.cc</code>, <code>.cxx</code> 等）。</p>
@@ -1257,14 +1257,14 @@
 </tr>
 </tbody></table>
 <p>我们这里要使用的是Nginx 的 TCP 负载均衡模块（即 stream 模块）</p>
-<p><img src="/.top//2.png" alt="2"></p>
+<p><img src="/2025/06/02/c-%E5%AE%9E%E7%8E%B0%E9%9B%86%E7%BE%A4%E8%81%8A%E5%A4%A9%E6%9C%8D%E5%8A%A1%E5%99%A8/2.png" alt="2"></p>
 <p>这是负载均衡器在本项目发挥的作用图。</p>
 <p>Nginx 默认是 HTTP 层负载均衡（七层），但它的 <strong><code>stream</code> 模块</strong> 支持四层（TCP&#x2F;UDP）负载均衡，非常适合。</p>
 <p>说白了，通过多台后台服务器提高并发量。但也面临着如何处理跨服务器通信的问题。</p>
 <h3 id="引入服务器中间件（redis）"><a href="#引入服务器中间件（redis）" class="headerlink" title="引入服务器中间件（redis）"></a>引入服务器中间件（redis）</h3><p><strong>Redis（Remote Dictionary Server）</strong> 是一个<strong>开源</strong>的、基于内存的<strong>键值对存储（Key-Value Store）数据库</strong>，支持丰富的数据结构，<strong>读写极快</strong>，非常适合用作缓存、中间件、消息队列等。</p>
 <p>引入redis是要解决如果一个用户要和另一个用户通信，但是另一个用户在另一台服务器上，我们能从数据库中看到他在线，但是我们不能获取他的连接，所以引入中间件。这样就可以解决跨服务器通信的问题。</p>
 <p>这里是redis在本项目的作用图：</p>
-<p><img src="/.top//3.png" alt="3"></p>
+<p><img src="/2025/06/02/c-%E5%AE%9E%E7%8E%B0%E9%9B%86%E7%BE%A4%E8%81%8A%E5%A4%A9%E6%9C%8D%E5%8A%A1%E5%99%A8/3.png" alt="3"></p>
 <h3 id="nginx项目配置"><a href="#nginx项目配置" class="headerlink" title="nginx项目配置"></a>nginx项目配置</h3><p>nginx配置编译好后，去修改&#x2F;usr&#x2F;local&#x2F;nginx&#x2F;conf中修改nginx.conf文件。</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#nginx tcp loadbalance config</span></span><br><span class="line">stream &#123;</span><br><span class="line">        upstream MyServer &#123;</span><br><span class="line">                server 127.0.0.1:6000 weight=1 max_fails=3 fail_timeout=30s;</span><br><span class="line">                server 127.0.0.1:6002 weight=1 max_fails=3 fail_timeout=30s;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        server &#123;</span><br><span class="line">                proxy_connect_timeout 1s;</span><br><span class="line">                <span class="comment">#proxy_timeout 3s; # 可以根据需要开启，控制代理的读写超时</span></span><br><span class="line">                listen 8000;</span><br><span class="line">                proxy_pass MyServer;</span><br><span class="line">                tcp_nodelay on;</span><br><span class="line">        &#125;       </span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
 
