@@ -1,3 +1,5 @@
+logo:
+  subtitle: '我的独立博客 | 欢迎来到我的博客' # '文字1 | 文字2' (鼠标放上去会切换到文字2)
 #有两种风格可选，tech: 默认技术类文章, story: 图文类文章
 article:
   type: tech # tech/story
@@ -55,7 +57,7 @@ footer:
   social:
     github:
       icon: '<img src="https://gcore.jsdelivr.net/gh/cdn-x/placeholder/social/08a41b181ce68.svg"/>'
-      url: https://
+      url: https://github.com/YuStone0416
     music:
       icon: '<img src="https://gcore.jsdelivr.net/gh/cdn-x/placeholder/social/3845874.svg"/>'
       url: https://
