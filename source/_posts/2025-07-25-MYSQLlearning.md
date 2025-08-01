@@ -1189,6 +1189,18 @@ UNLOCK TABLES;本身自带提交事务，释放线程占用的所有表锁。
 
 **redo log:	用于记录事务操作的变化，确保事务的持久性。redo log是在事务开始后就开始记录，不管事务是否提交都会记录下来，在异常发生时（如数据持久化过程中掉电），InnoDB会使用redo log恢复到掉电前的时刻，保证数据的完整性。**
 
+**innodb_log_buffer_size默认是16M,就是redo log缓冲区的大小，它随着事务开始，就开始写redo log,如果事务比较大，为了避免事务执行过程中花费过多磁盘IO,可以设置比较大的redo log缓存，节省磁盘IO。**
+
+**InnoDB修改操作数据，不是直接修改磁盘上的数据，实际只是修改Buffer Pool的数据。InnoDB总是先把Buffer Pool中的数据改变记录到redo log中，用来进行崩溃后的数据恢复。优先记录redo log,然后再慢慢的将Buffer Pool的脏数据刷新到磁盘上。**
+
+**innodb_log_group_home_dir指定的目录下的两个文件：ib_logfile0,ib_logfile1,该文件被称作重做日志。**
+
+**buffer pool缓存池：**
+
+**作用：加速读和加速写，直接操作data page,写redo log修改就算完成，有专门的线程去做把buffer pool的dirty page写入磁盘。**
+
+![15](15.png)
+
 **undo log:	保存了事务发生之前的数据的一个版本，用于事务执行时的回滚操作，同时也是实现多版本并发控制（MVCC）下读操作的关键技术。**
 
 **在创建表时，除了自己设定的字段，mysql会自动加一些字段，其中DB_TRX_ID：事务ID  DB_ROLL_PTR：回滚指针**
@@ -1232,3 +1244,42 @@ UNLOCK TABLES;本身自带提交事务，释放线程占用的所有表锁。
 
 ![12](12.png)
 
+## MySQL优化
+
+![16](16.png)
+
+## MySQL日志
+
+```mysql
+show variables like 'log_%'; #全局变量	设置&状态	show variables & show status
++----------------------------------------+----------------------------------------+
+| Variable_name                          | Value                                  |
++----------------------------------------+----------------------------------------+
+| log_bin                                | ON                                     |
+| log_bin_basename                       | /var/lib/mysql/binlog                  |
+| log_bin_index                          | /var/lib/mysql/binlog.index            |
+| log_bin_trust_function_creators        | OFF                                    |
+| log_bin_use_v1_row_events              | OFF                                    |
+| log_error                              | /var/log/mysql/error.log               |
+| log_error_services                     | log_filter_internal; log_sink_internal |
+| log_error_suppression_list             |                                        |
+| log_error_verbosity                    | 2                                      |
+| log_output                             | FILE                                   |
+| log_queries_not_using_indexes          | OFF                                    |
+| log_raw                                | OFF                                    |
+| log_replica_updates                    | ON                                     |
+| log_slave_updates                      | ON                                     |
+| log_slow_admin_statements              | OFF                                    |
+| log_slow_extra                         | OFF                                    |
+| log_slow_replica_statements            | OFF                                    |
+| log_slow_slave_statements              | OFF                                    |
+| log_statements_unsafe_for_binlog       | ON                                     |
+| log_throttle_queries_not_using_indexes | 0                                      |
+| log_timestamps                         | UTC                                    |
++----------------------------------------+----------------------------------------+
+21 rows in set (0.06 sec)
+```
+
+关于日志的配置需要到my.cnf去添加。
+
+![17](17.png)
