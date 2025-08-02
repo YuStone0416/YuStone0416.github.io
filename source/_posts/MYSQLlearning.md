@@ -1,5 +1,5 @@
 ---
-title: MYSQL learning
+title: MYSQLlearning
 date: 2025-07-25 15:46:07
 tags: MYSQL learning
 categories: MYSQL learning
@@ -16,7 +16,7 @@ updated: 2025-07-25 21:26:16
 4. MySQL设计成**C/S模型**
 5. MySQL的服务器模型采用的是**I/O复用+可伸缩的线程池**，是实现网络服务器的经典模型。用的是**select+线程池。**这里为什么不设计成epoll+线程池，或者更高效的模型，**用select,因为网络I/O快，但是MySQL还需要把数据存储到磁盘，磁盘I/O速度是比较慢的，所以速度匹配即可，没必要做那么快**。
 
-![1](1.png)
+![1](MYSQLlearning/1.png)
 
 **Windows下MySQL安装目录中有一个my.ini文件，可以做一些配置调优。在data文件夹中，每建立一个数据库会有一个文件夹与其对应。**
 
@@ -443,7 +443,7 @@ insert into user(nickname,name,age,sex) values('666','li si',21,'W'),('888','gao
 
 **这里有个问题：就是一次全插入和多次插入最后结果都是相同的，那么他们有什么区别。**
 
-![2](2.png)
+![2](MYSQLlearning/2.png)
 
 **由上图，多次插入会导致tcp连接次数增多，消耗资源。**
 
@@ -631,7 +631,7 @@ select age,sex,count(*) from user group by age,sex;
 
 ### 连接查询
 
-![3](3.png)
+![3](MYSQLlearning/3.png)
 
 #### 内连接查询
 
@@ -884,7 +884,7 @@ EXPLAIN SELECT * FROM user WHERE id = 1;
 
 **由于磁盘的读取也是按照block块操作的(内存是按page页面操作的)，因此B-树的节点大小一般设置为和磁盘块大小一致，这样一个B-树节点，就可以通过一次磁盘I/O把一个磁盘块的数据全部存储下来，所以当使用B-树存储索引的时候，磁盘I/O的操作次数是最少的(MySQL的读写效率，主要集中在磁盘I/O)。**
 
-![4](4.png)
+![4](MYSQLlearning/4.png)
 
 **为什么MySQL(MyISAM和InnoDB)索引底层选择B+树而不是B树呢？**
 
@@ -903,7 +903,7 @@ EXPLAIN SELECT * FROM user WHERE id = 1;
 
 #### InnoDB的主键和二级索引树
 
-![5](5.png)
+![5](MYSQLlearning/5.png)
 
 ```mysql
 select * from student where age=20 order by name;
@@ -916,11 +916,11 @@ key:age+name 在B+树的链表中先按age排序，再按name排序；age相同�
 
 #### MyISAM的主键和二级索引树
 
-![6](6.png)
+![6](MYSQLlearning/6.png)
 
 #### 哈希索引
 
-![7](7.png)
+![7](MYSQLlearning/7.png)
 
 #### InnoDB自适应哈希索引
 
@@ -1090,7 +1090,7 @@ SELECT @@transaction_isolation;
 
 ## MySQL的锁机制
 
-![8](8.png)
+![8](MYSQLlearning/8.png)
 
 ### 表级锁&行级锁
 
@@ -1122,7 +1122,7 @@ SELECT @@transaction_isolation;
 
 #### 间隙锁(gap lock)
 
-![9](9.png)
+![9](MYSQLlearning/9.png)
 
 **当我们用范围条件而不是相等条件检索数据，并请求共享或排它锁时，InnoDB会给符合条件的已有数据记录的索引项加锁；对于键值在条件范围内但并不存在的记录，叫做间隙，InnoDB也会对这个间隙加锁，这个锁机制就是所谓的间隙锁。举例来说，假如user表中只有101条记录，其userid的值分别为1，2，100，101，下面的SQL:**
 
@@ -1134,7 +1134,7 @@ select * from user where userid>100 for update;
 
 **InnoDB使用间隙锁的目的，为了防止幻读，以满足串行化隔离级别的要求，对于上面的例子，要是不使用间隙锁，如果其他事务插入了userid大于100的任何记录，那么本事务如果再次执行上述语句，就会发生幻读。**
 
-![10](10.png)
+![10](MYSQLlearning/10.png)
 
 ### InnoDB表级锁
 
@@ -1159,13 +1159,13 @@ UNLOCK TABLES;本身自带提交事务，释放线程占用的所有表锁。
 
 **IS和IX之间是兼容的，没有互斥**
 
-![13](13.png)
+![13](MYSQLlearning/13.png)
 
 ### 死锁
 
 **MyISAM表锁是deadlock free的，这是因为MyISAM总是一次获得所需的全部锁，要么全部满足，要么等待，因此不会出现死锁。但在InnoDB中，除单个SQL组成的事务外，锁是逐步获得的，即锁的粒度比较小，这就决定了在InnoDB中发生死锁是可能的。**
 
-![14](14.png)
+![14](MYSQLlearning/14.png)
 
 **死锁问题一般都是我们自己的应用造成的，和多线程编程的死锁情况相似，大部分都是由于我们多个线程在获取多个锁资源的时候，获取的顺序不同而导致的死锁问题。因此我们应用在对数据库的多个表作更新的时候，不同的代码段，应对这些表按相同的顺序进行更新操作，以防止锁冲突导致死锁问题。**
 
@@ -1199,7 +1199,7 @@ UNLOCK TABLES;本身自带提交事务，释放线程占用的所有表锁。
 
 **作用：加速读和加速写，直接操作data page,写redo log修改就算完成，有专门的线程去做把buffer pool的dirty page写入磁盘。**
 
-![15](15.png)
+![15](MYSQLlearning/15.png)
 
 **undo log:	保存了事务发生之前的数据的一个版本，用于事务执行时的回滚操作，同时也是实现多版本并发控制（MVCC）下读操作的关键技术。**
 
@@ -1207,7 +1207,7 @@ UNLOCK TABLES;本身自带提交事务，释放线程占用的所有表锁。
 
  **DB_ROLL_PTR：回滚指针指向修改前的数据，修改前的数据在undo log中，当然当前数据库里的数据是最新的。回滚的话，直接从undo log调就可以。**
 
-![11](11.png)
+![11](MYSQLlearning/11.png)
 
 ### MVCC多版本并发控制
 
@@ -1242,11 +1242,11 @@ UNLOCK TABLES;本身自带提交事务，释放线程占用的所有表锁。
 3. **版本已提交，但是在快照创建前提交的，可以读取**
 4. **当前事务内自己的更新，可以读到。**
 
-![12](12.png)
+![12](MYSQLlearning/12.png)
 
 ## MySQL优化
 
-![16](16.png)
+![16](MYSQLlearning/16.png)
 
 ## MySQL日志
 
@@ -1282,7 +1282,7 @@ show variables like 'log_%'; #全局变量	设置&状态	show variables & show s
 
 关于日志的配置需要到my.cnf去添加。
 
-![17](17.png)
+![17](MYSQLlearning/17.png)
 
 ### 二进制日志
 
