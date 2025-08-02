@@ -1283,3 +1283,67 @@ show variables like 'log_%'; #全局变量	设置&状态	show variables & show s
 关于日志的配置需要到my.cnf去添加。
 
 ![17](17.png)
+
+### 二进制日志
+
+**二进制日志(BINLOG)记录了所有的DDL(数据定义语言)语句和DML(数据操纵语言)语句,但是不包括数据查询语句。语句以事件的形式保存，他描述了数据的更改过程。此日志对于灾难时的数据恢复起到极其重要的作用。**
+
+**两个重要的应用场景：主从复制，数据恢复**
+
+**查看binlog**
+
+```mysql
+show binary logs;
++---------------+-----------+-----------+
+| Log_name      | File_size | Encrypted |
++---------------+-----------+-----------+
+| binlog.000027 |       157 | No        |
+| binlog.000028 |       157 | No        |
+| binlog.000029 |       157 | No        |
+| binlog.000030 |       157 | No        |
+| binlog.000031 |       157 | No        |
+| binlog.000032 |       157 | No        |
+| binlog.000033 | 104857956 | No        |
+| binlog.000034 | 104857734 | No        |
+| binlog.000035 | 104857734 | No        |
+| binlog.000036 | 104857688 | No        |
+| binlog.000037 | 104857740 | No        |
+| binlog.000038 | 104857740 | No        |
+| binlog.000039 |  10635266 | No        |
++---------------+-----------+-----------+
+13 rows in set (0.02 sec)
+```
+
+**通过mysqlbinlog工具(mysql原生自带的工具)可以快速解析大量的binlog日志文件。**
+
+```mysql
+#查看 binlog 日志内容
+mysqlbinlog /var/lib/mysql/mysql-bin.000001
+```
+
+**mysql数据的恢复：过期数据的备份(data.sql)+bin-log数据恢复**
+
+```bash
+#bin-log数据恢复 除了通过位置恢复还可以通过时间恢复
+mysqlbinlog --start-position=775 --stop-position=1410 mysql-bin.000003 | mysql -u root -p
+#过期数据的备份
+mysqldump -u root -p mytest user > ~/user.sql
+mysqldump -u root -p --databases db1 [db2] > ~/user.sql
+mysqldump -u root -p --all-databases > ~/user.sql
+mysql界面下还原数据
+source ~/user.sql
+或者
+cat ~/data.sql | mysql -u root -p
+```
+
+```bash
+前面导出的是mysql的记录
+我想直接导出记录
+bash下
+mysql -u root -p -D school -e "select * from user where age>18" > ~/user.txt
+```
+
+## SQL详细处理流程
+
+![18](MYSQLlearning/18.png)
+
