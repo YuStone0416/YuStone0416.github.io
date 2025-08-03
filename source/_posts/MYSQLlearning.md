@@ -3,7 +3,7 @@ title: MYSQLlearning
 date: 2025-07-25 15:46:07
 tags: MYSQL learning
 categories: MYSQL learning
-updated: 2025-07-25 21:26:16
+updated: 2025-08-03 21:26:16
 ---
 
 ## MySQL基础
@@ -1338,7 +1338,7 @@ cat ~/data.sql | mysql -u root -p
 
 ```bash
 前面导出的是mysql的记录
-我想直接导出记录
+我想直接导出数据
 bash下
 mysql -u root -p -D school -e "select * from user where age>18" > ~/user.txt
 ```
@@ -1347,3 +1347,240 @@ mysql -u root -p -D school -e "select * from user where age>18" > ~/user.txt
 
 ![18](MYSQLlearning/18.png)
 
+## MySQL集群
+
+**在实际生产环境中，如果对mysql数据库的读和写都在一台数据库服务器中操作，无论是在安全性，高可用性，还是高并发等各个方面都是不能满足实际需求的，一般要通过主从复制的方式来同步数据，再通过读写分离来提升数据库的并发负载能力。**
+
+1. **数据备份 -热备份&容灾&高可用。**
+2. **读写分离，支持更大的并发。**
+
+### 主从复制
+
+**原理介绍**
+
+![19](MYSQLlearning/19.png)
+
+**主从复制的流程：两个日志binlog二进制日志&relay log中继日志和三个线程(master的一个线程和slave的两个线程)**
+
+1. **主库的更新操作写入binlog二进制日志中。**
+2. **master服务器创建一个binlog转储线程，将二进制日志内容发送到从服务器。**
+3. **slave机器执行START SLAVE命令会在从服务器创建一个IO线程，接收master的binary log复制到其中继日志。首先slave开始一个工作线程(I/O线程)，I/O线程在master上打开一个普通的连接，然后开始binlog dump process,binlog dump process从master的二进制日志中读取事件，如果已经跟上master,它会睡眠并等待master产生新的事件，I/O线程将这些事件写入中继日志。**
+4. **sql slave thread(sql从线程)处理该过程的最后一步，sql线程从中继日志中读取事件，并重放其中的事件而更新slave机器的数据，使其与master的数据一致。只要该线程与I/O线程保持一致，中继日志通常会位于os缓存中，所以中继日志的开销很小。**
+
+
+
+### mysql主从复制配置
+
+**首先确认防火墙是否开放对应端口(使用ubtuntu)**
+
+```bash
+#防火墙（UFW）状态
+sudo ufw status
+#启用防火墙
+sudo ufw enable
+#开放指定端口
+sudo ufw allow 8080
+#仅开放 TCP：
+sudo ufw allow 8080/tcp
+#仅开放 UDP：
+sudo ufw allow 8080/udp
+#查看当前已开放的端口
+sudo ufw status numbered
+#关闭指定端口
+sudo ufw delete allow 8080
+```
+
+master配置：
+
+1. 开启二进制日志，配置log_bin和全局唯一的server-id.
+
+   ```bash
+   sudo vim /etc/my.cnf#编写配置文件
+   server-id=1
+   expire_logs_days=7
+   log-bin=mysql-bin
+   sudo systemctl restart mysql#重启mysql
+   ```
+
+2. 创建一个用于主从库通信用的账号
+
+   ```mysql
+   DROP USER IF EXISTS 'mslave'@'从库ip(如果虚拟机NAT模式可以看错误日志看具体是那个ip)';#删除user变量为mslave（如果要重新配置可以删除再配置）
+   CREATE USER 'mslave'@'从库ip(如果虚拟机NAT模式可以看错误日志看具体是那个ip)' IDENTIFIED WITH mysql_native_password BY '1qaz@wsx';
+   查看 /var/log/mysql/error.log 中出现的访问主库失败信息，通常能看到连接的 IP
+   GRANT REPLICATION SLAVE ON *.* TO 'mslave'@'和IP上同';
+   FLUSH PRIVILEGES;
+   ```
+
+3. 获取binlog的日志文件名和position
+
+   ```mysql
+   mysql>show master status;
+   show master status;
+   +---------------+----------+--------------+------------------+-------------------+
+   | File          | Position | Binlog_Do_DB | Binlog_Ignore_DB | Executed_Gtid_Set |
+   +---------------+----------+--------------+------------------+-------------------+
+   | binlog.000045 |     1056 |              |                  |                   |
+   +---------------+----------+--------------+------------------+-------------------+
+   1 row in set (0.00 sec)
+   ```
+
+slave配置：
+
+1. 配置全局唯一的server-id=2(配置完需要重启mysql);
+
+2. 使用master创建的账户读取binlog同步数据
+
+   ```mysql
+   change master to master_host='主库ip',
+   master_port=3306,
+   master_user='mslave',
+   master_password='1qaz@wsx',
+   master_log_file=' binlog.000045',
+   master_log_pos=1056;
+   ```
+
+3. START SLAVE
+
+   ```mysql
+   START SLAVE#开启从库接受主库的binlog
+   通过show slave status\G命令查看主从复制状态。
+   STOP SLAVE;停止SLAVE，可以修改，再开始
+   ```
+
+   **show processlist查看mysql中正在运行的线程。**
+
+```mysql
+如果后续在从库出现错误了
+可以用
+stop slave;
+set global sql_slave_skip_counter=5;#跳过5个错误
+start slave;
+```
+
+### 读写分离
+
+**读写分离就是在主服务器上修改，数据会同步到从服务器上，从服务器只能提供读取数据，不能写入，实现备份的同时也实现了数据库性能的优化，以及提升了服务器安全。**
+
+![20](MYSQLlearning/20.png)
+
+### Mycat读写分离配置
+
+**安装好mycat后，就要对配置进行修改**
+
+**mycat/conf/server.xml：配置的是mycat的账户信息**
+
+```xml
+<user name="root" defaultAccount="true">
+                <property name="password">123456</property>
+                <property name="schemas">TESTDB</property><!--逻辑库-->
+                <property name="defaultSchema">TESTDB</property>
+```
+
+**mycat/conf/schema.xml：配置读写分离，分库分表等内容**
+
+```xml
+<schema name="TESTDB" checkSQLschema="true" sqlMaxLimit="100" randomDataNode="dn1">
+	<!-- auto sharding by id (long) -->
+	<!--splitTableNames 启用<table name 属性使用逗号分割配置多个表,即多个表使用这个配置-->
+	<!--fetchStoreNodeByJdbc 启用ER表使用JDBC方式获取DataNode-->
+    <table name="customer" primaryKey="id" dataNode="dn1"/>
+	<!--<table name="customer" primaryKey="id" dataNode="dn1,dn2" rule="sharding-by-intfile" autoIncrement="true" fetchStoreNodeByJdbc="true">
+		<childTable name="customer_addr" primaryKey="id" joinKey="customer_id" parentKey="id"></childTable>
+	</table>-->
+	<!-- <table name="oc_call" primaryKey="ID" dataNode="dn1$0-743" rule="latest-month-calldate"
+                        /> -->
+</schema>
+<!-- <dataNode name="dn1$0-743" dataHost="localhost1" database="db$0-743"
+                /> -->
+<dataNode name="dn1" dataHost="localhost1" database="mytest" /><!--填写对应的数据库/>
+<!--<dataNode name="dn4" dataHost="sequoiadb1" database="SAMPLE" /><dataNode name="jdbc_dn1" dataHost="jdbchost" database="db1" /><dataNode       name="jdbc_dn2" dataHost="jdbchost" database="db2" /><dataNode name="jdbc_dn3"       dataHost="jdbchost" database="db3" /> -->
+<dataHost name="localhost1" maxCon="1000" minCon="10" balance="0"
+                          writeType="0" dbType="mysql" dbDriver="jdbc" switchType="1"  slaveThreshold="100">
+	<heartbeat>select user()</heartbeat>
+	<!-- can have multi write hosts -->
+	<writeHost host="192.168.25.129" url="jdbc:mysql://192.168.25.129:3306/mytest" user="root"
+                                   password="123456">
+        <readHost host="192.168.1.6" url="jdbc:mysql://192.168.1.6:3306/mytest" user="root"
+                                   password="123456"/>
+    </writeHost>
+    <writeHost host="192.168.1.6" url="jdbc:mysql://192.168.1.6:3306/mytest" user="root" password="123456"/>
+	<!-- <writeHost host="hostM2" url="localhost:3316" user="root" password="123456"/> -->
+</dataHost>
+```
+
+**schema指的是逻辑库和逻辑表，dataNode指的是数据节点，dataHost指的是物理数据库信息。writeHost填写自己部署的写服务器地址readHost填写读服务器地址**
+
+```xml
+<writeHost host="192.168.1.6" url="jdbc:mysql://192.168.1.6:3306/mytest" user="root" password="123456"/>
+```
+
+**这句当写服务器挂了后，可以把其他服务器或者自己的读服务器变为主服务器**。
+
+```xml
+<dataHost name="localhost1" maxCon="1000" minCon="10" balance="0"
+                          writeType="0" dbType="mysql" dbDriver="jdbc" switchType="1"  slaveThreshold="100">
+```
+
+```xml
+maxCon，minCon可以规定连接数。
+balance:"0":不开启读写分离
+		"1":全部的readHost和stand by writeHost(等待的写服务器)参与select语句的负载
+		"2":所有的读操作随机在readHost和writeHost分发
+		"3":所有读请求随机分发到writeHost对应的readHost上执行
+writeType="0":所有的写操作发送到配置的第一个writeHost,第一个挂掉切换到还生存的第二个writeHost
+switchType:"-1"；不自动切换
+			"1":自动切换，根据心跳select user()
+			"2":基于MySQL的主从同步状态决定是否进行切换 show slave status来检测
+```
+
+**启动出错可以去看wrapper.log**
+
+**运行出错可以去看mycat.log**
+
+```mysql
+#使用客户端连接
+mysql -h ip -P 8066 -u root -p 登录端口为9066是管理端口（监控和管理端口），8066是数据服务端口（SQL 端口）
+#默认用户名是 root，密码为你在 conf/server.xml 中 <user> 配置的密码。
+```
+
+**如果确认是哪个服务器的数据库执行查，执行写，我们可以看对应数据库查询日志**
+
+## MySQL分库分表
+
+**刚开始多数项目用单机数据库就够了，随着服务器流量越来越大，面对的请求也越来越多，我们做了数据库读写分离，使用多个从库副本（Slave）负责读，使用主库（Master）负责写，master和slave通过主从复制实现数据同步更新，保持数据一致。slave从库可以水平扩展，所以更多的读请求不成问题。**
+
+**但是当用户量级上升，写请求越来越多，怎么保证数据库的负载足够？增加一个Master是不能解决问题的，因为数据要保持一致性，写操作需要2个master同步，相当于重复了，而且架构设计更加复杂。**
+
+**这时需要用到分库分表(sharding)，对写操作进行切分。**
+
+### 库表问题
+
+**单库太大**
+
+**单库处理能力有限，所在服务器上的磁盘空间不足，遇到IO瓶颈，需要将单库切分为更多更小的库。**
+
+**单表太大**
+
+**CRUD效率都很低，数据量太大导致索引膨胀，查询超时，需要把单表切分成多个数据集更小的表。**
+
+### 拆分策略
+
+**单个库太大，先考虑是表多还是数据多：**
+
+1. **如果因为表多而造成数据过多，则使用垂直拆分，即根据业务拆分成不同的库**
+2. **如果因为单张表的数据量太大，则使用水平拆分，即把表的数据按照某种规则拆分成多张表。**
+
+**分库分表的原则应先考虑垂直拆分，再考虑水平拆分。**
+
+### 垂直拆分
+
+**MyCat 垂直分库=不同表走不同数据库，但对外仍是一个逻辑库，既解耦又统一**
+
+### 水平分表
+
+**水平分表=将一张表“拆行”为多张表，用路由规则将数据映射到对应表，是应对大表性能瓶颈的核心手段。**
+
+**后续mycat考虑深入**
+
+## 完结散花
