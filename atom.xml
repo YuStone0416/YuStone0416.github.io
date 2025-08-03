@@ -17,6 +17,30 @@
   <generator uri="https://hexo.io/">Hexo</generator>
   
   <entry>
+    <title>C++basiclearning</title>
+    <link href="http://yustonerain.top/C-basiclearning/"/>
+    <id>http://yustonerain.top/C-basiclearning/</id>
+    <published>2025-08-03T13:26:16.000Z</published>
+    <updated>2025-08-03T13:26:16.000Z</updated>
+    
+    <content type="html"><![CDATA[<h2 id="代码底层机制"><a href="#代码底层机制" class="headerlink" title="代码底层机制"></a>代码底层机制</h2><h3 id="进程虚拟地址空间区域划分"><a href="#进程虚拟地址空间区域划分" class="headerlink" title="进程虚拟地址空间区域划分"></a>进程虚拟地址空间区域划分</h3><p><img src="/C-basiclearning/1.png" alt="1"></p><h3 id="指令角度函数调用堆栈详细过程"><a href="#指令角度函数调用堆栈详细过程" class="headerlink" title="指令角度函数调用堆栈详细过程"></a>指令角度函数调用堆栈详细过程</h3>]]></content>
+    
+    
+      
+      
+    <summary type="html">&lt;h2 id=&quot;代码底层机制&quot;&gt;&lt;a href=&quot;#代码底层机制&quot; class=&quot;headerlink&quot; title=&quot;代码底层机制&quot;&gt;&lt;/a&gt;代码底层机制&lt;/h2&gt;&lt;h3 id=&quot;进程虚拟地址空间区域划分&quot;&gt;&lt;a href=&quot;#进程虚拟地址空间区域划分&quot; class=&quot;head</summary>
+      
+    
+    
+    
+    <category term="C++basiclearning" scheme="http://yustonerain.top/categories/C-basiclearning/"/>
+    
+    
+    <category term="C++" scheme="http://yustonerain.top/tags/C/"/>
+    
+  </entry>
+  
+  <entry>
     <title>MYSQLlearning</title>
     <link href="http://yustonerain.top/MYSQLlearning/"/>
     <id>http://yustonerain.top/MYSQLlearning/</id>
