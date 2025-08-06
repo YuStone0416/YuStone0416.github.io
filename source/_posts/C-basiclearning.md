@@ -249,6 +249,7 @@ using namespace std;
 /*
 const如何理解
 const修饰的变量不能够再作为左值，初始化完成后，值不能够被修改
+常量是左值（const 是左值），但它是不能作为赋值语句左边的左值，因为它是只读的
 
 C和C++中const的区别是什么
 const的编译方式不同，C中，const就是当作一个变量来编译生成指令的。
@@ -490,7 +491,7 @@ int main()
 {
     //写一句代码，在内存的0x0018ff44处写一个4字节的10
     //int* const &p = (int*)0x0018ff44;
-    //int * &&p= (int*)0x0018ff44;
+    //int* &&p= (int*)0x0018ff44;
     int a = 10;
     int* p = &a;
     //const int*& q = p;这句是执行不了的
@@ -501,3 +502,251 @@ int main()
 }
 ```
 
+### new和delete
+
+```c++
+#include <iostream>
+/*
+new和delete
+new和malloc的区别
+delete和free的区别
+
+malloc和free,称作C的库函数
+new和delete,称作运算符
+
+new不仅可以做内存开辟，还可以做内存初始化操作
+malloc开辟内存失败，是通过返回值和nullptr作比较；
+而new开辟内存失败，是通过抛出bad_alloc类型的异常来判断的。
+
+delete和free
+free一般用于C,delete用于C++。free只是释放所对应的内存。delete在对象中除了会释放所对应的内存，还会执行对象的析构函数
+*/
+#if 0
+int main()
+{
+    int* p = (int*)malloc(sizeof(int));
+    if (p == nullptr)
+    {
+        return -1;
+    }
+    *p = 20;
+    free(p);
+
+    int* p1 = new int(20);
+    delete p1;
+
+    
+    //开辟数组
+    int* q = (int*)malloc(sizeof(int) * 20);
+    if (q == nullptr)
+    {
+        return -1;
+    }
+    free(q);
+    
+    int* q1 = new int[20];//20个int
+    delete[]q1;
+    
+    return 0;
+}
+#endif
+int main()
+{
+    //new有多少种
+    int* p1 = new int(20);
+    int* p2 = new (std::nothrow) int;//未开辟成功，不会抛出异常
+    const int* p3 = new const int(40);//在堆区开辟一个常量
+    //定位new
+    int data = 0;
+    int* p4 = new (&data) int(50);//在指定的地址开辟空间
+    std::cout << "data:" << data << std::endl;//data变为50
+    return 0;
+}
+```
+
+## C++面向对象
+
+### 类和对象，this指针
+
+```c++
+#include <iostream>
+/*
+C++ OOP面向对象 OOP编程，this指针
+C: 各种各样的函数的定义 struct
+C++：类 =》实体的抽象类型
+实体（属性，行为） -> ADT(abstract data type)抽象数据类型
+  |                                 |
+对象      (实例化) <- 类(属性->成员变量  行为->成员方法)
+
+OOP语言的四大特征是什么？
+抽象     封装/隐藏    继承  多态
+
+访问限定符：public公有的 private私有的 protected保护的
+*/
+const int NAME_LEN = 20;
+class CGoods //=>商品的抽象数据类型
+{
+public://给外部提供公有的成员方法，来访问私有的属性
+    //做商品数据初始化用的
+    void init(const char* name, double price, int amount);
+    //打印商品信息
+    void show();
+    //给成员变量提供一个getXXX或者setXXX的方法
+    //类体内实现的方法，自动处理成inline内联函数
+    void setName(char* name) { strcpy(_name, name); }
+    void setPrice(double price) { _price = price; }
+    void setAmount(int amount) { _amount = amount; }
+    const char* getName() { return _name; }
+    double getPrice() { return _price;}
+    int getAmount() { return _amount; }
+private://属性一般都是私有的成员变量
+    char _name[NAME_LEN];
+    double _price;
+    int _amount;
+};
+void CGoods::init(const char* name, double price, int amount)
+{
+    strcpy(_name, name);
+    _price = price;
+    _amount = amount;
+}
+void CGoods::show()
+{
+    std::cout << "name:" << _name << std::endl;
+    std::cout << "price:" << _price << std::endl;
+    std::cout << "amount:" << _amount << std::endl;
+}
+int main()
+{
+    /*
+    CGoods可以定义无数的对象，每一个对象都有自己的成员变量，但是他们共享一套成员方法
+    成员方法如何知道自己所要修改的对象是谁呢？
+    类的成员方法一经编译，所有的方法参数，都会加一个this指针，接收调用该方法的的对象的地址。
+    底层会自动转变void init(CGoods *this,const char* name, double price, int amount)，里面的变量会变成this.变量名。
+    这样就可以区分是哪个对象了。
+    */
+    //对象内存大小=》只和成员变量有关，与成员方法无关
+    CGoods good;//类实例化了一个对象
+    good.init("面包", 10.0, 200);
+    good.show();
+    good.setPrice(20.5);
+    good.setAmount(100);
+    good.show();
+    return 0;
+}
+```
+
+### 构造函数和析构函数
+
+```c++
+#include <iostream>
+/*
+构造函数和析构函数
+OOP实现一个顺序栈
+
+构造函数和析构函数
+函数的名字和类名一样
+没有返回值
+*/
+class SeqStack
+{
+public:
+    //构造函数
+    SeqStack(int size = 10) //是可以带参数的，因此可以提供多个构造函数，叫做构造函数的重载
+    {
+        std::cout << this << "SeqStack()" << std::endl;
+        _pstack = new int[size];
+        _top = -1;
+        _size = size;
+    }
+    //析构函数
+    ~SeqStack() //是不带参数的，所有析构函数只能有一个
+    {
+        std::cout << this << "~SeqStack()" << std::endl;
+        delete[]_pstack;
+        _pstack = nullptr;
+    }
+    void init(int size = 10) 
+    {
+        _pstack = new int[size];
+        _top = -1;
+        _size = size;
+    }
+    void release()
+    {
+        delete[]_pstack;
+        _pstack = nullptr;
+    }
+    void push(int val)
+    {
+        if (full())
+            resize();
+        _pstack[++_top] = val;
+    }
+    void pop() 
+    {
+        if (empty())
+            return;
+        --_top;
+    }
+    int top() 
+    {
+        return _pstack[_top];
+    }
+    bool empty()
+    {
+        return _top == -1;
+    }
+    bool full()
+    {
+        return _top == _size - 1;
+    }
+private:
+    int* _pstack;//动态开辟数组，存储顺序栈的元素
+    int _top;//指向栈顶元素的位置
+    int _size;//数组扩容的总大小
+    void resize() 
+    {
+        int* ptmp = new int[_size * 2];
+        for (int i = 0;i < _size;i++) 
+        {
+            ptmp[i] = _pstack[i];
+        }
+        delete[]_pstack;
+        _pstack = ptmp;
+        _size *= 2;
+    }
+};
+SeqStack s;//是建立在数据段上的，程序结束析构函数执行(最后析构)
+int main()
+{
+    /*
+    .data
+    heap
+    stack
+    */
+    SeqStack* ps = new SeqStack(60);//这个是建立在堆上的，相当于malloc内存开辟+SeqStack(60)构造
+    ps->push(70);
+    ps->push(80);
+    ps->pop();
+    std::cout << ps->top() << std::endl;
+    delete ps;//只有delete后才会触发析构函数，delete过程：先调用ps->~SeqStack(),然后free(ps)
+    SeqStack s;//1.开辟内存 2.调用构造函数 这个析构函数执行在当前函数结束时
+    //s.init(5);
+    for (int i = 0;i < 15;i++)
+    {
+        s.push(rand() % 100);
+    }
+    while (!s.empty())
+    {
+        std::cout << s.top() << " ";
+        s.pop();
+    }
+    //s.release();
+    //s.~SeqStack();//析构函数调用以后，对象不存在了
+    //s.push(30);//堆内存的非法访问，所以不建议自己单独调用析构函数。
+    return 0;
+}
+```
+
+### 对象的深拷贝和浅拷贝
