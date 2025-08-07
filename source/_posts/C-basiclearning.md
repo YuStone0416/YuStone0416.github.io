@@ -750,3 +750,134 @@ int main()
 ```
 
 ### 对象的深拷贝和浅拷贝
+
+![4](C-basiclearning/4.png)
+
+```c++
+#include <iostream>
+/*
+this指针 =》类 ->很多对象 共享一套成员方法
+成员方法，方法的参数都会添加一个this指针
+
+构造函数：
+    定义对象时，自动调用的；可以重载的；构造完成，对象产生了
+析构函数：
+    不带参数，不能重载，只有一个析构函数；析构完成，对象就不存在了
+
+对象的深拷贝和浅拷贝
+*/
+
+class SeqStack
+{
+public:
+    //构造函数
+    SeqStack(int size = 10) //是可以带参数的，因此可以提供多个构造函数，叫做构造函数的重载
+    {
+        std::cout << this << "SeqStack()" << std::endl;
+        _pstack = new int[size];
+        _top = -1;
+        _size = size;
+    }
+    //自定义拷贝构造函数 《=对象的浅拷贝现在有问题了
+    SeqStack(const SeqStack& src) 
+    {
+        _pstack = new int[src._size];
+        for (int i = 0;i < src._top;i++)
+        {
+            _pstack[i] = src._pstack[i];
+        }
+        //这里赋值为什么不使用memcpy或者realloc,如果是对指针数组的拷贝的话
+        //那它本身是浅拷贝。所以这里一定要用for循环赋值
+        _top = src._top;
+        _size = src._size;
+    }
+    //赋值重载函数(浅拷贝存在问题)
+    void operator=(const SeqStack& src)
+    {
+        //防止自赋值
+        if (this == &src)
+            return;
+        //需要先释放当前对象占用的外部资源
+        delete[]_pstack;
+        _pstack = new int[src._size];
+        for (int i = 0;i < src._top;i++)
+        {
+            _pstack[i] = src._pstack[i];
+        }
+        //这里赋值为什么不使用memcpy或者realloc,如果是对指针数组的拷贝的话
+        //那它本身是浅拷贝。所以这里一定要用for循环赋值
+        _top = src._top;
+        _size = src._size;
+    }
+    //析构函数
+    ~SeqStack() //是不带参数的，所有析构函数只能有一个
+    {
+        std::cout << this << "~SeqStack()" << std::endl;
+        delete[]_pstack;
+        _pstack = nullptr;
+    }
+    void init(int size = 10)
+    {
+        _pstack = new int[size];
+        _top = -1;
+        _size = size;
+    }
+    void release()
+    {
+        delete[]_pstack;
+        _pstack = nullptr;
+    }
+    void push(int val)
+    {
+        if (full())
+            resize();
+        _pstack[++_top] = val;
+    }
+    void pop()
+    {
+        if (empty())
+            return;
+        --_top;
+    }
+    int top()
+    {
+        return _pstack[_top];
+    }
+    bool empty()
+    {
+        return _top == -1;
+    }
+    bool full()
+    {
+        return _top == _size - 1;
+    }
+private:
+    int* _pstack;//动态开辟数组，存储顺序栈的元素
+    int _top;//指向栈顶元素的位置
+    int _size;//数组扩容的总大小
+    void resize()
+    {
+        int* ptmp = new int[_size * 2];
+        for (int i = 0;i < _size;i++)
+        {
+            ptmp[i] = _pstack[i];
+        }
+        delete[]_pstack;
+        _pstack = ptmp;
+        _size *= 2;
+    }
+};
+int main()
+{
+    //SeqStack s;//没有提供任意构造函数的时候，会为你生成默认构造和默认析构，是空函数。
+    SeqStack s1(10);
+    SeqStack s2 = s1;//默认拷贝构造函数=》做直接内存数据拷贝
+    //SeqStack s3(s1);
+
+    //s2.operator=(s1)
+    //void operator=(const SeqStack &src)
+    s2 = s1;//默认的赋值函数 =》做直接的内存拷贝(浅拷贝)
+    return 0;
+}
+```
+
