@@ -881,3 +881,681 @@ int main()
 }
 ```
 
+### 类和对象代码应用实践
+
+```c++
+#include <iostream>
+
+/*
+String类型
+循环队列 Queue
+*/
+#if 0
+class String
+{
+public:
+    String(const char* str = nullptr)//普通构造函数
+    {
+        if (str != nullptr) 
+        {
+            //strlen计算字符串长度时，是不计入'\0'的
+            m_data = new char[strlen(str) + 1];
+            strcpy(this->m_data, str);
+        }
+        else
+        {
+            //这里不能直接把m_data赋值为nullptr，如果这里赋值
+            //后面的构造函数都要判断地址为空的条件。
+            m_data = new char[1];
+            *m_data = '\0';
+        }
+       
+    }
+    String(const String& other)//拷贝构造函数
+    {
+        m_data = new char[strlen(other.m_data) + 1];
+        strcpy(m_data, other.m_data);
+    }
+    ~String(void)//析构函数
+    {
+        delete[]m_data;
+        m_data = nullptr;
+    }
+    String& operator = (const String &other)//赋值重载函数
+    {
+        //防止自赋值
+        if (this == &other)
+        {
+            return *this;
+        }
+        delete[]m_data;
+        m_data = new char[strlen(other.m_data) + 1];
+        strcpy(m_data, other.m_data);
+        return *this;
+    }
+private:
+    char* m_data;//用于保存字符串
+
+};
+int main()
+{
+    //这三个都是使用普通的构造函数String(const char* str = nullptr)
+    String str1;
+    String str2("hello");
+    String str3 = "World";
+    
+    //这两个都是调用拷贝构造函数
+    String str4 = str3;
+    String str5(str3);
+    //下面调用赋值重载函数
+    str1 = str2;
+
+    /*
+    下面执行顺序从右向左
+    str1=str2;
+    str1.operator=(str2);如果返回值变成了void
+    str3=void这样就会出错，所以返回值变为 String&
+    这样是为了支持连续赋值
+    */
+    str3 = str1 = str2;
+    return 0;
+}
+#endif
+
+//循环队列
+class Queue
+{
+public:
+    Queue(int size = 5)
+    {
+        _pQue = new int[size];
+        _front = _rear = 0;
+        _size = size;
+    }
+    //C++11可以把拷贝和赋值删除掉，用户就无法使用了，禁用后，使用会报错
+    //Queue(const Queue&) = delete;
+    //Queue& operator=(const Queue&) = delete;
+    Queue(const Queue& src) 
+    {
+        _size = src._size;
+        _front = src._front;
+        _rear = src._rear;
+        _pQue = new int[_size];
+        for (int i = _front;i != _rear;i = (i + 1) % _size)
+        {
+            _pQue[i] = src._pQue[i];
+        }
+    }
+    Queue& operator=(const Queue&src)
+    {
+        if (this == &src)
+            return *this;
+        delete[]_pQue;
+        _size = src._size;
+        _front = src._front;
+        _rear = src._rear;
+        _pQue = new int[_size];
+        for (int i = _front;i != _rear;i = (i + 1) % _size)
+        {
+            _pQue[i] = src._pQue[i];
+        }
+        return *this;
+    }
+    ~Queue() 
+    {
+        delete[]_pQue;
+        _pQue = nullptr;
+    }
+    void push(int val)//入队操作
+    {
+        if (full())
+        {
+            resize();
+        }
+        _pQue[_rear] = val;
+        _rear = (_rear + 1) % _size;
+    }
+    void pop()//出队操作
+    {
+        if (empty()) 
+        {
+            return;
+        }
+        _front = (_front + 1) % _size;
+    }
+    int front()//获取队头元素
+    {
+        return _pQue[_front];
+    }
+    bool full()
+    {
+        return (_rear + 1) % _size == _front;
+    }
+    bool empty()
+    {
+        return _front == _rear;
+    }
+private:
+    int* _pQue;//申请队列的数组空间
+    int _front;//指示队头的位置
+    int _rear;//指示队尾的位置
+    int _size;//队列扩容的总大小
+
+    void resize()
+    {
+        int* ptmp = new int[2 * _size];
+        int index = 0;
+        //使用循环队列，不要直接搬过去，会出现问题不符合队列的特性，所以把循环队列重新放入新空间中。
+        for (int i = _front;i != _rear;i = (i + 1) % _size)
+        {
+            ptmp[index++] = _pQue[i];
+        }
+        delete[]_pQue;
+        _pQue = ptmp;
+        _front = 0;
+        _rear = index;
+        _size *= 2;
+    }
+};
+int main()
+{
+    Queue queue;
+    for (int i = 0;i < 20;i++)
+    {
+        queue.push(rand() % 100);
+    }
+    while (!queue.empty()) 
+    {
+        std::cout << queue.front() << " ";
+        queue.pop();
+    }
+    std::cout << std::endl;
+
+
+    return 0;
+}
+```
+
+### 构造函数的初始化列表
+
+```c++
+#include <iostream>
+
+#if 0
+/*
+日期类
+*/
+class CDate
+{
+public:
+    CDate(int y, int m, int d)//自定义了构造函数，编译器就不会产生默认的构造函数
+    {
+        _year = y;
+        _month = m;
+        _day = d;
+    }
+    void show()
+    {
+        std::cout << _year << "/" << _month << "/" << _day << std::endl;
+    }
+private:
+    int _year;
+    int _month;
+    int _day;
+};
+/*
+构造函数的初始化列表 可以指定当前对象成员变量的初始化方式
+CDate信息 CGoods商品信息的一部分
+*/
+class CGoods
+{
+public:
+    CGoods(const char* n, int a, double p,int y,int m,int d)
+        :_date(y,m,d)//相当于CDate _date(y,m,d);
+        ,_amount(a)//相当于int _amount=a;
+        ,_price(p)//构造函数的初始化列表
+    {
+        //当前类类型构造函数体
+        strcpy(_name, n);
+        //_amount=a;相当于int _amount;_amount=a;
+    }
+    void show()
+    {
+        std::cout << "name:" << _name << std::endl;
+        std::cout << "amount:" << _amount << std::endl;
+        std::cout << "price:" << _price << std::endl;
+        _date.show();
+    }
+private:
+    char _name[20];
+    int _amount;
+    double _price;
+    CDate _date;//成员对象 1.分配内存 2.调用构造函数 这里会调用默认构造函数,所以要在当前类的构造函数放入初始化
+};
+int main()
+{
+    CGoods good("商品", 100, 35.0, 2019, 5, 12);
+    good.show();
+    return 0;
+}
+#endif
+
+class Test 
+{
+public:
+    Test(int data = 10) :mb(data), ma(mb) {}//这里初始化的顺序是按照变量的定义顺序指定的，和你赋值的顺序无关
+    void show()
+    {
+        std::cout << "ma:" << ma << "mb:" << mb << std::endl;
+        //0xCCCCCCCC就是后面的数字 ma:-858993460mb:10
+    }
+private:
+    //成员变量初始化和他们定义的顺序有关，和构造函数初始化列表中出现的先后顺序无关！
+    int ma;
+    int mb;
+};
+
+int main()
+{
+    Test t;
+    t.show();
+    return 0;
+}
+```
+
+### 类的各种成员方法以及区别
+
+```c++
+#include <iostream>
+
+/*
+类的各种成员 - 成员方法/变量
+普通的成员方法 =》编译器会添加一个this形参变量
+1.属于类的作用域
+2.调用该方法时，需要依赖一个对象（常对象是无法调用的）
+3.可以任意访问对象的私有成员变量   先不考虑protected继承 只看public private
+
+static静态成员方法 =》不会生成this形参
+1.属于类的作用域
+2.用类名作用域来调用方法
+3.可以任意访问对象的私有成员，仅限于不依赖对象的成员(只能调用其他的static静态成员)
+
+const常成员方法 =》const CGoods *this
+1.属于类的作用域
+2.调用依赖一个对象，普通对象或者常对象都可以
+3.可以任意访问对象的私有成员，但是只能读，而不能写
+*/
+class CDate
+{
+public:
+    CDate(int y, int m, int d)//自定义了构造函数，编译器就不会产生默认的构造函数
+    {
+        _year = y;
+        _month = m;
+        _day = d;
+    }
+    void show()const
+    {
+        std::cout << _year << "/" << _month << "/" << _day << std::endl;
+    }
+private:
+    int _year;
+    int _month;
+    int _day;
+};
+/*
+构造函数的初始化列表 可以指定当前对象成员变量的初始化方式
+CDate信息 CGoods商品信息的一部分
+*/
+class CGoods
+{
+public:
+    CGoods(const char* n, int a, double p, int y, int m, int d)
+        :_date(y, m, d)//相当于CDate _date(y,m,d);
+        , _amount(a)//相当于int _amount=a;
+        , _price(p)//构造函数的初始化列表
+    {
+        //当前类类型构造函数体
+        strcpy(_name, n);
+        //_amount=a;相当于int _amount;_amount=a;
+
+        _count++;//记录所有产生的新对象的数量
+    }
+    //普通成员方法 CGoods *this
+    void show()//打印商品私有的信息
+    {
+        std::cout << "name:" << _name << std::endl;
+        std::cout << "amount:" << _amount << std::endl;
+        std::cout << "price:" << _price << std::endl;
+        _date.show();
+    }
+    //常成员方法 只要是只读操作的成员方法，一律实现成const常成员方法
+    //这样普通对象可以调，常对象也可以调用
+    void show() const //const CGoods *this
+    {
+        std::cout << "name:" << _name << std::endl;
+        std::cout << "amount:" << _amount << std::endl;
+        std::cout << "price:" << _price << std::endl;
+        _date.show();
+    }
+    //静态成员方法 没有this指针的
+    static void showCGoodsCount()//打印的是所有商品共享的信息
+    {
+        std::cout << "所有商品的种类数量是：" << _count << std::endl;
+    }
+private:
+    char _name[20];
+    int _amount;
+    double _price;
+    CDate _date;//成员对象 1.分配内存 2.调用构造函数 这里会调用默认构造函数,所以要在当前类的构造函数放入初始化
+    static int _count;//声明 用来记录商品数量的总数量 不属于对象而是属于类级别
+};
+//static成员变量一定要在类外进行定义并且初始化
+int CGoods::_count = 0;
+int main()
+{
+    CGoods good1("商品1", 100, 35.0, 2019, 5, 12);
+    good1.show();
+    CGoods good2("商品2", 100, 35.0, 2019, 5, 12);
+    good2.show();
+    CGoods good3("商品3", 100, 35.0, 2019, 5, 12);
+    good3.show();
+    CGoods good4("商品4", 100, 35.0, 2019, 5, 12);
+    good4.show();
+
+    //统计所有商品的总数量
+    CGoods::showCGoodsCount();
+
+    const CGoods good5("非卖品商品5", 100, 35.0, 2019, 5, 12);
+    good5.show();//CGoods::show(&good5) const CGoods* => CGoods *this这样是会报错的
+    return 0;
+}
+```
+
+### 指向类成员(成员方法和成员变量)的指针
+
+```c++
+#include <iostream>
+
+/*
+指向类成员(成员变量和成员方法)的指针(public可从外界访问)
+*/
+class Test
+{
+public:
+    void func()
+    {
+        std::cout << "call Test::func" << std::endl;
+    }
+    static void static_func()
+    {
+        std::cout << "Test::static_func" << std::endl;
+    }
+    int ma;
+    static int mb;
+};
+int Test::mb = 0;
+int main()
+{
+#if 0
+    Test t1;
+    Test* t2 = new Test();
+
+    int Test::* p = &Test::ma;
+    t1.*p = 20;
+    std::cout << t1.*p << std::endl;
+
+    t2->*p = 30;
+    std::cout << t2->*p << std::endl;
+
+    int* p1 = &Test::mb;
+    *p1 = 40;
+    std::cout << *p1 << std::endl;
+    delete t2;
+#endif
+    
+    Test t1;
+    Test* t2 = new Test();
+    //指向成员方法的指针
+    void (Test:: * pfunc)() = &Test::func;
+    (t1.*pfunc)();
+    (t2->*pfunc)();
+
+    //如何定义函数指针指向类的static成员方法
+    void (*pfunc1)() = &Test::static_func;
+    (*pfunc1)();
+    return 0;
+}
+```
+
+## C++模板
+
+### 函数模板
+
+```c++
+#include <iostream>
+
+/*
+函数模板
+模板的意义：对类型也可以进行参数化了
+int sum(int a,int b){return a+b}
+
+函数模板    《=是不进行编译的,因为类型不知
+模板的实例化 《=函数调用点进行实例化
+模板函数 <=这个才是要被编译器所编译的
+
+模板类型参数 typename/class
+模板非类型参数
+
+模板的实参推演 => 可以根据用户传入的实参类型，来推导出模板类型参数的具体类型
+
+模板的特例化（专用化） 不是编译器提供的，而是用户提供的实例化
+函数模板，模板的特例化，非模板函数的重载关系
+
+模板代码不能在一个文件中定义，在另一个文件中使用的。
+模板代码调用前，一定要看到模板定义的地方，这样的话，模板才能够进行正常的实例化，产生能够被编译器编译的代码
+所以，模板代码都是放在头文件当中的，然后在源文件中直接进行include包含
+*/
+
+//函数模板
+template<typename T> //定义一个模板参数列表
+bool compare(T a, T b)  //compare是一个函数模板
+{
+    std::cout << "template compare" << std::endl;
+    return a > b;
+}
+
+//模板的特例化
+//针对compare函数模板，提供const char *类型的特例化版本
+template<>
+bool compare<const char*>(const char* a, const char* b)
+{
+    std::cout << "compare<const char*>" << std::endl;
+    return strcmp(a, b) > 0;
+}
+
+//非模板函数 普通函数
+bool compare(const char* a, const char* b)
+{
+    std::cout << "normal comapre" << std::endl;
+    return strcmp(a, b) > 0;
+}
+/*
+在函数调用点，编译器用用户指定的类型，从原模版实例化一份函数代码出来
+bool compare<int>(int a,int b)
+{
+    return a > b;
+}
+bool compare<double>(double a,double b)
+{
+    return a > b;
+}
+这两个就是模板函数
+*/
+int main()
+{
+    //函数调用点 在函数调用点，编译器用用户指定的类型，从原模版实例化一份函数代码出来
+    compare<int>(10, 20);
+    compare<double>(10.5, 20.5);
+    //模板的实参推演 = > 可以根据用户传入的实参类型，来推导出模板类型参数的具体类型
+    compare(20, 30);//这次还是使用的是int类型的代码，之前产生过了，就不会再产生了。不然会出现重定义
+
+
+    //compare(30, 40.5); 会报错
+    compare<int>(30, 40.5);//这里会把double强制转换int
+
+    //T const char *
+    //对于某些类型来说，依赖编译器默认实例化的模板代码，代码处理逻辑是有错误的
+    compare("aaa", "bbb");//直接a>b比较，比较的是地址大小，满足不了需求，所以这里要用到特例化
+    //编译器优先把compare处理成函数名字，没有的话，才去找compare模板
+    //compare("aaa", "bbb");如果有对应的非模板函数，优先非模板函数
+    return 0;
+}
+```
+
+### 类模板
+
+```c++
+#include <iostream>
+
+/*
+函数模板
+模板的非类型参数 必须是整数类型(整数或者地址/引用都可以)都是常量，只能使用，不能修改
+类模板 =>实例化 =》模板类
+
+*/
+#if 0
+template<typename T,int SIZE>
+void sort(T* arr) 
+{
+	for (int i = 0;i < SIZE - 1;i++)
+	{
+		for (int j = 0;j < SIZE - 1 - i;j++)
+		{
+			if (arr[j] > arr[j + 1])
+			{
+				int tmp = arr[j];
+				arr[j] = arr[j + 1];
+				arr[j + 1] = tmp;
+			}
+		}
+	}
+}
+int main()
+{
+	int arr[] = { 12,5,7,89,32,21,35 };
+	const int size = sizeof(arr) / sizeof(arr[0]);
+	sort<int, size>(arr);
+	for (int val : arr)
+	{
+		std::cout << val << " ";
+	}
+	std::cout << std::endl;
+	return 0;
+}
+#endif
+//基于类模板实现的顺序栈
+template<typename T>
+class SeqStack //模板名称+类型参数列表 = 类名称 :SeqStack<T>
+{
+public:
+	//构造和析构函数不用加<T>,其他出现模板的地方都加上类型参数列表
+	SeqStack(int size = 10)
+		:_pstack(new T[size])
+		, _top(0)
+		, _size(size)
+	{}
+	~SeqStack()
+	{
+		delete[]_pstack;
+		_pstack = nullptr;
+	}
+	SeqStack(const SeqStack<T>& stack)
+		:_top(stack._top)
+		,_size(stack._size)
+	{
+		_pstack = new T[_size];
+		//不要用memcpy进行拷贝
+		for (int i = 0;i < _top;i++)
+		{
+			_pstack[i] = stack._pstack[i];
+		}
+	}
+	SeqStack<T>& operator=(const SeqStack<T>& stack) 
+	{
+		if (this == &stack) 
+		{
+			return *this;
+		}
+		delete[]_pstack;
+		_top = stack._top;
+		_size = stack._size;
+		_pstack = new T[_size];
+		//不要用memcpy进行拷贝
+		for (int i = 0;i < _top;i++)
+		{
+			_pstack[i] = stack._pstack[i];
+		}
+		return *this;
+	}
+	void push(const T& val)//入栈操作
+	{
+		if (full()) 
+		{
+			expand();
+		}
+		_pstack[_top++] = val;
+	}
+	void pop() 
+	{
+		if (empty())
+			return;
+		--_top;
+	}
+	T top()const 
+	{
+		if (empty())
+			throw "stack is empty!";//抛异常也代表函数逻辑结束
+		return _pstack[_top-1];
+	}
+	bool full()const 
+	{
+		return _top == _size;
+	}
+	bool empty()const 
+	{
+		return _top == 0;
+	}
+
+private:
+	T* _pstack;
+	int _top;
+	int _size;
+	//顺序栈底层数组按两倍的方式扩容
+	void expand()
+	{
+		T* ptmp = new T[2 * _size];
+		for (int i = 0;i < _top;i++)
+		{
+			ptmp[i] = _pstack[i];
+		}
+		delete[]_pstack;
+		_pstack = ptmp;
+		_size *= 2;
+	}
+};
+int main()
+{
+	//类模板的选择性实例化 调用过的方法才会加入到实例化，成为模板类
+	//模板类 class SeqStack<int>{};
+	SeqStack<int>s1;
+	s1.push(20);
+	s1.push(78);
+	s1.push(32);
+	s1.push(15);
+	s1.pop();
+	std::cout << s1.top() << std::endl;
+	return 0;
+}
+```
+
