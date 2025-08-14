@@ -1559,3 +1559,502 @@ int main()
 }
 ```
 
+### 类模板实现vector
+
+```c++
+#include <iostream>
+#include<vector>
+/*
+类模板 =》实现一个C++ STL里面的一个顺序容器 vector 向量容器
+容器：
+空间配置器allocator
+_EXPORT_STD template <class _Ty, class _Alloc = allocator<_Ty>>
+class vector { // varying size array of values
+*/
+
+template<typename T>
+class vector
+{
+public:
+    vector(int size = 10)
+    {
+        _first = new T[size];
+        _last = _first;
+        _end = _first + size;
+    }
+    ~vector()
+    {
+        delete[]_first;
+        _first = _last = _end = nullptr;
+    }
+    vector(const vector<T>& rhs)
+    {
+        int size = rhs._end - rhs._first;
+        _first = new T[size];
+        int len = rhs._last - rhs._first;
+        for (int i = 0;i < len;i++)
+        {
+            _first[i] = rhs._first[i];
+        }
+        _last = _first + len;
+        _end = _first + size;
+    }
+    vector<T>& operator=(const vector<T>& rhs)
+    {
+        if (this == &rhs)
+        {
+            return *this;
+        }
+        delete[]_first;
+
+        int size = rhs._end - rhs._first;
+        _first = new T[size];
+        int len = rhs._last - rhs._first;
+        for (int i = 0;i < len;i++)
+        {
+            _first[i] = rhs._first[i];
+        }
+        _last = _first + len;
+        _end = _first + size;
+        return *this;
+    }
+    void push_back(const T &val)//向容器末尾添加元素
+    {
+        if (full())
+            expand();
+        *_last++ = val;
+    }
+    void pop_vack()//从容器末尾删除元素
+    {
+        if (empty())
+            return;
+        --_last;
+    }
+    T back() const//返回容器末尾的元素值
+    {
+        return *(_last - 1);
+    }
+    bool full() const
+    {
+        return _last == _end;
+    }
+    bool empty() const
+    {
+        return _first == _last;
+    }
+    int size() const
+    {
+        return _last - _first;
+    }
+private:
+    T* _first;//指向数组起始的位置
+    T* _last;//指向数组中有效元素的后继位置
+    T* _end;//指向数组空间的后继位置
+    void expand()//容器的二倍扩容
+    {
+        int size = _end - _first;
+        T* ptmp = new T[2 * size];
+        for (int i = 0;i < size;i++)
+        {
+            ptmp[i] = _first[i];
+        }
+        delete[]_first;
+        _first = ptmp;
+        _last = _first + size;
+        _end = _first + 2 * size;
+    }
+};
+int main()
+{
+    vector<int> vec;
+    for (int i = 0;i < 20;i++)
+    {
+        vec.push_back(rand() % 100);
+    }
+    while (!vec.empty())
+    {
+        std::cout << vec.back() << " ";
+        vec.pop_vack();
+    }
+    std::cout << std::endl;
+    return 0;
+}
+```
+
+### 容器空间配置器allocator
+
+**为什么会使用到空间配置器？**
+
+1. **空间配置器是把内存开辟/内存释放 对象构造/对象析构这几个分离开来，如果只用new它是会将内存开辟和对象构造都做了，delete也是一样。有时候，我们最好不要这样做。**
+2. **在上一节，对于vector里面类型如果为自定义的类型，使用new，它会在size块的空间创建相应对象，调用构造函数，但是刚开始我们只是想申请地址空间，而不是去构造，所以要把内存开辟对象构造这两项分离开。**
+3. **如果其中一个对象想要析构，我使用delete,不仅析构了而且释放了它属于的空间这样是不可以的，我只要析构，释放是由最后释放数组时释放的，所以要分离开来，如果一个对象有外界资源，也是只需要析构，而非释放所对应的地址空间。**
+
+```c++
+#include <iostream>
+#include<vector>
+/*
+类模板 =》实现一个C++ STL里面的一个顺序容器 vector 向量容器
+容器：
+空间配置器allocator
+_EXPORT_STD template <class _Ty, class _Alloc = allocator<_Ty>>
+class vector { // varying size array of values
+
+容器的空间配置器allocator 做四件事 内存开辟/内存释放 对象构造/对象析构
+*/
+//定义容器的空间配置器，和C++标准库的allocator实现一样
+template<typename T>
+struct Allocator
+{
+    T* allocate(size_t size)//负责内存开辟
+    {
+        return (T*)malloc(sizeof(T) * size);
+    }
+    void deallocate(void* p)//负责内存释放
+    {
+        free(p);
+    }
+    void construct(T* p, const T& val)//负责对象构造
+    {
+        new (p) T(val);//定位new:在指定地址去构造值为val的对象
+    }
+    void destroy(T* p)//负责对象析构
+    {
+        p->~T(); //~T()代表T类型的析构函数
+    }
+};
+/*
+容器底层内存开辟，内存释放，对象构造和析构，都通过allocator空间配置器来实现
+*/
+template<typename T,typename Alloc=Allocator<T>>
+class vector
+{
+public:
+    vector(int size = 10)
+    {
+        //需要把内存开辟和对象构造分开处理，不然我使用vector<Test> vec;
+        //自动创建10个Test对象
+        //_first = new T[size];
+        _first = _allocator.allocate(size);
+        _last = _first;
+        _end = _first + size;
+    }
+    ~vector()
+    {
+        //析构容器有效的元素，然后释放_first指针指向的堆内存
+        //delete[]_first;
+        for (T* p = _first;p != _last;p++)
+        {
+            _allocator.destroy(p);//把_first指针指向的数组的有效元素进行析构操作
+        }
+        _allocator.deallocate(_first);//释放堆上的数组内存
+        _first = _last = _end = nullptr;
+    }
+    vector(const vector<T>& rhs)
+    {
+        int size = rhs._end - rhs._first;
+        //_first = new T[size];
+        _first = _allocator.allocate(size);
+        int len = rhs._last - rhs._first;
+        for (int i = 0;i < len;i++)
+        {
+            //_first[i] = rhs._first[i];
+            _allocator.construct(_first+i.rhs._first[i]);
+        }
+        _last = _first + len;
+        _end = _first + size;
+    }
+    vector<T>& operator=(const vector<T>& rhs)
+    {
+        if (this == &rhs)
+        {
+            return *this;
+        }
+        //delete[]_first;
+        for (T* p = _first;p != _last;p++)
+        {
+            _allocator.destroy(p);//把_first指针指向的数组的有效元素进行析构操作
+        }
+        _allocator.deallocate(_first);//释放堆上的数组内存
+        int size = rhs._end - rhs._first;
+        //_first = new T[size];
+        _first = _allocator.allocate(size);
+        int len = rhs._last - rhs._first;
+        for (int i = 0;i < len;i++)
+        {
+            //_first[i] = rhs._first[i];
+            _allocator.construct(_first + i.rhs._first[i]);
+        }
+        _last = _first + len;
+        _end = _first + size;
+        return *this;
+    }
+    void push_back(const T &val)//向容器末尾添加元素
+    {
+        if (full())
+            expand();
+        //*_last++ = val;
+        //_last指针指向的内存构造一个值为val的对象
+        _allocator.construct(_last, val);
+        _last++;
+    }
+    void pop_back()//从容器末尾删除元素
+    {
+        if (empty())
+            return;
+        //--_last;
+        //不仅要把_last指针--，还要析构删除的元素
+        --_last;
+        _allocator.destroy(_last);
+    }
+    T back() const//返回容器末尾的元素值
+    {
+        return *(_last - 1);
+    }
+    bool full() const
+    {
+        return _last == _end;
+    }
+    bool empty() const
+    {
+        return _first == _last;
+    }
+    int size() const
+    {
+        return _last - _first;
+    }
+private:
+    T* _first;//指向数组起始的位置
+    T* _last;//指向数组中有效元素的后继位置
+    T* _end;//指向数组空间的后继位置
+    Alloc _allocator;//定义容器的空间配置器对象
+    void expand()//容器的二倍扩容
+    {
+        int size = _end - _first;
+        //T* ptmp = new T[2 * size];
+        T* ptmp = _allocator.allocate(2 * size);
+        for (int i = 0;i < size;i++)
+        {
+            //ptmp[i] = _first[i];
+            _allocator.construct(ptmp + i, _first[i]);
+        }
+        //delete[]_first;
+        for (T* p = _first;p != _last;p++)
+        {
+            _allocator.destroy(p);
+        }
+        _allocator.deallocate(_first);
+        _first = ptmp;
+        _last = _first + size;
+        _end = _first + 2 * size;
+    }
+};
+class Test 
+{
+public:
+    Test()
+    {
+        std::cout << "Test()" << std::endl;
+    }
+    ~Test() 
+    {
+        std::cout << "~Test()" << std::endl;
+    }
+    Test(const Test&)
+    {
+        std::cout << "Test(const Test&)" << std::endl;
+    }
+};
+int main()
+{
+    Test t1, t2, t3;
+    std::cout << "-----------------------------" << std::endl;
+    vector<Test> vec;
+    vec.push_back(t1);
+    vec.push_back(t2);
+    vec.push_back(t3);
+    std::cout << "-------------------------------" << std::endl;
+    //从结果上看，没有做任何操作，只是将指针前移，如果存在外部资源，是会出现问题的
+    //所以只需要析构对象。但是要把对象的析构和内存释放分隔开。因为内存释放是由delete构建的数组释放的，不能直接释放，所以要分离开,所以要使用到空间配置器allocator
+    vec.pop_back();
+    std::cout << "-------------------------------" << std::endl;
+    return 0;
+}
+```
+
+这是没有使用空间配置器，只有new了，对应区域都构造相应的对象。
+
+```c++
+Test()
+Test()
+Test()
+-----------------------------
+Test()
+Test()
+Test()
+Test()
+Test()
+Test()
+Test()
+Test()
+Test()
+Test()
+-------------------------------
+-------------------------------
+~Test()
+~Test()
+~Test()
+~Test()
+~Test()
+~Test()
+~Test()
+~Test()
+~Test()
+~Test()
+~Test()
+~Test()
+~Test()
+```
+
+这是使用空间配置器后,在构造时，申请空间，在插入和删除时再对对象进行构造和析构
+
+```c++
+Test()
+Test()
+Test()
+-----------------------------
+Test(const Test&)
+Test(const Test&)
+Test(const Test&)
+-------------------------------
+~Test()
+-------------------------------
+~Test()
+~Test()
+~Test()
+~Test()
+~Test()
+```
+
+## C++运算符重载
+
+### 复数类CComplex
+
+**写一个复数类了解运算符重载。**
+
+```c++
+#include <iostream>
+/*
+C++的运算符重载：使对象的运算表现的和编译器内置类型一样
+复数类
+*/
+class CComplex
+{
+public:
+    CComplex(int r =0, int i = 0) 
+        :mreal(r),mimage(i)
+    {}
+    //指导编译器怎么做CComplex类对象的加法操作
+    CComplex operator+(const CComplex& src)
+    {
+        /*CComplex comp;
+        comp.mreal = this->mreal + src.mreal;
+        comp.mimage = this->mimage + src.mimage;
+        return comp;*/
+        return CComplex(this->mreal + src.mreal, this->mimage + src.mimage);
+    }
+    void show()
+    {
+        std::cout << "real:" << mreal << " image :" << mimage << std::endl;
+    }
+    CComplex operator++(int)
+    {
+        //CComplex comp = *this;
+        //mreal += 1;
+        //mimage += 1;
+        //return comp;
+        return CComplex(mreal++, mimage++);
+    }
+    CComplex& operator++()
+    {
+        mreal += 1;
+        mimage += 1;
+        return *this;
+    }
+    void operator +=(const CComplex &src)
+    {
+        mreal += src.mreal;
+        mimage += src.mimage;
+    }
+private:
+    int mreal;
+    int mimage;
+    friend CComplex operator+(const CComplex& lhs, const CComplex& rhs);
+    friend std::ostream& operator<<(std::ostream& out, const CComplex& src);
+    friend std::istream& operator>>(std::istream& in, CComplex& src);
+};
+CComplex operator+(const CComplex& lhs, const CComplex& rhs)
+{
+    return CComplex(lhs.mreal + rhs.mreal, lhs.mimage + rhs.mimage);
+}
+std::ostream& operator<<(std::ostream& out, const CComplex& src)
+{
+    out << "mreal:" << src.mreal << " mimage:" << src.mimage << std::endl;
+    return out;
+}
+std::istream& operator>>(std::istream& in, CComplex& src)
+{
+    in >> src.mreal >> src.mimage;
+    return in;
+}
+int main()
+{
+    CComplex comp1(10, 10);
+    CComplex comp2(20, 20);
+    // comp1.operator+(comp2) 加法运算符的重载函数    
+    CComplex comp3 = comp1 + comp2;
+    comp3.show();
+    CComplex comp4 = comp1 + 20; //comp1.operator+(20) int -> CComplex  CComplex(int)
+    comp4.show();
+    //编译器做对象运算的时候，会调用对象的运算符重载函数（优先调用成员方法）;如果没有成员方法，就在全局作用域找合适的运算符重载函数
+    CComplex comp5 = 30 + comp1;
+    comp5.show();
+    //CComplex operator++(int)
+    comp5 = comp1++;//++ --单目运算符 operator++()前置++  operator++(int) 后置++
+    comp1.show();
+    comp5.show();
+    //CComplex operator++()
+    comp5 = ++comp1;
+    comp1.show();
+    comp5.show();
+    //void comp1.operator+=(comp2) ::operator+=(comp1,comp2);
+    comp1 += comp2;
+    comp1.show();
+    //对象信息的输出
+    //只能做全局重载函数
+    //cout ::operator<<(cout,comp1)
+    //ostream& operator<<(ostream &out,const CComplex &src)
+    std::cout << comp1 << std::endl;
+    std::cin >> comp1 >> comp2;
+    std::cout << comp1<< comp2 << std::endl;
+    return 0;
+}
+```
+
+```c++
+real:30 image :30
+real:30 image :10
+real:40 image :10
+real:11 image :11
+real:10 image :10
+real:12 image :12
+real:12 image :12
+real:32 image :32
+mreal:32 mimage:32
+
+1 1
+2 2
+mreal:1 mimage:1
+mreal:2 mimage:2
+```
+
+### 模拟实现string类代码
