@@ -2058,3 +2058,870 @@ mreal:2 mimage:2
 ```
 
 ### 模拟实现string类代码
+
+```c++
+#include <iostream>
+#include <string>
+//char arr[]="jkhsdkf";
+
+//自己实现一个字符串对象
+class String
+{
+public:
+    String(const char* p = nullptr)
+    {
+        if (p != nullptr)
+        {
+            _pstr = new char[strlen(p) + 1];
+            strcpy(_pstr, p);
+        }
+        else
+        {
+            _pstr = new char[1];
+            *_pstr = '\0';
+        }
+
+    }
+    ~String()
+    {
+        delete[] _pstr;
+        _pstr = nullptr;
+    }
+    String(const String& src)
+    {
+        _pstr = new char[strlen(src._pstr) + 1];
+        strcpy(_pstr, src._pstr);
+    }
+    String& operator=(const String& src)
+    {
+        if (this == &src)
+        {
+            return *this;
+        }
+        delete[] _pstr;
+        _pstr = new char[strlen(src._pstr) + 1];
+        strcpy(_pstr, src._pstr);
+        return *this;
+    }
+    bool operator>(const String& str) const
+    {
+        return strcmp(_pstr, str._pstr) > 0;
+    }
+    bool operator<(const String& str) const
+    {
+        return strcmp(_pstr, str._pstr) < 0;
+    }
+    bool operator==(const String& str) const
+    {
+        return strcmp(_pstr, str._pstr) == 0;
+    }
+    int length()const
+    {
+        return strlen(_pstr);
+    }
+    char& operator[](int index)
+    {
+        return _pstr[index];
+    }
+    const char& operator[](int index) const
+    {
+        return _pstr[index];
+    }
+    const char* c_str() const
+    {
+        return _pstr;
+    }
+    //给String字符串提供迭代器的实现
+    class iterator
+    {
+    public:
+        iterator(char* p = nullptr)
+            :_p(p)
+        {}
+        bool operator!=(const iterator& it)
+        {
+            return _p != it._p;
+        }
+        void operator++()
+        {
+            ++_p;
+        }
+        char& operator*()
+        {
+            return *_p;
+        }
+    private:
+        char* _p;
+    };
+    //begin返回的是容器底层首元素的迭代器的表示
+    iterator begin()
+    {
+        return iterator(_pstr);
+    }
+    //end返回的是容器末尾元素后继位置的迭代器的表示
+    iterator end()
+    {
+        return iterator(_pstr + length());
+    }
+
+private:
+    char* _pstr;
+    friend std::ostream& operator<<(std::ostream& out, const String& str);
+    friend String operator+(const String& lhs, const String& rhs);
+};
+String operator+(const String& lhs, const String& rhs)
+{
+    /*char* ptmp = new char[strlen(lhs._pstr) + strlen(rhs._pstr) + 1];
+    strcpy(ptmp, lhs._pstr);
+    strcat(ptmp, rhs._pstr);
+    String tmp(ptmp);
+    delete[]ptmp;
+    return tmp;*/
+    //上述这种做法效率有点低
+    String tmp;
+    tmp._pstr= new char[strlen(lhs._pstr) + strlen(rhs._pstr) + 1];
+    strcpy(tmp._pstr, lhs._pstr);
+    strcat(tmp._pstr, rhs._pstr);
+    return tmp;
+    //这种做法少了一次new和delete操作
+}
+std::ostream& operator<<(std::ostream& out, const String& str)
+{
+    out << str._pstr;
+    return out;
+}
+int main()
+{
+#if 0
+    String str1;
+    String str2 = "aaa";//string(const char*)
+    String str3 = "bbb";
+    String str4 = str2 + str3;
+    String str5 = str2 + "ccc";
+    String str6 = "ddd" + str2;
+
+    std::cout << "str5:" << str6 << std::endl;
+    if (str5 > str6)
+    {
+        std::cout << str5 << " > " << str6 << std::endl;
+    }
+    else
+    {
+        std::cout << str5 << " < " << str6 << std::endl;
+    }
+    int len = str6.length();
+    for (int i = 0;i < len;i++)
+    {
+        //char& str6.operator[](i)
+        std::cout << str6[i] << " ";
+    }
+    std::cout << std::endl;
+
+    //string -> char *
+    char buf[1024] = { 0 };
+    strcpy(buf, str6.c_str());
+    std::cout << "buf: " << buf << std::endl;
+#endif
+    String str1 = "hello world";
+    //容器的迭代器
+    //迭代器的功能：提供一种统一的方式，来透明的遍历容器
+    auto it = str1.begin();
+    for (;it != str1.end();++it)
+    {
+        std::cout << *it << " ";
+    }
+    std::cout << std::endl;
+    //C++11 foreach的方式来遍历容器内部元素的值=>底层通过迭代器遍历的
+    for (char ch : str1)
+    {
+        std::cout << ch << " ";
+    }
+    std::cout << std::endl;
+    return 0;
+}
+```
+
+### vector容器的迭代器iterator实现
+
+```c++
+#include <iostream>
+#include<vector>
+/*
+类模板 =》实现一个C++ STL里面的一个顺序容器 vector 向量容器
+容器：
+空间配置器allocator
+_EXPORT_STD template <class _Ty, class _Alloc = allocator<_Ty>>
+class vector { // varying size array of values
+
+容器的空间配置器allocator 做四件事 内存开辟/内存释放 对象构造/对象析构
+*/
+//定义容器的空间配置器，和C++标准库的allocator实现一样
+template<typename T>
+struct Allocator
+{
+    T* allocate(size_t size)//负责内存开辟
+    {
+        return (T*)malloc(sizeof(T) * size);
+    }
+    void deallocate(void* p)//负责内存释放
+    {
+        free(p);
+    }
+    void construct(T* p, const T& val)//负责对象构造
+    {
+        new (p) T(val);//定位new:在指定地址去构造值为val的对象
+    }
+    void destroy(T* p)//负责对象析构
+    {
+        p->~T(); //~T()代表T类型的析构函数
+    }
+};
+/*
+容器底层内存开辟，内存释放，对象构造和析构，都通过allocator空间配置器来实现
+*/
+template<typename T, typename Alloc = Allocator<T>>
+class vector
+{
+public:
+    vector(int size = 10)
+    {
+        //需要把内存开辟和对象构造分开处理，不然我使用vector<Test> vec;
+        //自动创建10个Test对象
+        //_first = new T[size];
+        _first = _allocator.allocate(size);
+        _last = _first;
+        _end = _first + size;
+    }
+    ~vector()
+    {
+        //析构容器有效的元素，然后释放_first指针指向的堆内存
+        //delete[]_first;
+        for (T* p = _first;p != _last;p++)
+        {
+            _allocator.destroy(p);//把_first指针指向的数组的有效元素进行析构操作
+        }
+        _allocator.deallocate(_first);//释放堆上的数组内存
+        _first = _last = _end = nullptr;
+    }
+    vector(const vector<T>& rhs)
+    {
+        int size = rhs._end - rhs._first;
+        //_first = new T[size];
+        _first = _allocator.allocate(size);
+        int len = rhs._last - rhs._first;
+        for (int i = 0;i < len;i++)
+        {
+            //_first[i] = rhs._first[i];
+            _allocator.construct(_first + i.rhs._first[i]);
+        }
+        _last = _first + len;
+        _end = _first + size;
+    }
+    vector<T>& operator=(const vector<T>& rhs)
+    {
+        if (this == &rhs)
+        {
+            return *this;
+        }
+        //delete[]_first;
+        for (T* p = _first;p != _last;p++)
+        {
+            _allocator.destroy(p);//把_first指针指向的数组的有效元素进行析构操作
+        }
+        _allocator.deallocate(_first);//释放堆上的数组内存
+        int size = rhs._end - rhs._first;
+        //_first = new T[size];
+        _first = _allocator.allocate(size);
+        int len = rhs._last - rhs._first;
+        for (int i = 0;i < len;i++)
+        {
+            //_first[i] = rhs._first[i];
+            _allocator.construct(_first + i.rhs._first[i]);
+        }
+        _last = _first + len;
+        _end = _first + size;
+        return *this;
+    }
+    void push_back(const T& val)//向容器末尾添加元素
+    {
+        if (full())
+            expand();
+        //*_last++ = val;
+        //_last指针指向的内存构造一个值为val的对象
+        _allocator.construct(_last, val);
+        _last++;
+    }
+    void pop_back()//从容器末尾删除元素
+    {
+        if (empty())
+            return;
+        //--_last;
+        //不仅要把_last指针--，还要析构删除的元素
+        --_last;
+        _allocator.destroy(_last);
+    }
+    T back() const//返回容器末尾的元素值
+    {
+        return *(_last - 1);
+    }
+    bool full() const
+    {
+        return _last == _end;
+    }
+    bool empty() const
+    {
+        return _first == _last;
+    }
+    int size() const
+    {
+        return _last - _first;
+    }
+    T& operator[](int index)
+    {
+        if (index < 0 || index >= size())
+        {
+            throw "OutOfRangeException";
+        }
+        return _first[index];
+    }
+    //迭代器一般实现成容器的嵌套类型
+    class iterator
+    {
+    public:
+        iterator(T* ptr = nullptr)
+            :_ptr(ptr)
+        {
+
+        }
+        bool operator!=(const iterator& it) const
+        {
+            return _ptr != it._ptr;
+        }
+        void operator++()
+        {
+            _ptr++;
+        }
+        T& operator*()
+        {
+            return *_ptr;
+        }
+        const T& operator*()const 
+        {
+            return *_ptr;
+        }
+    private:
+        T* _ptr;
+    };
+    //需要给容器提供begin和end方法
+    iterator begin()
+    {
+        return iterator(_first);
+    }
+    iterator end()
+    {
+        return iterator(_last);
+    }
+private:
+    T* _first;//指向数组起始的位置
+    T* _last;//指向数组中有效元素的后继位置
+    T* _end;//指向数组空间的后继位置
+    Alloc _allocator;//定义容器的空间配置器对象
+    void expand()//容器的二倍扩容
+    {
+        int size = _end - _first;
+        //T* ptmp = new T[2 * size];
+        T* ptmp = _allocator.allocate(2 * size);
+        for (int i = 0;i < size;i++)
+        {
+            //ptmp[i] = _first[i];
+            _allocator.construct(ptmp + i, _first[i]);
+        }
+        //delete[]_first;
+        for (T* p = _first;p != _last;p++)
+        {
+            _allocator.destroy(p);
+        }
+        _allocator.deallocate(_first);
+        _first = ptmp;
+        _last = _first + size;
+        _end = _first + 2 * size;
+    }
+};
+class Test
+{
+public:
+    Test()
+    {
+        std::cout << "Test()" << std::endl;
+    }
+    ~Test()
+    {
+        std::cout << "~Test()" << std::endl;
+    }
+    Test(const Test&)
+    {
+        std::cout << "Test(const Test&)" << std::endl;
+    }
+};
+int main()
+{
+    vector<int>vec;
+    for (int i = 0;i < 20;i++)
+    {
+        vec.push_back(rand() % 100 + 1);
+    }
+    int size = vec.size();
+    for (int i = 0;i < size;i++)
+    {
+        std::cout << vec[i] << " ";
+    }
+    std::cout << std::endl;
+    vector<int>::iterator it = vec.begin();
+    for (;it != vec.end();++it)
+    {
+        std::cout << *it << " ";
+    }
+    std::cout << std::endl;
+    for (int val : vec)//其底层原理，就是通过容器的迭代器来实现容器遍历的
+    {
+        std::cout << val << " ";
+    }
+    std::cout << std::endl;
+    return 0;
+}
+```
+
+### 迭代器失效问题
+
+![5](C-basiclearning/5.png)
+
+```c++
+#include <iostream>
+#include <vector>
+/*
+迭代器为什么会失效
+    当容器调用erase方法后，当前位置到容器末尾元素的所有的迭代器全部失效了
+    当容器调用insert方法后，当前位置到容器末尾元素的所有的迭代器全部失效了
+      迭代器依然有效       迭代器全部失效  
+首元素     -》插入点/删除点       =》末尾元素
+insert，如果引起容器内存扩容
+    原来容器的所有迭代器都全部失效了
+首元素     -》插入点/删除点       =》末尾元素
+
+不同容器的迭代器是不能进行比较运算的
+
+迭代器失效了以后，问题该如何解决？
+对插入/删除点的迭代器进行更新操作
+*/
+int main()
+{
+    std::vector<int> vec;
+    for (int i = 0;i < 20;++i)
+    {
+        vec.push_back(rand() % 100 + 1);
+    }
+    for (int v : vec)
+    {
+        std::cout << v << " ";
+    }
+    std::cout << std::endl;
+#if 1
+    //给vec容器中所有的偶数前面添加一个小于偶数值1的数字
+    auto it = vec.begin();
+    for (;it != vec.end();++it)
+    {
+        if (*it % 2 == 0)
+        {
+            //这里的迭代器在第一次insert之后，iterator就失效了
+            //所以用返回值更新it
+            it=vec.insert(it,*it-1);
+            ++it;
+            //break;
+        }
+    }
+    for (int v : vec)
+    {
+        std::cout << v << " ";
+    }
+    std::cout << std::endl;
+#endif
+#if 0
+    //把vec容器中所有偶数全部删除
+    auto it = vec.begin();
+    while(it!=vec.end())
+    {
+        if (*it % 2 == 0)
+        {
+            //迭代器失效的问题，第一次调用erase以后，迭代器it就失效了
+            //E:\Desktop\C++base\23\x64\Debug\23.exe (进程 26640)已退出，代码为 -1073741819。
+            //所以这里要用it接受返回的iterator,实现更新it
+            it=vec.erase(it);//insert(it,val) erase(it)
+            //break;
+        }
+        else
+        {
+            ++it;
+        }
+    }
+    for (int v : vec)
+    {
+        std::cout << v << " ";
+    }
+    std::cout << std::endl;
+#endif
+    return 0;
+}
+```
+
+### 自编写vector容器实现解决迭代器失效问题
+
+```c++
+#include <iostream>
+/*
+类模板 =》实现一个C++ STL里面的一个顺序容器 vector 向量容器
+容器：
+空间配置器allocator
+_EXPORT_STD template <class _Ty, class _Alloc = allocator<_Ty>>
+class vector { // varying size array of values
+
+容器的空间配置器allocator 做四件事 内存开辟/内存释放 对象构造/对象析构
+*/
+//定义容器的空间配置器，和C++标准库的allocator实现一样
+template<typename T>
+struct Allocator
+{
+    T* allocate(size_t size)//负责内存开辟
+    {
+        return (T*)malloc(sizeof(T) * size);
+    }
+    void deallocate(void* p)//负责内存释放
+    {
+        free(p);
+    }
+    void construct(T* p, const T& val)//负责对象构造
+    {
+        new (p) T(val);//定位new:在指定地址去构造值为val的对象
+    }
+    void destroy(T* p)//负责对象析构
+    {
+        p->~T(); //~T()代表T类型的析构函数
+    }
+};
+/*
+容器底层内存开辟，内存释放，对象构造和析构，都通过allocator空间配置器来实现
+*/
+template<typename T, typename Alloc = Allocator<T>>
+class vector
+{
+public:
+    vector(int size = 10)
+    {
+        //需要把内存开辟和对象构造分开处理，不然我使用vector<Test> vec;
+        //自动创建10个Test对象
+        //_first = new T[size];
+        _first = _allocator.allocate(size);
+        _last = _first;
+        _end = _first + size;
+    }
+    ~vector()
+    {
+        //析构容器有效的元素，然后释放_first指针指向的堆内存
+        //delete[]_first;
+        for (T* p = _first;p != _last;p++)
+        {
+            _allocator.destroy(p);//把_first指针指向的数组的有效元素进行析构操作
+        }
+        _allocator.deallocate(_first);//释放堆上的数组内存
+        _first = _last = _end = nullptr;
+    }
+    vector(const vector<T>& rhs)
+    {
+        int size = rhs._end - rhs._first;
+        //_first = new T[size];
+        _first = _allocator.allocate(size);
+        int len = rhs._last - rhs._first;
+        for (int i = 0;i < len;i++)
+        {
+            //_first[i] = rhs._first[i];
+            _allocator.construct(_first + i.rhs._first[i]);
+        }
+        _last = _first + len;
+        _end = _first + size;
+    }
+    vector<T>& operator=(const vector<T>& rhs)
+    {
+        if (this == &rhs)
+        {
+            return *this;
+        }
+        //delete[]_first;
+        for (T* p = _first;p != _last;p++)
+        {
+            _allocator.destroy(p);//把_first指针指向的数组的有效元素进行析构操作
+        }
+        _allocator.deallocate(_first);//释放堆上的数组内存
+        int size = rhs._end - rhs._first;
+        //_first = new T[size];
+        _first = _allocator.allocate(size);
+        int len = rhs._last - rhs._first;
+        for (int i = 0;i < len;i++)
+        {
+            //_first[i] = rhs._first[i];
+            _allocator.construct(_first + i.rhs._first[i]);
+        }
+        _last = _first + len;
+        _end = _first + size;
+        return *this;
+    }
+    void push_back(const T& val)//向容器末尾添加元素
+    {
+        if (full())
+            expand();
+        //*_last++ = val;
+        //_last指针指向的内存构造一个值为val的对象
+        _allocator.construct(_last, val);
+        _last++;
+    }
+    void pop_back()//从容器末尾删除元素
+    {
+        if (empty())
+            return;
+        //erase(it); verify(it._ptr,_last);
+        //insert(it,val);verify(it._ptr,_last);
+        verify(_last - 1, _last);
+        //--_last;
+        //不仅要把_last指针--，还要析构删除的元素
+        --_last;
+        _allocator.destroy(_last);
+    }
+    T back() const//返回容器末尾的元素值
+    {
+        return *(_last - 1);
+    }
+    bool full() const
+    {
+        return _last == _end;
+    }
+    bool empty() const
+    {
+        return _first == _last;
+    }
+    int size() const
+    {
+        return _last - _first;
+    }
+    T& operator[](int index)
+    {
+        if (index < 0 || index >= size())
+        {
+            throw "OutOfRangeException";
+        }
+        return _first[index];
+    }
+    //迭代器一般实现成容器的嵌套类型
+    class iterator
+    {
+        friend vector<T>;
+    public:
+        iterator(vector<T,Alloc> *pvec=nullptr,T* ptr = nullptr)
+            :_ptr(ptr),_pVec(pvec)
+        {
+            Iterator_Base* itb = new Iterator_Base(this, _pVec->_head._next);
+            _pVec->_head._next = itb;
+        }
+        bool operator!=(const iterator& it) const
+        {
+            //检查迭代器的有效性
+            if (_pVec == nullptr || _pVec != it._pVec)
+            {
+                throw "iterator incompatable";
+            }
+            return _ptr != it._ptr;
+        }
+        void operator++()
+        {
+            //检查迭代器的有效性
+            if (_pVec == nullptr)
+            {
+                throw "iterator invalid!";
+            }
+            _ptr++;
+        }
+        T& operator*()
+        {
+            if (_pVec == nullptr)
+            {
+                throw "iterator invalid!";
+            }
+            return *_ptr;
+        }
+        const T& operator*()const
+        {
+            if (_pVec == nullptr)
+            {
+                throw "iterator invalid!";
+            }
+            return *_ptr;
+        }
+    private:
+        T* _ptr;
+        //当前迭代器迭代的是哪一个容器对象
+        vector<T, Alloc>* _pVec;
+    };
+    //需要给容器提供begin和end方法
+    iterator begin()
+    {
+        return iterator(this,_first);
+    }
+    iterator end()
+    {
+        return iterator(this,_last);
+    }
+
+    //检查迭代器失效
+    void verify(T* first, T* last)
+    {
+        Iterator_Base* pre = &this->_head;
+        Iterator_Base* it = this->_head._next;
+        while (it != nullptr)
+        {
+            if (it->_cur->_ptr > first && it->_cur->_ptr <= last)
+            {
+                //迭代器失效，把iterator持有的容器指针置nullptr
+                it->_cur->_pVec = nullptr;
+                //删除当前迭代器节点，继续判断后面的迭代器节点是否有效
+                pre->_next = it->_next;
+                delete it;
+                it = pre->_next;
+            }
+            else
+            {
+                pre = it;
+                it = it->_next;
+            }
+        }
+    }
+
+    //自定义vector容器insert方法的实现
+    iterator insert(iterator it, const T& val)
+    {
+        //写简单点
+        //不考虑扩容
+        //不考虑it._ptr的指针合法性
+        verify(it._ptr - 1, _last);
+        T* p = _last;
+        while (p > it._ptr)
+        {
+            _allocator.construct(p,*(p-1));
+            _allocator.destroy(p - 1);
+            p--;
+        }
+        _allocator.construct(p, val);
+        _last++;
+        return iterator(this, p);
+    }
+    //自定义vector容器erase方法的实现
+    iterator erase(iterator it)
+    {
+        verify(it._ptr - 1, _last);
+        T* p = it._ptr;
+        while (p<_last-1)
+        {
+            _allocator.destroy(p);
+            _allocator.construct(p, *(p + 1));
+            p++;
+        }
+        _allocator.destroy(p);
+        _last--;
+        return iterator(this, it._ptr);
+    }
+private:
+    T* _first;//指向数组起始的位置
+    T* _last;//指向数组中有效元素的后继位置
+    T* _end;//指向数组空间的后继位置
+    Alloc _allocator;//定义容器的空间配置器对象
+
+    //容器迭代器失效增加代码
+    struct Iterator_Base
+    {
+        Iterator_Base(iterator* c = nullptr, Iterator_Base* n = nullptr)
+            :_cur(c), _next(n)
+        {}
+        iterator* _cur;
+        Iterator_Base* _next;
+    };
+    Iterator_Base _head;
+    void expand()//容器的二倍扩容
+    {
+        int size = _end - _first;
+        //T* ptmp = new T[2 * size];
+        T* ptmp = _allocator.allocate(2 * size);
+        for (int i = 0;i < size;i++)
+        {
+            //ptmp[i] = _first[i];
+            _allocator.construct(ptmp + i, _first[i]);
+        }
+        //delete[]_first;
+        for (T* p = _first;p != _last;p++)
+        {
+            _allocator.destroy(p);
+        }
+        _allocator.deallocate(_first);
+        _first = ptmp;
+        _last = _first + size;
+        _end = _first + 2 * size;
+    }
+};
+int main()
+{
+    vector<int> vec(200);
+    for (int i = 0;i < 20;++i)
+    {
+        vec.push_back(rand() % 100 + 1);
+    }
+#if 0
+    //给vec容器中所有的偶数前面添加一个小于偶数值1的数字
+    auto it = vec.begin();
+    for (;it != vec.end();++it)
+    {
+        if (*it % 2 == 0)
+        {
+            //这里的迭代器在第一次insert之后，iterator就失效了
+            //所以用返回值更新it
+            it=vec.insert(it, *it - 1);
+            ++it;
+            //break;
+        }
+    }
+    for (int v : vec)
+    {
+        std::cout << v << " ";
+    }
+    std::cout << std::endl;
+#endif
+    //把vec容器中所有偶数全部删除
+    auto it = vec.begin();
+    while (it != vec.end())
+    {
+        if (*it % 2 == 0)
+        {
+            //迭代器失效的问题，第一次调用erase以后，迭代器it就失效了
+            //E:\Desktop\C++base\23\x64\Debug\23.exe (进程 26640)已退出，代码为 -1073741819。
+            //所以这里要用it接受返回的iterator,实现更新it
+            it = vec.erase(it);//insert(it,val) erase(it)
+            //break;
+        }
+        else
+        {
+            ++it;
+        }
+    }
+    for (int v : vec)
+    {
+        std::cout << v << " ";
+    }
+    std::cout << std::endl;
+    return 0;
+}
+```
+
