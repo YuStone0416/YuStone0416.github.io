@@ -5,6 +5,7 @@ comments: true
 tags: mysql连接池
 categories: mysql连接池
 updated: 2025-07-04 21:26:00
+excerpt: MySQL连接池学习
 ---
 
 ## 项目目的

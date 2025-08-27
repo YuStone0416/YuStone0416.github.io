@@ -5,6 +5,7 @@ comments: true
 tags: Linux System Programming
 categories: Linux System Programming
 updated: 2025-07-16 21:26:00
+excerpt: Linux系统编程学习
 ---
 
 ## Linux常见目录

@@ -1,6 +1,5 @@
 ---
 title: 友情链接
-menu_id: more
 layout: page
 ---
 

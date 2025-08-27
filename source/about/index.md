@@ -1,6 +1,5 @@
 ---
 title: 关于
-menu_id: more
 layout: page
 ---
 你好，我是 Jun Cen，目前专注于 C++ 开发、前端技术和 AI 应用研究。  

@@ -23,6 +23,16 @@ menubar:
       icon: solar:documents-bold-duotone # 支持 svg/img 标签，可以定义在 icons.yml 文件中，也支持外部图片的 URL
       title: 博客 # 标题
       url: / # 跳转链接，支持相对路径和绝对路径
+    - id: about # 页面中高亮的 menu_id
+      theme: '#1BCDFC' # 高亮时的颜色，仅 svg 中 fill="currentColor" 时有效
+      icon: solar:documents-bold-duotone # 支持 svg/img 标签，可以定义在 icons.yml 文件中，也支持外部图片的 URL
+      title: 关于 # 标题
+      url: /about/ # 跳转链接，支持相对路径和绝对路径
+    - id: friends # 页面中高亮的 menu_id
+      theme: '#1BCDFC' # 高亮时的颜色，仅 svg 中 fill="currentColor" 时有效
+      icon: solar:documents-bold-duotone # 支持 svg/img 标签，可以定义在 icons.yml 文件中，也支持外部图片的 URL
+      title: 朋友 # 标题
+      url: /friends/ # 跳转链接，支持相对路径和绝对路径
     # - id: wiki
     #   theme: '#3DC550'
     #   icon: solar:notebook-bookmark-bold-duotone
@@ -38,11 +48,11 @@ menubar:
     #   icon: solar:chat-square-like-bold-duotone
     #   title: 社交
     #   url: /friends/
-    - id: more
-      theme: ''
-      title: 更多
-      icon: ''
-      url: /more/
+    # - id: more
+    #   theme: ''
+    #   title: 更多
+    #   icon: ''
+    #   url: /more/
 
 
 
