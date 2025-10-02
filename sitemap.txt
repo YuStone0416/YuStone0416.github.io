@@ -1,9 +1,10 @@
-http://yustonerain.top/more/
 http://yustonerain.top/tags/
-http://yustonerain.top/about/
+http://yustonerain.top/more/
 http://yustonerain.top/categories/
 http://yustonerain.top/friends/
+http://yustonerain.top/about/
 http://yustonerain.top/404
+http://yustonerain.top/protobuf%E5%AE%9E%E8%B7%B5cpp/
 http://yustonerain.top/%E5%88%86%E5%B8%83%E5%BC%8F%E7%BD%91%E7%BB%9C%E9%80%9A%E4%BF%A1%E6%A1%86%E6%9E%B6/
 http://yustonerain.top/%E5%89%96%E6%9E%90muduo%E7%BD%91%E7%BB%9C%E5%BA%93%E6%A0%B8%E5%BF%83%E4%BB%A3%E7%A0%81/
 http://yustonerain.top/mysql%E8%BF%9E%E6%8E%A5%E6%B1%A0/
@@ -23,6 +24,7 @@ http://yustonerain.top/tags/MYSQL-learning/
 http://yustonerain.top/tags/C-chatserver/
 http://yustonerain.top/tags/git/
 http://yustonerain.top/tags/mysql%E8%BF%9E%E6%8E%A5%E6%B1%A0/
+http://yustonerain.top/tags/protobuf/
 http://yustonerain.top/tags/%E5%88%86%E5%B8%83%E5%BC%8F%E7%BD%91%E7%BB%9C%E9%80%9A%E4%BF%A1/
 http://yustonerain.top/tags/muduo/
 http://yustonerain.top/tags/data-structure/
@@ -34,6 +36,7 @@ http://yustonerain.top/categories/MYSQL-learning/
 http://yustonerain.top/categories/c-%E5%AE%9E%E7%8E%B0%E9%9B%86%E7%BE%A4%E8%81%8A%E5%A4%A9%E6%9C%8D%E5%8A%A1%E5%99%A8/
 http://yustonerain.top/categories/git%E5%BF%85%E7%9F%A5%E5%BF%85%E4%BC%9A/
 http://yustonerain.top/categories/mysql%E8%BF%9E%E6%8E%A5%E6%B1%A0/
+http://yustonerain.top/categories/protobuf/
 http://yustonerain.top/categories/%E5%88%86%E5%B8%83%E5%BC%8F%E7%BD%91%E7%BB%9C%E9%80%9A%E4%BF%A1/
 http://yustonerain.top/categories/muduo/
 http://yustonerain.top/categories/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84100%E9%A2%98/
