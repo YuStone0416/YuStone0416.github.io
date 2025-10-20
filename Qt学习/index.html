@@ -5,7 +5,7 @@
   <meta charset="utf-8">
   <meta name="hexo-theme" content="https://github.com/xaoxuu/hexo-theme-stellar/tree/1.33.1" theme-name="Stellar" theme-version="1.33.1">
   
-  <meta name="robots" content="noindex,follow">
+  
   <meta name="generator" content="Hexo 7.3.0">
   <meta http-equiv='x-dns-prefetch-control' content='on' />
   
@@ -17,23 +17,27 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
   <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#000">
   <meta name="theme-color" content="#f9fafb">
-  <title>标签：分布式网络通信 - YuStone</title>
+  <title>Qt学习 - YuStone</title>
 
   
-    <meta property="og:type" content="website">
-<meta property="og:title" content="YuStone">
-<meta property="og:url" content="http://yustonerain.top/tags/%E5%88%86%E5%B8%83%E5%BC%8F%E7%BD%91%E7%BB%9C%E9%80%9A%E4%BF%A1/">
+    <meta name="description" content="Qt学习">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Qt学习">
+<meta property="og:url" content="http://yustonerain.top/Qt%E5%AD%A6%E4%B9%A0/">
 <meta property="og:site_name" content="YuStone">
+<meta property="og:description" content="Qt学习">
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="http://yustonerain.top/images/avatar.jpg">
+<meta property="article:published_time" content="2025-10-19T06:54:16.000Z">
+<meta property="article:modified_time" content="2025-10-19T05:26:16.000Z">
 <meta property="article:author" content="YuStone">
-<meta property="article:tag" content="YuStoneblog">
+<meta property="article:tag" content="Qt">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:image" content="http://yustonerain.top/images/avatar.jpg">
   
   
   
-  <meta name="keywords" content="YuStoneblog">
+  <meta name="keywords" content="Qt">
 
   <!-- feed -->
   
@@ -49,12 +53,12 @@
 
   
 
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"Website","@id":"http://yustonerain.top","author":{"@type":"Person","name":"YuStone","sameAs":[],"image":"/images/avatar.jpg"},"name":"YuStone","description":"","url":"http://yustonerain.top"}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"YuStone","sameAs":[],"image":"/images/avatar.jpg"},"dateCreated":"2025-10-19T14:54:16+08:00","dateModified":"2025-10-19T13:26:16+08:00","datePublished":"2025-10-19T14:54:16+08:00","description":"Qt学习","headline":"Qt学习","mainEntityOfPage":{"@type":"WebPage","@id":"http://yustonerain.top/Qt%E5%AD%A6%E4%B9%A0/"},"publisher":{"@type":"Organization","name":"YuStone","sameAs":[],"image":"/images/avatar.jpg","logo":{"@type":"ImageObject","url":"/images/avatar.jpg"}},"url":"http://yustonerain.top/Qt%E5%AD%A6%E4%B9%A0/","keywords":"Qt","image":[]}</script>
   
 </head>
 <body>
 
-<div class="l_body index" id="start" layout="undefined" type="undefined" ><aside class="l_left"><div class="sidebg"></div><div class="leftbar-container">
+<div class="l_body content" id="start" layout="post" type="tech" ><aside class="l_left"><div class="sidebg"></div><div class="leftbar-container">
 
 
 <header class="header"><div class="logo-wrap"><a class="avatar" href="/about/"><div class="bg" style="opacity:0;background-image:url(https://gcore.jsdelivr.net/gh/cdn-x/placeholder@1.0.12/avatar/round/rainbow64@3x.webp);"></div><img no-lazy class="avatar" src="/images/avatar.jpg" onerror="javascript:this.classList.add('error');this.src='https://gcore.jsdelivr.net/gh/cdn-x/placeholder@1.0.12/image/2659360.svg';"></a><a class="title" href="/"><div class="main">YuStone</div><div class="sub normal cap">我的独立博客</div><div class="sub hover cap" style="opacity:0"> 欢迎来到我的博客</div></a></div></header>
@@ -66,28 +70,191 @@
 <div class="widgets">
 <div class="search-wrapper" id="search-wrapper"><form class="search-form"><a class="search-button" onclick="document.getElementById(&quot;search-input&quot;).focus();"><svg t="1705074644177" viewBox="0 0 1025 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="1560" width="200" height="200"><path d="M1008.839137 935.96571L792.364903 719.491476a56.783488 56.783488 0 0 0-80.152866 0 358.53545 358.53545 0 1 1 100.857314-335.166073 362.840335 362.840335 0 0 1-3.689902 170.145468 51.248635 51.248635 0 1 0 99.217358 26.444296 462.057693 462.057693 0 1 0-158.255785 242.303546l185.930047 185.725053a51.248635 51.248635 0 0 0 72.568068 0 51.248635 51.248635 0 0 0 0-72.978056z" p-id="1561"></path><path d="M616.479587 615.969233a50.428657 50.428657 0 0 0-61.498362-5.534852 174.655348 174.655348 0 0 1-177.525271 3.484907 49.403684 49.403684 0 0 0-58.833433 6.76482l-3.074918 2.869923a49.403684 49.403684 0 0 0 8.609771 78.10292 277.767601 277.767601 0 0 0 286.992355-5.739847 49.403684 49.403684 0 0 0 8.404776-76.667958z" p-id="1562"></path></svg></a><input type="text" class="search-input" id="search-input" placeholder="站内搜索"></form><div id="search-result"></div><div class="search-no-result">没有找到内容！</div></div>
 
+
+
 <widget class="widget-wrapper recent post-list"><div class="widget-header dis-select"><span class="name">最近更新</span></div><div class="widget-body fs14"><a class="item title" href="/Qt%E5%AD%A6%E4%B9%A0/"><span class="title">Qt学习</span></a><a class="item title" href="/%E5%88%86%E5%B8%83%E5%BC%8F%E7%BD%91%E7%BB%9C%E9%80%9A%E4%BF%A1%E6%A1%86%E6%9E%B6/"><span class="title">分布式网络通信框架编写</span></a><a class="item title" href="/protobuf%E5%AE%9E%E8%B7%B5cpp/"><span class="title">protobuf实践基于cpp</span></a><a class="item title" href="/%E5%89%96%E6%9E%90muduo%E7%BD%91%E7%BB%9C%E5%BA%93%E6%A0%B8%E5%BF%83%E4%BB%A3%E7%A0%81/"><span class="title">剖析muduo网络库核心代码</span></a><a class="item title" href="/mysql%E8%BF%9E%E6%8E%A5%E6%B1%A0/"><span class="title">mysql连接池</span></a><a class="item title" href="/C-%E6%8F%90%E5%8D%87/"><span class="title">C++提升</span></a><a class="item title" href="/C-basiclearning/"><span class="title">C++basiclearning</span></a><a class="item title" href="/git%E5%BF%85%E7%9F%A5%E5%BF%85%E4%BC%9A/"><span class="title">git必知必会</span></a><a class="item title" href="/MYSQLlearning/"><span class="title">MYSQLlearning</span></a><a class="item title" href="/Linux%E7%BD%91%E7%BB%9C%E7%BC%96%E7%A8%8B/"><span class="title">Linux网络编程</span></a></div></widget>
 </div>
 <footer class="footer dis-select"><div class="social-wrap"><a class="social" href="https://github.com/YuStone0416" target="_blank" rel="external nofollow noopener noreferrer"><img src="https://gcore.jsdelivr.net/gh/cdn-x/placeholder/social/08a41b181ce68.svg"/></a><a class="social" href="https://" target="_blank" rel="external nofollow noopener noreferrer"><img src="https://gcore.jsdelivr.net/gh/cdn-x/placeholder/social/3845874.svg"/></a><a class="social" href="https://" target="_blank" rel="external nofollow noopener noreferrer"><img src="https://gcore.jsdelivr.net/gh/cdn-x/placeholder/social/3616429.svg"/></a><a class="social" href="https://" target="_blank" rel="external nofollow noopener noreferrer"><img src="https://gcore.jsdelivr.net/gh/cdn-x/placeholder/social/942ebbf1a4b91.svg"/></a></div></footer>
 </div></aside><div class="l_main" id="main">
 
-<header class="header mobile-only"><div class="logo-wrap"><a class="avatar" href="/about/"><div class="bg" style="opacity:0;background-image:url(https://gcore.jsdelivr.net/gh/cdn-x/placeholder@1.0.12/avatar/round/rainbow64@3x.webp);"></div><img no-lazy class="avatar" src="/images/avatar.jpg" onerror="javascript:this.classList.add('error');this.src='https://gcore.jsdelivr.net/gh/cdn-x/placeholder@1.0.12/image/2659360.svg';"></a><a class="title" href="/"><div class="main">YuStone</div><div class="sub normal cap">我的独立博客</div><div class="sub hover cap" style="opacity:0"> 欢迎来到我的博客</div></a></div></header>
-
- 
 
 
 
 
-<div class="navbar top"><div class="navbar-blur"><div class="navbar-container"><nav class="post"><a href="/">近期发布</a><a href="/categories/">分类</a><a class="active" href="/tags/">标签：分布式网络通信</a><a href="/archives/">归档</a></nav></div></div></div>
-<div class="post-list post"><a class="post-card post" href="/%E5%88%86%E5%B8%83%E5%BC%8F%E7%BD%91%E7%BB%9C%E9%80%9A%E4%BF%A1%E6%A1%86%E6%9E%B6/">
-<article class="md-text"><h2 class="post-title">分布式网络通信框架编写</h2><div class="excerpt"><p>分布式网络通信框架编写</p></div><div class="meta cap"><span class="cap" id="post-meta"><svg style="margin-bottom:2px" xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24"><path fill="currentColor" d="M6.94 2c.416 0 .753.324.753.724v1.46c.668-.012 1.417-.012 2.26-.012h4.015c.842 0 1.591 0 2.259.013v-1.46c0-.4.337-.725.753-.725s.753.324.753.724V4.25c1.445.111 2.394.384 3.09 1.055c.698.67.982 1.582 1.097 2.972L22 9H2v-.724c.116-1.39.4-2.302 1.097-2.972c.697-.67 1.645-.944 3.09-1.055V2.724c0-.4.337-.724.753-.724"/><path fill="currentColor" d="M22 14v-2c0-.839-.004-2.335-.017-3H2.01c-.013.665-.01 2.161-.01 3v2c0 3.771 0 5.657 1.172 6.828C4.343 22 6.228 22 10 22h4c3.77 0 5.656 0 6.828-1.172C22 19.658 22 17.772 22 14" opacity=".5"/><path fill="currentColor" d="M18 17a1 1 0 1 1-2 0a1 1 0 0 1 2 0m0-4a1 1 0 1 1-2 0a1 1 0 0 1 2 0m-5 4a1 1 0 1 1-2 0a1 1 0 0 1 2 0m0-4a1 1 0 1 1-2 0a1 1 0 0 1 2 0m-5 4a1 1 0 1 1-2 0a1 1 0 0 1 2 0m0-4a1 1 0 1 1-2 0a1 1 0 0 1 2 0"/></svg><time datetime="2025-09-30T06:54:16.000Z">2025-09-30</time></span><span class="cap breadcrumb"><svg style="margin-bottom:1px" xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24"><path fill="currentColor" d="M2 6.95c0-.883 0-1.324.07-1.692A4 4 0 0 1 5.257 2.07C5.626 2 6.068 2 6.95 2c.386 0 .58 0 .766.017a4 4 0 0 1 2.18.904c.144.119.28.255.554.529L11 4c.816.816 1.224 1.224 1.712 1.495a4 4 0 0 0 .848.352C14.098 6 14.675 6 15.828 6h.374c2.632 0 3.949 0 4.804.77c.079.07.154.145.224.224c.77.855.77 2.172.77 4.804V14c0 3.771 0 5.657-1.172 6.828C19.657 22 17.771 22 14 22h-4c-3.771 0-5.657 0-6.828-1.172C2 19.657 2 17.771 2 14z" opacity=".5"/><path fill="currentColor" d="M20 6.238c0-.298-.005-.475-.025-.63a3 3 0 0 0-2.583-2.582C17.197 3 16.965 3 16.5 3H9.988c.116.104.247.234.462.45L11 4c.816.816 1.224 1.224 1.712 1.495a4 4 0 0 0 .849.352C14.098 6 14.675 6 15.829 6h.373c1.78 0 2.957 0 3.798.238"/><path fill="currentColor" fill-rule="evenodd" d="M12.25 10a.75.75 0 0 1 .75-.75h5a.75.75 0 0 1 0 1.5h-5a.75.75 0 0 1-.75-.75" clip-rule="evenodd"/></svg><span>分布式网络通信</span></span></div></article>
-</a></div>
+<div class="article banner top">
+  <div class="content">
+    <div class="top bread-nav footnote"><div class="left"><div class="flex-row" id="breadcrumb"><a class="cap breadcrumb" href="/">主页</a>
+<span class="sep"></span><a class="cap breadcrumb" href="/">文章</a><span class="sep"></span><a class="cap breadcrumb-link" href="/categories/Qt%E5%AD%A6%E4%B9%A0/">Qt学习</a></div>
+<div class="flex-row" id="post-meta"><span class="text created">发布于：<time datetime="2025-10-19T06:54:16.000Z">2025-10-19</time></span><span class="sep updated"></span><span class="text updated">更新于：<time datetime="2025-10-19T05:26:16.000Z">2025-10-19</time></span></div></div></div>
+    
+    <div class="bottom only-title">
+      
+      <div class="text-area">
+        <h1 class="text title"><span>Qt学习</span></h1>
+        
+      </div>
+    </div>
+    
+  </div>
+  </div><article class="md-text content"><h2 id="Qt信号与槽机制原理"><a href="#Qt信号与槽机制原理" class="headerlink" title="Qt信号与槽机制原理"></a>Qt信号与槽机制原理</h2><p>信号：信号本质是事件，信号展现方式就是函数。当一个事件发生之后，则发出一个信号(signal )。</p>
+<p>槽：对信号响应的函数，槽就是一个函数。槽函数和普通函数的区别：槽函数可以与一个信号关联，</p>
+<p>当信号被发射时，关联的槽函数会被自动执行处理。信号和槽关联是使用QObject::connect()函数进行实现。</p>
+<p>信号函数只需要声明(不需要定义)，而槽函数需要实现。</p>
+<p>每个信号都可以用函数表示，称为信号函数；每个槽也可以用函数表示，称为槽函数</p>
+<p>Qt 的信号&#x2F;槽机制<strong>表面像直接函数调用</strong>，但<strong>底层并不是由编译器静态绑定的普通函数调用</strong>，而是通过 <strong>元对象系统 + 运行时反射 + 事件队列（或者直接函数调用）</strong> 来实现的。</p>
+<p>核心流程可以简单理解为：</p>
+<p>QObject::connect()</p>
+<ul>
+<li>connect 时不会产生任何函数调用</li>
+<li>Qt 会把 <em>sender 的信号</em> → <em>receiver 的槽函数指针（或元信息）</em> 存入一个连接表</li>
+</ul>
+<hr>
+<p>emit 触发信号时</p>
+<p>编译器把 <code>emit someSignal(...)</code> <strong>直接当作正常函数调用</strong>（就是调用一个隐藏的 <code>someSignal()</code> 函数）<br> 而这个函数内部会调用 Qt 的元对象系统：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">QMetaObject::<span class="built_in">activate</span>(<span class="keyword">this</span>, metaobject, signal_index, argv);</span><br></pre></td></tr></table></figure>
+
+<p>然后 Qt 会做：</p>
+<ol>
+<li>找到这个 signal 对应的所有已连接的槽</li>
+<li>根据连接方式（Qt::AutoConnection）<ul>
+<li><strong>同线程 → 直接调用槽函数（类似调用成员函数）</strong></li>
+<li><strong>跨线程 → 投递事件到对方线程的事件队列中（异步执行）</strong></li>
+</ul>
+</li>
+<li>最终再调用槽函数</li>
+</ol>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">[<span class="type">static</span>] <span class="function">QMetaObject::Connection <span class="title">QObject::connect</span><span class="params">(<span class="type">const</span> QObject *sender, <span class="type">const</span> <span class="type">char</span> *signal, <span class="type">const</span> QObject *receiver, <span class="type">const</span> <span class="type">char</span> *method, Qt::ConnectionType type = Qt::AutoConnection)</span></span>;</span><br><span class="line"><span class="type">const</span> QObject *sender:发出信号的对象</span><br><span class="line"><span class="type">const</span> <span class="type">char</span> *signal：sender对象的信号</span><br><span class="line"><span class="type">const</span> QObject *receiver：信号接收者</span><br><span class="line"><span class="type">const</span> <span class="type">char</span> *method：receiver对象的槽函数    </span><br></pre></td></tr></table></figure>
+
+<h3 id="信号和槽机制连接方式"><a href="#信号和槽机制连接方式" class="headerlink" title="信号和槽机制连接方式"></a>信号和槽机制连接方式</h3><ol>
+<li><strong>一个信号可以跟另一个信号相连；</strong></li>
+<li><strong>同一个信号可以跟多个槽相连。</strong></li>
+<li><strong>同一个槽可以响应多个信号。</strong></li>
+</ol>
+<h3 id="信号和槽机制优缺点"><a href="#信号和槽机制优缺点" class="headerlink" title="信号和槽机制优缺点"></a>信号和槽机制优缺点</h3><p><strong>一、优势</strong></p>
+<ol>
+<li><strong>松耦合</strong><ul>
+<li>信号发送者无需知道谁接收信号</li>
+<li>接收者也不用知道信号来自哪里</li>
+<li>提升模块化，方便维护和扩展</li>
+</ul>
+</li>
+<li><strong>自动线程安全</strong><ul>
+<li>Qt 自动检测信号和槽是否跨线程</li>
+<li>跨线程时，信号会通过事件队列异步调用槽</li>
+<li>减少手动锁和线程同步的复杂性</li>
+</ul>
+</li>
+<li><strong>支持多目标</strong><ul>
+<li>一个信号可以连接多个槽</li>
+<li>多个组件可以同时响应同一事件</li>
+</ul>
+</li>
+<li><strong>类型安全</strong><ul>
+<li>Qt5+ 函数指针写法保证编译期类型检查</li>
+<li>避免 runtime crash</li>
+</ul>
+</li>
+<li><strong>事件驱动和异步支持</strong><ul>
+<li>信号槽机制天然适合 GUI、I&#x2F;O、网络等异步事件</li>
+<li>可以轻松实现 UI 响应、后台任务结果更新</li>
+</ul>
+</li>
+<li><strong>自动管理对象生命周期</strong><ul>
+<li>QObject 对象销毁时会自动断开其所有信号连接</li>
+<li>防止悬垂指针调用槽函数</li>
+</ul>
+</li>
+</ol>
+<hr>
+<p><strong>二、缺点</strong></p>
+<ol>
+<li><strong>性能开销</strong><ul>
+<li>信号触发需要查表、函数调用间接层、可能事件队列投递</li>
+<li>高频调用场景（如每帧图像处理、底层硬件采样）不适合</li>
+</ul>
+</li>
+<li><strong>调试困难</strong><ul>
+<li>信号槽是运行时绑定，错误可能在 connect 时或槽执行时才发现</li>
+<li>如果槽抛异常或被多次连接，问题不容易追踪</li>
+</ul>
+</li>
+<li><strong>必须继承 QObject</strong><ul>
+<li>信号槽只能在 QObject 子类中使用</li>
+<li>对纯数据类、算法类限制多</li>
+</ul>
+</li>
+<li><strong>依赖元对象系统 (MOC)</strong><ul>
+<li>需要 Qt 的 moc 编译器预处理 <code>signals:</code> &#x2F; <code>slots:</code></li>
+<li>不适合完全脱离 Qt 的项目</li>
+</ul>
+</li>
+<li><strong>跨语言&#x2F;跨平台限制</strong><ul>
+<li>信号槽机制是 Qt 独有，不像标准 C++ 回调可移植</li>
+<li>如果想做轻量、纯 C++ 库，依赖 Qt 会增加包大小</li>
+</ul>
+</li>
+</ol>
+<h2 id="QMap类和QHash类和QVector类"><a href="#QMap类和QHash类和QVector类" class="headerlink" title="QMap类和QHash类和QVector类"></a>QMap类和QHash类和QVector类</h2><p>QMap</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;QCoreApplication&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;QDebug&gt;</span></span></span><br><span class="line"><span class="function"><span class="type">int</span> <span class="title">main</span><span class="params">(<span class="type">int</span> argc, <span class="type">char</span> *argv[])</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="function">QCoreApplication <span class="title">a</span><span class="params">(argc, argv)</span></span>;</span><br><span class="line">    </span><br><span class="line">    <span class="comment">//QMap类</span></span><br><span class="line">    <span class="comment">//1：创建Map实例，第一个参数为QString类型的值，第二个参数为int类型的值</span></span><br><span class="line">    QMap&lt;QString,<span class="type">int</span>&gt; qmap;</span><br><span class="line">    </span><br><span class="line">    <span class="comment">//插入数据信息，它有两方式进行操作</span></span><br><span class="line">    qmap[<span class="string">&quot;Chinese&quot;</span>]=<span class="number">119</span>;</span><br><span class="line">    qmap[<span class="string">&quot;English&quot;</span>]=<span class="number">120</span>;</span><br><span class="line">    </span><br><span class="line">    qmap.<span class="built_in">insert</span>(<span class="string">&quot;Math&quot;</span>,<span class="number">115</span>);</span><br><span class="line">    qmap.<span class="built_in">insert</span>(<span class="string">&quot;physics&quot;</span>,<span class="number">99</span>);</span><br><span class="line">    qmap.<span class="built_in">insert</span>(<span class="string">&quot;Chemistry&quot;</span>,<span class="number">100</span>);</span><br><span class="line">    <span class="built_in">qDebug</span>()&lt;&lt;qmap;</span><br><span class="line">    </span><br><span class="line">    <span class="comment">//删除数据信息key键</span></span><br><span class="line">    qmap.<span class="built_in">remove</span>(<span class="string">&quot;Chemistry&quot;</span>);</span><br><span class="line">    <span class="built_in">qDebug</span>()&lt;&lt;qmap;</span><br><span class="line">    </span><br><span class="line">    <span class="comment">//遍历QMap类的实例：数据信息</span></span><br><span class="line">    <span class="comment">//1：迭代器</span></span><br><span class="line">    <span class="function">QMapIterator&lt;QString,<span class="type">int</span>&gt; <span class="title">itr</span><span class="params">(qmap)</span></span>;</span><br><span class="line">    <span class="keyword">while</span>(itr.<span class="built_in">hasNext</span>())</span><br><span class="line">    &#123;</span><br><span class="line">        itr.<span class="built_in">next</span>();</span><br><span class="line">        <span class="built_in">qDebug</span>()&lt;&lt;itr.<span class="built_in">key</span>()&lt;&lt;<span class="string">&quot; &quot;</span>&lt;&lt;itr.<span class="built_in">value</span>();</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">//2：STL类型的迭代</span></span><br><span class="line">    <span class="built_in">qDebug</span>();</span><br><span class="line">    QMap&lt;QString,<span class="type">int</span>&gt;::const_iterator stritr=qmap.<span class="built_in">constBegin</span>();</span><br><span class="line">    <span class="keyword">while</span>(stritr!=qmap.<span class="built_in">constEnd</span>())</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="built_in">qDebug</span>()&lt;&lt;stritr.<span class="built_in">key</span>()&lt;&lt;<span class="string">&quot; &quot;</span>&lt;&lt;stritr.<span class="built_in">value</span>();</span><br><span class="line">        stritr++;</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    <span class="comment">//key键/T键--》来查找</span></span><br><span class="line">    <span class="built_in">qDebug</span>()&lt;&lt;endl;</span><br><span class="line">    <span class="built_in">qDebug</span>()&lt;&lt;<span class="string">&quot;key--&gt;T&quot;</span>&lt;&lt;qmap.<span class="built_in">value</span>(<span class="string">&quot;Math&quot;</span>);</span><br><span class="line">    <span class="built_in">qDebug</span>()&lt;&lt;<span class="string">&quot;T--&gt;key&quot;</span>&lt;&lt;qmap.<span class="built_in">key</span>(<span class="number">99</span>);</span><br><span class="line">    </span><br><span class="line">    <span class="comment">//修改键值</span></span><br><span class="line">    <span class="comment">//一个键对应一个值，再次调用insert()函数将覆盖之前的值</span></span><br><span class="line">    qmap.<span class="built_in">insert</span>(<span class="string">&quot;Math&quot;</span>,<span class="number">118</span>);</span><br><span class="line">    <span class="built_in">qDebug</span>()&lt;&lt;qmap.<span class="built_in">value</span>(<span class="string">&quot;Math&quot;</span>);</span><br><span class="line">    </span><br><span class="line">    <span class="comment">//查询是否包含某个键</span></span><br><span class="line">    <span class="built_in">qDebug</span>()&lt;&lt;<span class="string">&quot;result=&quot;</span>&lt;&lt;qmap.<span class="built_in">contains</span>(<span class="string">&quot;Chinese&quot;</span>);</span><br><span class="line">    <span class="built_in">qDebug</span>()&lt;&lt;<span class="string">&quot;result=&quot;</span>&lt;&lt;qmap.<span class="built_in">contains</span>(<span class="string">&quot;Chemistry&quot;</span>);</span><br><span class="line">    </span><br><span class="line">    <span class="comment">//输出所有QMap实例化：Key键和T键值</span></span><br><span class="line">    <span class="built_in">qDebug</span>()&lt;&lt;endl;</span><br><span class="line">    QList&lt;QString&gt; akeys=qmap.<span class="built_in">keys</span>();</span><br><span class="line">    <span class="built_in">qDebug</span>()&lt;&lt;akeys;</span><br><span class="line">    </span><br><span class="line">    QList&lt;<span class="type">int</span>&gt; aValues=qmap.<span class="built_in">values</span>();</span><br><span class="line">    <span class="built_in">qDebug</span>()&lt;&lt;aValues;</span><br><span class="line">    </span><br><span class="line">    <span class="comment">//一个键对应多个值</span></span><br><span class="line">    <span class="comment">//直接使用QMultiMap类来实例化一个QMap对象</span></span><br><span class="line">    <span class="built_in">qDebug</span>()&lt;&lt;endl;</span><br><span class="line">    QMultiMap&lt;QString,QString&gt; mulmap;</span><br><span class="line">    mulmap.<span class="built_in">insert</span>(<span class="string">&quot;student&quot;</span>,<span class="string">&quot;no&quot;</span>);</span><br><span class="line">    mulmap.<span class="built_in">insert</span>(<span class="string">&quot;student&quot;</span>,<span class="string">&quot;name&quot;</span>);</span><br><span class="line">    mulmap.<span class="built_in">insert</span>(<span class="string">&quot;student&quot;</span>,<span class="string">&quot;sex&quot;</span>);</span><br><span class="line">    mulmap.<span class="built_in">insert</span>(<span class="string">&quot;student&quot;</span>,<span class="string">&quot;age&quot;</span>);</span><br><span class="line">    mulmap.<span class="built_in">insert</span>(<span class="string">&quot;student&quot;</span>,<span class="string">&quot;hign&quot;</span>);</span><br><span class="line">    <span class="built_in">qDebug</span>()&lt;&lt;mulmap;<span class="comment">//mulmap还是一个QMap对象</span></span><br><span class="line">    <span class="keyword">return</span> a.<span class="built_in">exec</span>();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>QHash</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;QCoreApplication&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;QDebug&gt;</span></span></span><br><span class="line"><span class="function"><span class="type">int</span> <span class="title">main</span><span class="params">(<span class="type">int</span> argc, <span class="type">char</span> *argv[])</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="function">QCoreApplication <span class="title">a</span><span class="params">(argc, argv)</span></span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">//QHash类</span></span><br><span class="line">    QHash&lt;QString,<span class="type">int</span>&gt; qhash;</span><br><span class="line">    qhash[<span class="string">&quot;key 1&quot;</span>]=<span class="number">3</span>;</span><br><span class="line">    qhash[<span class="string">&quot;key 1&quot;</span>]=<span class="number">8</span>;</span><br><span class="line">    qhash[<span class="string">&quot;key 4&quot;</span>]=<span class="number">4</span>;</span><br><span class="line">    qhash[<span class="string">&quot;key 2&quot;</span>]=<span class="number">2</span>;</span><br><span class="line">    qhash.<span class="built_in">insert</span>(<span class="string">&quot;key 3&quot;</span>,<span class="number">30</span>);</span><br><span class="line">    QList&lt;QString&gt; list=qhash.<span class="built_in">keys</span>();</span><br><span class="line">    <span class="keyword">for</span>(<span class="type">int</span> i=<span class="number">0</span>;i&lt;list.<span class="built_in">length</span>();++i)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="built_in">qDebug</span>()&lt;&lt;list[i]&lt;&lt;<span class="string">&quot;,&quot;</span>&lt;&lt;qhash.<span class="built_in">value</span>(list[i]);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">//QHash内部的QHashIterator类</span></span><br><span class="line">    QHash&lt;QString,<span class="type">int</span>&gt; hash;</span><br><span class="line">    hash[<span class="string">&quot;key 1&quot;</span>]=<span class="number">33</span>;</span><br><span class="line">    hash[<span class="string">&quot;key 2&quot;</span>]=<span class="number">44</span>;</span><br><span class="line">    hash[<span class="string">&quot;key 3&quot;</span>]=<span class="number">55</span>;</span><br><span class="line">    hash[<span class="string">&quot;key 4&quot;</span>]=<span class="number">66</span>;</span><br><span class="line">    hash.<span class="built_in">insert</span>(<span class="string">&quot;key 3&quot;</span>,<span class="number">100</span>);</span><br><span class="line"></span><br><span class="line">    QHash&lt;QString,<span class="type">int</span>&gt;::const_iterator iterator;</span><br><span class="line">    <span class="keyword">for</span>(iterator=hash.<span class="built_in">begin</span>();iterator!=hash.<span class="built_in">end</span>();iterator++)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="built_in">qDebug</span>()&lt;&lt;iterator.<span class="built_in">key</span>()&lt;&lt;<span class="string">&quot;---&gt;&quot;</span>&lt;&lt;iterator.<span class="built_in">value</span>();</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> a.<span class="built_in">exec</span>();</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+</article>
+<div class="article-footer">
+    <section id="license">
+      <div class="header"><span>许可协议</span></div>
+      <div class="body"><p>本文采用 <a target="_blank" rel="noopener" href="https://creativecommons.org/licenses/by-nc-sa/4.0/">署名-非商业性使用-相同方式共享 4.0 国际</a> 许可协议，转载请注明出处。</p>
+</div>
+    </section>
+    
+
+
+    <section id="share">
+      <div class="header"><span>分享文章</span></div>
+      <div class="body">
+        <div class="link"><input class="copy-area" readonly="true" id="copy-link" value="http://yustonerain.top/Qt%E5%AD%A6%E4%B9%A0/" /></div>
+        <div class="social-wrap dis-select"><a class="social share-item wechat" onclick="util.toggle(&quot;qrcode-wechat&quot;)"><img  src="https://gcore.jsdelivr.net/gh/cdn-x/placeholder@1.0.12/social/b32ef3da1162a.svg" /></a><a class="social share-item weibo" target="_blank" rel="external nofollow noopener noreferrer" href="https://service.weibo.com/share/share.php?url=http://yustonerain.top/Qt%E5%AD%A6%E4%B9%A0/&title=Qt学习 - YuStone&summary=Qt学习"><img  src="https://gcore.jsdelivr.net/gh/cdn-x/placeholder@1.0.12/social/80c07e4dbb303.svg" /></a><a class="social share-item email" href="mailto:?subject=Qt学习 - YuStone&amp;body=http://yustonerain.top/Qt%E5%AD%A6%E4%B9%A0/"><img  src="https://gcore.jsdelivr.net/gh/cdn-x/placeholder@1.0.12/social/a1b00e20f425d.svg" /></a><a class="social share-item link" onclick="util.copy(&quot;copy-link&quot;, &quot;复制成功&quot;)"><img  src="https://gcore.jsdelivr.net/gh/cdn-x/placeholder@1.0.12/social/8411ed322ced6.svg" /></a></div>
+        
+        <div class="qrcode" id="qrcode-wechat" style="opacity:0;height:0">
+          <img src="https://api.qrserver.com/v1/create-qr-code/?size=256x256&data=http://yustonerain.top/Qt%E5%AD%A6%E4%B9%A0/"/>
+        </div>
+        
+      </div>
+    </section>
+    </div>
+
+<div class="related-wrap" id="read-next"><section class="body"><div class="item" id="prev"></div><div class="item" id="next"><div class="note">较早文章</div><a href="/protobuf%E5%AE%9E%E8%B7%B5cpp/">protobuf实践基于cpp</a></div></section></div>
+
+<div class="related-wrap" id="related-posts"></div>
+
+
+  <div class="related-wrap md-text" id="comments">
+    <section class='header cmt-title cap theme'>
+      <p>快来参与讨论吧~</p>
+
+    </section>
+    <section class='body cmt-body utterances'>
+      
+
+<svg class="loading" style="vertical-align:middle;fill:currentColor;overflow:hidden;" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="2709"><path d="M832 512c0-176-144-320-320-320V128c211.2 0 384 172.8 384 384h-64zM192 512c0 176 144 320 320 320v64C300.8 896 128 723.2 128 512h64z" p-id="2710"></path></svg>
+
+<div id="utterances" repo="YuStone0416/YuStone0416.github.io" issue-term="pathname" theme="preferred-color-scheme"></div>
+
+    </section>
+  </div>
+
 
 
 <footer class="page-footer footnote"><hr><div class="text"><p>本站由 <a href="/">YuStone</a> 使用 <a target="_blank" rel="noopener" href="https://github.com/xaoxuu/hexo-theme-stellar/tree/1.33.1">Stellar 1.33.1</a> 主题创建。<br>本博客所有文章除特别声明外，均采用 <a target="_blank" rel="noopener" href="https://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a> 许可协议，转载请注明出处。</p>
 </div></footer>
 <div class="main-mask" onclick="sidebar.dismiss()"></div></div><aside class="l_right">
-</aside><div class='float-panel'>
+<div class="widgets">
+
+
+
+<widget class="widget-wrapper toc" id="data-toc" collapse="false"><div class="widget-header dis-select"><span class="name">本文目录</span><a class="cap-action" onclick="sidebar.toggleTOC()" ><svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6h11m-11 6h11m-11 6h11M4 6h1v4m-1 0h2m0 8H4c0-1 2-2 2-3s-1-1.5-2-1"/></svg></a></div><div class="widget-body"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#Qt%E4%BF%A1%E5%8F%B7%E4%B8%8E%E6%A7%BD%E6%9C%BA%E5%88%B6%E5%8E%9F%E7%90%86"><span class="toc-text">Qt信号与槽机制原理</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BF%A1%E5%8F%B7%E5%92%8C%E6%A7%BD%E6%9C%BA%E5%88%B6%E8%BF%9E%E6%8E%A5%E6%96%B9%E5%BC%8F"><span class="toc-text">信号和槽机制连接方式</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BF%A1%E5%8F%B7%E5%92%8C%E6%A7%BD%E6%9C%BA%E5%88%B6%E4%BC%98%E7%BC%BA%E7%82%B9"><span class="toc-text">信号和槽机制优缺点</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#QMap%E7%B1%BB%E5%92%8CQHash%E7%B1%BB%E5%92%8CQVector%E7%B1%BB"><span class="toc-text">QMap类和QHash类和QVector类</span></a></li></ol></div><div class="widget-footer"><a class="top" onclick="util.scrollTop()"><svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24"><!-- Icon from Solar by 480 Design - https://creativecommons.org/licenses/by/4.0/ --><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-width="1.5"><path stroke-linejoin="round" d="m9 15.5l3-3l3 3m-6-4l3-3l3 3"/><path d="M7 3.338A9.95 9.95 0 0 1 12 2c5.523 0 10 4.477 10 10s-4.477 10-10 10S2 17.523 2 12c0-1.821.487-3.53 1.338-5"/></g></svg><span>回到顶部</span></a><a class="buttom" onclick="util.scrollComment()"><svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24"><!-- Icon from Solar by 480 Design - https://creativecommons.org/licenses/by/4.0/ --><path fill="none" stroke="currentColor" stroke-linecap="round" stroke-width="1.5" d="M8 10.5h8M8 14h5.5M17 3.338A9.95 9.95 0 0 0 12 2C6.477 2 2 6.477 2 12c0 1.6.376 3.112 1.043 4.453c.178.356.237.763.134 1.148l-.595 2.226a1.3 1.3 0 0 0 1.591 1.592l2.226-.596a1.63 1.63 0 0 1 1.149.133A9.96 9.96 0 0 0 12 22c5.523 0 10-4.477 10-10c0-1.821-.487-3.53-1.338-5"/></svg><span>参与讨论</span></a></div></widget>
+</div></aside><div class='float-panel'>
   <button type='button' style='display:none' class='laptop-only rightbar-toggle mobile' onclick='sidebar.rightbar()'>
     <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6h11m-11 6h11m-11 6h11M4 6h1v4m-1 0h2m0 8H4c0-1 2-2 2-3s-1-1.5-2-1"/></svg>
   </button>
@@ -581,6 +748,31 @@
 
 
 <!-- optional -->
+
+  <script type="module">
+  const el = document.querySelector("#comments #utterances");
+  util.viewportLazyload(el, load_utterances, false);
+
+  function load_utterances() {
+    if (!el) return;
+    try {
+      el.innerHTML = '';
+    } catch (error) {
+      console.error(error);
+    }
+    const script = document.createElement('script');
+    script.src = 'https://utteranc.es/client.js';
+    script.async = true;
+    for (const key of Object.keys(el.attributes)) {
+      const attr = el.attributes[key];
+      if (['class', 'id'].includes(attr.name) === false) {
+        script.setAttribute(attr.name, attr.value);
+      }
+    }
+    el.appendChild(script);
+  }
+</script>
+
 
 
 
