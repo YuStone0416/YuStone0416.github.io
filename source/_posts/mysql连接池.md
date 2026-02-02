@@ -2,8 +2,8 @@
 title: mysql连接池
 date: 2025-09-02 20:48:36
 comments: true
-tags: mysql连接池
-categories: mysql连接池
+tags: mysql
+categories: mysql
 updated: 2025-09-03 21:26:00
 excerpt: MySQL连接池学习
 ---

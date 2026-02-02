@@ -1,7 +1,7 @@
 ---
 title: git必知必会
 tags: git
-categories: git必知必会
+categories: git
 comments: true
 date: 2025-08-27 14:54:16
 updated: 2025-08-21 13:26:16

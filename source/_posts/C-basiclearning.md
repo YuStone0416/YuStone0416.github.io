@@ -2,7 +2,7 @@
 title: C++basiclearning
 date: 2025-08-03 21:26:16
 tags: C++
-categories: C++basiclearning
+categories: C++
 updated: 2025-08-21 21:26:16
 excerpt: C++基础学习
 ---

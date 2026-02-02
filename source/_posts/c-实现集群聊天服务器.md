@@ -2,8 +2,8 @@
 title: c++实现集群聊天服务器
 date: 2025-06-02 23:57:52
 comments: true
-tags: C++ chatserver
-categories: c++实现集群聊天服务器
+tags: chatserver
+categories: chatserver
 updated: 2025-06-23 23:30:00
 excerpt: 基于C++，使用muduo,redis,json等技术实现的集群聊天服务器
 ---

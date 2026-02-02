@@ -1,8 +1,8 @@
 ---
 title: MYSQLlearning
 date: 2025-07-25 15:46:07
-tags: MYSQL learning
-categories: MYSQL learning
+tags: MYSQL
+categories: MYSQL
 updated: 2025-08-03 21:26:16
 excerpt: MySQL学习
 ---

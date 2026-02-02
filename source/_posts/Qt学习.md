@@ -1,7 +1,7 @@
 ---
 title: Qt学习
 tags: Qt
-categories: Qt学习
+categories: Qt
 comments: true
 excerpt: Qt学习
 date: 2025-10-19 14:54:16
@@ -109,7 +109,7 @@ const char *method：receiver对象的槽函数
 
 ## QMap类和QHash类和QVector类
 
-QMap
+**QMap**
 
 ```c++
 #include <QCoreApplication>
@@ -189,7 +189,7 @@ int main(int argc, char *argv[])
 }
 ```
 
-QHash
+**QHash**
 
 ```c++
 #include <QCoreApplication>
@@ -227,6 +227,4 @@ int main(int argc, char *argv[])
     }
     return a.exec();
 }
-
 ```
-
