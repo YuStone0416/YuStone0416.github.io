@@ -2150,3 +2150,952 @@ private:
 ```
 
 ## 搜索
+
+### 二分搜索
+
+代码实现和复杂度分析
+
+```c++
+// 二分搜索算法.cpp : 此文件包含 "main" 函数。程序执行将在此处开始并结束。
+//
+
+#include <iostream>
+//二分搜索非递归实现
+int BinarySearch(int arr[], int size, int val)
+{
+    int first = 0;
+    int last = size - 1;
+
+    while (first <= last)
+    {
+        int mid = (first + last) / 2;
+        if (arr[mid] == val)
+        {
+            return mid;
+        }
+        else if (arr[mid] > val)
+        {
+            last = mid - 1;
+        }
+        else
+        {
+            first = mid + 1;
+        }
+    }
+    return -1;
+}
+
+
+int main()
+{
+    int arr[] = { 12,25,34,39,45,57,63,78,82,96,100 };
+    int size = sizeof(arr) / sizeof(arr[0]);
+    std::cout << BinarySearch(arr, size, 39) << std::endl;
+    std::cout << BinarySearch(arr, size, 45) << std::endl;
+    std::cout << BinarySearch(arr, size, 12) << std::endl;
+    std::cout << BinarySearch(arr, size, 64) << std::endl;
+}
+```
+
+![9](DataStructure/9.png)
+
+**递归实现**
+
+![10](DataStructure/10.png)
+
+递归代码实现：
+
+```c++
+//二分搜索递归代码
+int BinarySearch1(int arr[], int i, int j, int val)
+{
+    if (i > j)
+    {
+        return -1;
+    }
+    int mid = (i + j) / 2;
+    if (arr[mid] == val)
+    {
+        return mid;
+    }
+    else if (arr[mid] > val)
+    {
+        BinarySearch1(arr, i, mid - 1, val);
+    }
+    else
+    {
+        BinarySearch1(arr, mid + 1, j, val);
+    }
+}
+int BinarySearch(int arr[], int size, int val)
+{
+    return BinarySearch1(arr, 0, size-1, val);
+}
+
+
+int main()
+{
+    int arr[] = { 12,25,34,39,45,57,63,78,82,96,100 };
+    int size = sizeof(arr) / sizeof(arr[0]);
+    std::cout << BinarySearch(arr, size, 39) << std::endl;
+    std::cout << BinarySearch(arr, size, 45) << std::endl;
+    std::cout << BinarySearch(arr, size, 12) << std::endl;
+    std::cout << BinarySearch(arr, size, 64) << std::endl;
+}
+```
+
+## 排序算法
+
+### 冒泡排序
+
+![11](DataStructure/11.png)
+
+特点：相邻元素两两比较，把值大的元素往下交换。
+
+缺点：数据交换次数太多了。
+
+```c++
+// 基础排序.cpp : 此文件包含 "main" 函数。程序执行将在此处开始并结束。
+//
+
+#include <iostream>
+#include <stdlib.h>
+#include <time.h>
+
+//冒泡排序算法
+void BubbleSort(int arr[], int size)
+{
+    //外层表示趟数  
+    for (int i = 0;i < size - 1;i++)
+    {
+        bool flag = false;
+        //一趟的处理
+        for (int j = 0;j < size - 1- i;j++)
+        {
+            if (arr[j] > arr[j + 1])
+            {
+                int tmp = arr[j];
+                arr[j] = arr[j + 1];
+                arr[j + 1] = tmp;
+                flag = true;
+            }
+        }
+        //如果在某一趟没有做任何的数据交换，说明数据已经有序了
+        if (!flag)
+            return;
+    }
+    
+}
+
+int main()
+{
+    int arr[10];
+    srand(time(NULL));
+
+    for (int i = 0;i < 10;i++)
+    {
+        arr[i] = rand() % 100 + 1;
+    }
+    for (int v : arr)
+    {
+        std::cout << v << " ";
+    }
+    std::cout << std::endl;
+    BubbleSort(arr, 10);
+    for (int v : arr)
+    {
+        std::cout << v << " ";
+    }
+    std::cout << std::endl;
+}
+```
+
+### 选择排序
+
+特点：每次在剩下的元素中选择值最小的元素，和当前元素进行交换。
+
+缺点：相比于冒泡排序，交换的次数少了，但是比较的次数依然很多。
+
+![12](DataStructure/12.png)
+
+```c++
+// 基础排序.cpp : 此文件包含 "main" 函数。程序执行将在此处开始并结束。
+//
+
+#include <iostream>
+#include <stdlib.h>
+#include <time.h>
+
+//选择排序算法 O(n^2) 空间复杂度：O(1) 稳定性：不稳定。例子5 5 3-》3 5 5
+void ChoiceSort(int arr[], int size)
+{
+    for (int i = 0;i < size - 1;i++)
+    {
+        int min = arr[i];
+        int k = i;
+        for (int j = i+1;j < size;j++)
+        {
+            if (min > arr[j])
+            {
+                min = arr[j];
+                k = j;
+            }
+        }
+        if (i != k)
+        {
+            int tmp = arr[i];
+            arr[i] = arr[k];
+            arr[k] = tmp;
+        } 
+    }
+}
+
+
+int main()
+{
+    int arr[10];
+    srand(time(NULL));
+
+    for (int i = 0;i < 10;i++)
+    {
+        arr[i] = rand() % 100 + 1;
+    }
+    for (int v : arr)
+    {
+        std::cout << v << " ";
+    }
+    std::cout << std::endl;
+    ChoiceSort(arr, 10);
+    for (int v : arr)
+    {
+        std::cout << v << " ";
+    }
+    std::cout << std::endl;
+}
+```
+
+### 插入排序
+
+特点：从第二个元素开始，把前面的元素序列当作已经有序的，然后找合适的位置插入。
+
+优点：插入排序是普通排序中效率最高的排序算法，而且在数据越趋于有序的情况下，插入排序的效率是最高的。
+
+![13](DataStructure/13.png)
+
+```c++
+// 基础排序.cpp : 此文件包含 "main" 函数。程序执行将在此处开始并结束。
+//
+
+#include <iostream>
+#include <stdlib.h>
+#include <time.h>
+
+//插入排序算法
+void InsertSort(int arr[], int size)
+{
+    for (int i = 1;i < size;i++)
+    {
+        int val = arr[i];
+        int j = i - 1;
+        for (;j >= 0;j--)
+        {
+            if (arr[j] <= val)
+            {
+                break;
+            }
+            arr[j + 1] = arr[j];
+        }
+        arr[j + 1] = val;
+    }
+}
+
+int main()
+{
+    int arr[10];
+    srand(time(NULL));
+
+    for (int i = 0;i < 10;i++)
+    {
+        arr[i] = rand() % 100 + 1;
+    }
+    for (int v : arr)
+    {
+        std::cout << v << " ";
+    }
+    std::cout << std::endl;
+    InsertSort(arr, 10);
+    for (int v : arr)
+    {
+        std::cout << v << " ";
+    }
+    std::cout << std::endl;
+}
+```
+
+### 希尔排序
+
+特点：可以看作是多路的插入排序，分组的数据越趋于有序，整体的数据也越趋于有序，插入排序效率完美体现。
+
+![14](DataStructure/14.png)
+
+```c++
+// 基础排序.cpp : 此文件包含 "main" 函数。程序执行将在此处开始并结束。
+//
+
+#include <iostream>
+#include <stdlib.h>
+#include <time.h>
+
+//希尔排序
+void ShellSort(int arr[], int size)
+{
+    for (int gap = size / 2;gap != 0;gap = gap / 2)
+    {
+        for (int i = gap;i < size;i++)
+        {
+            int val = arr[i];
+            int j = i - gap;
+            for (;j >= 0;j-=gap)
+            {
+                if (arr[j] <= val)
+                {
+                    break;
+                }
+                arr[j + gap] = arr[j];
+            }
+            arr[j + gap] = val;
+        }
+    }
+}
+int main()
+{
+    int arr[10];
+    srand(time(NULL));
+
+    for (int i = 0;i < 10;i++)
+    {
+        arr[i] = rand() % 100 + 1;
+    }
+    for (int v : arr)
+    {
+        std::cout << v << " ";
+    }
+    std::cout << std::endl;
+    ShellSort(arr, 10);
+    for (int v : arr)
+    {
+        std::cout << v << " ";
+    }
+    std::cout << std::endl;
+}
+```
+
+### 四种排序排序性能对比：
+
+| 排序算法           | 100000组(单位：ms) |
+| ------------------ | ------------------ |
+| 冒泡排序(效率最低) | 19.32s             |
+| 选择排序(效率次之) | 4.066s             |
+| 插入排序(效率最高) | 3.475s             |
+| 希尔排序(效率更高) | 0.019s             |
+
+| 排序算法 | 平均时间复杂度                 | 最好时间复杂度 | 最坏时间复杂度 | 空间复杂度 | 稳定性 |
+| -------- | ------------------------------ | -------------- | -------------- | ---------- | ------ |
+| 冒泡排序 | O(n^2)                         | O(n)           | O(n^2)         | O(1)       | 稳定   |
+| 选择排序 | O(n^2)                         | O(n^2)         | O(n^2)         | O(1)       | 不稳定 |
+| 插入排序 | O(n^2)                         | O(n)           | O(n^2)         | O(1)       | 稳定   |
+| 希尔排序 | 依赖不同的增量序列设置O(n^1.3) | O(n)           | O(n^2)         | O(1)       | 不稳定 |
+
+插入排序的效率最好，尤其在数据已经趋于有序的情况下，采用**插入排序效率最高**。
+
+一般中等数据量的排序都用希尔排序，选择合适的增量序列，效率就已经不错了，如果数据量比较大，可以选择高级的排序算法，如快速排序。
+
+### 快速排序
+
+**冒泡排序的升级算法。**
+
+每次选择基准数，把小于基准数的放到基准数的左边，把大于基准数的放到基准数的右边，采用“分治思想”处理剩余的序列元素，直到整个序列变为有序序列。
+
+![15](DataStructure/15.png)
+
+```c++
+// 快速排序.cpp : 此文件包含 "main" 函数。程序执行将在此处开始并结束。
+//
+
+#include <iostream>
+#include <stdlib.h>
+#include <time.h>
+
+
+//快排分割处理函数 时间复杂度(最好和平均): O(n*logn) 空间复杂度：O(logn) 递归的深度所占用的栈内存
+//                  最坏时间复杂度：O(n^2) 空间复杂度O(n)
+int Partation(int arr[], int l, int r)
+{
+    //记录基准数
+    int val = arr[l];
+
+    //一次快排处理
+    while (l < r)
+    {
+        while (l<r && arr[r] > val)
+        {
+            r--;
+        }
+        if (l < r)
+        {
+            arr[l] = arr[r];
+            l++;
+        }
+        while (l<r && arr[l]<val)
+        {
+            l++;
+        }
+        if (l < r)
+        {
+            arr[r] = arr[l];
+            r--;
+        }
+    }
+    //l==r的位置放基准数
+    arr[l] = val;
+    return l;
+}
+//快排的递归接口
+void QuickSort(int arr[], int begin, int end)
+{
+    if (begin >= end)//快排递归结束条件
+    {
+        return;
+    }
+    //在[begin,end]区间的元素做一次快排分割处理
+    int pos = Partation(arr, begin, end);
+    //对基准数的左边和右边分别进行快排
+    QuickSort(arr, begin, pos - 1);
+    QuickSort(arr, pos + 1, end);
+}
+//快速排序
+void QuickSort(int arr[], int size)
+{
+    return QuickSort(arr, 0, size - 1);
+}
+int main()
+{
+    int arr[10];
+    srand(time(NULL));
+
+    for (int i = 0;i < 10;i++)
+    {
+        arr[i] = rand() % 100 + 1;
+    }
+    for (int v : arr)
+    {
+        std::cout << v << " ";
+    }
+    std::cout << std::endl;
+    QuickSort(arr, 10);
+    for (int v : arr)
+    {
+        std::cout << v << " ";
+    }
+    std::cout << std::endl;
+}
+```
+
+**算法效率提升：**
+
+1. 对于小段趋于有序的序列采用插入排序。(设定序列小到一定数量使用插入排序)
+2. 三数取中法。取序列中间的数arr[(l+r)/2],旨在挑选合适的基准数，防止快排退化成冒泡排序
+3. 随机数法
+
+### 归并排序
+
+也采用“分治思想”，先进行序列划分，再进行元素的有序合并。
+
+![16](DataStructure/16.png)
+
+```c++
+// 归并排序.cpp : 此文件包含 "main" 函数。程序执行将在此处开始并结束。
+//
+
+#include <iostream>
+#include <stdlib.h>
+#include <time.h>
+
+//归并过程函数
+void Merge(int arr[], int l, int m, int r, int* p)
+{
+    //int* p = new int[r - l + 1];
+    int idx = 0;
+    int i = l;
+    int j = m + 1;
+    while (i <= m && j <= r)
+    {
+        if (arr[i] <= arr[j])
+        {
+            p[idx++] = arr[i++];
+        }
+        else
+        {
+            p[idx++] = arr[j++];
+        }
+    }
+    while (i <= m)
+    {
+        p[idx++] = arr[i++];
+    }
+    while (j <= r)
+    {
+        p[idx++] = arr[j++];
+    }
+
+    //再把合并好的大段有序结果，拷贝到原始arr数组[l,r]区间内
+    for (i = l, j = 0;i <= r;i++, j++)
+    {
+        arr[i] = p[j];
+    }
+    //delete[] p;
+    p = nullptr;
+}
+//归并排序递归接口
+void MergeSort(int arr[], int begin, int end, int* p)
+{
+    //递归结束条件
+    if (begin >= end)
+        return;
+
+    int mid = (begin + end) / 2;
+    //先递
+    MergeSort(arr, begin, mid, p);
+    MergeSort(arr, mid + 1, end, p);
+    //再归并 [begin,mid] [mid+1,end]把两个小段有序序列，合并成大段有序的序列
+    Merge(arr, begin, mid, end, p);
+}
+//归并排序
+void MergeSort(int arr[], int size)
+{
+    int* p = new int[size];
+    MergeSort(arr, 0, size - 1, p);
+    delete[]p;
+}
+
+
+int main()
+{
+    int arr[10];
+    srand(time(NULL));
+
+    for (int i = 0;i < 10;i++)
+    {
+        arr[i] = rand() % 100 + 1;
+    }
+    for (int v : arr)
+    {
+        std::cout << v << " ";
+    }
+    std::cout << std::endl;
+    MergeSort(arr, 10);
+    for (int v : arr)
+    {
+        std::cout << v << " ";
+    }
+    std::cout << std::endl;
+}
+```
+
+### 堆排序
+
+**二叉堆**
+
+就是一颗**完全二叉树**，分为两种典型的堆，分别是**大根堆**和**小根堆**
+
+满足0<=i<=(n-1)/2,n代表最后一个元素的下标。
+
+如果arr[i]<=arr[2*i+1]&&arr[i]<=arr[2*i+1+2],就是**小根堆**
+
+如果arr[i]>=arr[2*i+1]&&arr[i]>=arr[2*i+1+2],就是**大根堆**
+
+![17](DataStructure/17.png)
+
+![18](DataStructure/18.png)
+
+**基于堆的优先级队列代码实现：**
+
+```c++
+// 二叉堆.cpp : 此文件包含 "main" 函数。程序执行将在此处开始并结束。
+//
+
+#include <iostream>
+#include <functional>
+#include <stdlib.h>
+#include <time.h>
+//优先级队列实现 priority_queue
+class PriorityQueue
+{
+public:
+    using Comp = std::function<bool(int, int)>;
+    PriorityQueue(int cap=20, Comp comp = std::greater<int>())
+        :size_(0)
+        , cap_(cap)
+        , comp_(comp)
+    {
+        que_ = new int[cap_];
+    }
+    PriorityQueue(Comp comp)
+        :size_(0)
+        , cap_(20)
+        , comp_(comp)
+    {
+        que_ = new int[cap_];
+    }
+    ~PriorityQueue()
+    {
+        delete[] que_;
+        que_ = nullptr;
+    }
+
+public:
+    //入堆操作
+    void push(int val)
+    {
+        //判断扩容
+        if (size_ == cap_)
+        {
+            int* p = new int[2 * cap_];
+            memcpy(p, que_, cap_ * sizeof(int));
+            delete[] que_;
+            que_ = p;
+            cap_ *= 2;
+        }
+        if (size_ == 0)
+        {
+            //只有一个元素，不用进行堆的上浮调整
+            que_[size_] = val;
+        }
+        else
+        {
+            //堆里面有多个元素，需要进行上浮调整
+            shiftUp(size_,val);
+        }
+        size_++;
+    }
+    //出堆操作
+    void pop()
+    {
+        if (size_ == 0)
+        {
+            throw "container is empty!";
+        }
+        size_--;
+        if (size_ > 0)
+        {
+            //删除堆顶元素，还有剩余的元素，要进行堆的下浮调整
+            shiftDown(0,que_[size_]);
+        }
+    }
+    bool empty() const
+    {
+        return size_ == 0;
+    }
+    int top() const
+    {
+        if (size_ == 0)
+        {
+            throw "container is empty!";
+        }
+        return que_[0];
+    }
+    int size() const
+    {
+        return size_;
+    }
+private:
+    //入堆上浮调整 O(logn)
+    void shiftUp(int i, int val)
+    {
+        while (i > 0) //最多计算到根节点
+        {
+            int father = (i - 1) / 2;
+            if (comp_(val, que_[father]))
+            {
+                que_[i] = que_[father];
+                i = father;
+            }
+            else
+            {
+                break;
+            }
+        }
+        //把val放到i的位置
+        que_[i] = val;
+    }
+    //出堆下沉调整 O(logn)
+    void shiftDown(int i, int val)
+    {
+        //i下沉不能超过最后一个有孩子的节点
+        //i <= (size - 2) / 2这里注意size为1时会出现负数所以改为2 * i + 1 < size_
+        while (2 * i + 1 < size_)
+        {
+            int child = 2 * i + 1;//第i个节点的左孩子
+            
+            if (child + 1 < size_ && comp_(que_[child + 1], que_[child]))
+            {
+                //如果i节点的右孩子的值大于左孩子，child记录为右孩子
+                child = child + 1;
+            }
+            if (comp_(que_[child], val))
+            {
+                que_[i] = que_[child];
+                i = child;
+            }
+            else
+            {
+                break;//已经满足堆的性质，提前结束
+            }
+        }
+        que_[i] = val;
+    }
+private:
+    int* que_; //指向动态扩容的数组
+    int size_; //数组元素的个数
+    int cap_; //数组的总空间大小
+    Comp comp_; //比较器对象
+};
+int main()
+{
+    //PriorityQueue que;//基于大根堆实现的优先级队列
+    PriorityQueue que([](int a, int b)//基于小根堆实现的优先级队列
+        {return a < b;});
+    srand(time(NULL));
+    for (int i = 0;i < 10;i++)
+    {
+        que.push(rand() % 100);
+    }
+    while (!que.empty())
+    {
+        std::cout << que.top() << " ";
+        que.pop();
+    }
+    std::cout << std::endl;
+
+}
+```
+
+![19](DataStructure/19.png)
+
+**堆排序代码：**
+
+```c++
+// 堆排序.cpp : 此文件包含 "main" 函数。程序执行将在此处开始并结束。
+//
+
+#include <iostream>
+#include <stdlib.h>
+#include <time.h>
+
+//堆的下沉调整
+void shiftDown(int arr[], int i, int size)
+{
+    int val = arr[i];
+    //i <= (size - 2) / 2这里注意size为1时会出现负数所以改为2 * i + 1 < size
+    while (2 * i + 1 < size)
+    {
+        int child = 2 * i + 1;
+        if (child + 1 < size && arr[child + 1] > arr[child])
+        {
+            child = child + 1;
+        }
+        if (arr[child] > val)
+        {
+            arr[i] = arr[child];
+            i = child; //i继续指向它的孩子
+        }
+        else
+        {
+            break;
+        }
+    }
+    arr[i] = val;
+}
+
+
+//堆排序(大根堆) 从小到大排序 时间复杂度 O(n*logn) 空间复杂度O(1)
+void HeapSort(int arr[], int size)
+{
+    int n = size - 1;
+    //从最后一个非叶子节点
+    for (int i = (n - 1) / 2;i >= 0;i--)
+    {
+        shiftDown(arr, i, size);
+    }
+    //把堆顶元素和末尾元素交换，从堆顶开始进行下沉操作
+    for (int i = n;i > 0;i--)
+    {
+        int tmp = arr[i];
+        arr[i] = arr[0];
+        arr[0] = tmp;
+        shiftDown(arr, 0, i);
+    }
+}
+
+int main()
+{
+    int arr[10];
+    srand(time(NULL));
+
+    for (int i = 0;i < 10;i++)
+    {
+        arr[i] = rand() % 100 + 1;
+    }
+    for (int v : arr)
+    {
+        std::cout << v << " ";
+    }
+    std::cout << std::endl;
+    HeapSort(arr, 10);
+    for (int v : arr)
+    {
+        std::cout << v << " ";
+    }
+    std::cout << std::endl;
+}
+```
+
+| 排序算法 | 平均时间复杂度 | 最好时间复杂度 | 最坏时间复杂度 | 空间复杂度    | 稳定性 |
+| -------- | -------------- | -------------- | -------------- | ------------- | ------ |
+| 堆排序   | O(n*logn)      | O(n*logn)      | O(n*logn)      | O(1)          | 不稳定 |
+| 快速排序 | O(n*logn)      | O(n*logn)      | O(n^2)         | O(logn)->O(n) | 不稳定 |
+| 归并排序 | O(n*logn)      | O(n*logn)      | O(n*logn)      | O(n)          | 稳定   |
+
+### 快排&归并&堆排序&希尔性能测试
+
+| 数据规模 | 快速排序 | 归并排序 | 希尔排序 | 堆排序  |
+| -------- | -------- | -------- | -------- | ------- |
+| 1000万   | 0.974s   | 1.605s   | 3.257s   | 2.274s  |
+| 5000万   | 4.871s   | 8.471s   | 18.712s  | 14.718s |
+| 1亿      | 9.717s   | 17.266s  | 41.887s  | 32.279s |
+
+**1.不管是快排，或者归并排序，遍历元素的时候都是按照顺序遍历的，对CPU缓存是友好的(CPU缓存命中率高)。但是堆排序，访问元素的时候，是按照父子节点的关系访问的，并不是按照顺序访问的，所以排序过程中，不管是进行元素上浮调整，还是下沉调整，对CPU缓存不友好**
+
+**2.堆排序的过程中，进行元素下沉调整所作的无效比较过多(因为它本身就小，所以最终下沉到的地方，和末尾位置相差不远，中间做了很多比较，无用功太多)**
+
+### 高级算法的一些问题
+
+**1.STL里sort算法用的是什么排序算法？**
+
+**首先用的是快速排序算法，如果待排序的序列个数<=32变为插入排序，如果递归层数太深转为堆排序。**
+
+**2.快速排序的时间复杂度不是稳定的nlogn,最坏情况会变成n^2,怎么解决复杂度恶化的问题？**
+
+**三数取中(选择合理的基准数)**
+
+**3.快速排序递归实现时，怎么解决递归层次过深的问题？**
+
+**可以设计一个ideal,当ideal达到一个值后使用堆排。(stl::sort用法)**
+
+**4.递归过深会引发什么问题？**
+
+**函数开销变大导致栈内存溢出，程序挂掉。**
+
+**5.怎么控制递归深度？如果达到递归深度了还没排完序怎么办？**
+
+**达到递归深度可以使用非递归排序算法。**
+
+**6.假设你只有100Mb的内存，需要对1Gb的数据进行排序，最合适的算法是归并算法**
+
+### 基数排序
+
+![20](DataStructure/20.png)
+
+![21](DataStructure/21.png)
+
+
+
+代码：
+
+```c++
+// 基数排序.cpp : 此文件包含 "main" 函数。程序执行将在此处开始并结束。
+//
+
+#include <iostream>
+#include <stdlib.h>
+#include <time.h>
+#include <string>
+#include <vector>
+//基数排序代码 处理不了浮点数
+void RadixSort(int arr[], int size)
+{
+    int maxData = arr[0];
+    for (int i = 1;i < size;i++)
+    {
+        if (maxData < abs(arr[i]))
+        {
+            maxData = abs(arr[i]);
+        }
+    }
+    int len = std::to_string(maxData).size();
+    
+    std::vector<std::vector<int>> vecs;
+    int mod = 10;
+    int dev = 1;
+    for (int i = 0;i < len;i++, mod *= 10, dev *= 10)
+    {
+        vecs.resize(20); //20个桶，为了能处理负数
+        for (int j = 0;j < size;j++)
+        {
+            //得到当前元素第i个位置的元素
+            int index = arr[j] % mod / dev+10;
+            vecs[index].push_back(arr[j]);
+        }
+        //依次遍历所有的桶，把元素拷贝回原始的数组当中
+        int idx = 0;
+        for (auto vec : vecs)
+        {
+            for (int v : vec)
+            {
+                arr[idx++] = v;
+            }
+        }
+        vecs.clear();
+    }
+}
+int main()
+{
+    int arr[10];
+    srand(time(NULL));
+
+    for (int i = 0;i < 10;i++)
+    {
+        arr[i] = rand() % 100 + 1;
+    }
+    for (int v : arr)
+    {
+        std::cout << v << " ";
+    }
+    std::cout << std::endl;
+    RadixSort(arr, 10);
+    for (int v : arr)
+    {
+        std::cout << v << " ";
+    }
+    std::cout << std::endl;
+}
+```
+
+| 排序算法 | 平均时间复杂度 | 最好时间复杂度 | 最坏时间复杂度 | 空间复杂度 | 稳定性 |
+| -------- | -------------- | -------------- | -------------- | ---------- | ------ |
+| 基数排序 | O(nd)          | O(nd)          | O(nd)          | O(n)       | 稳定   |
+
+## 哈希表
+
+![22](DataStructure/22.png)
+
+### 线性探测哈希表实现
+
+![23](DataStructure/23.png)
+
+**代码实现：**
+
+```c++
+
+```
+
