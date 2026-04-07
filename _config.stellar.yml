@@ -80,7 +80,7 @@ footer:
 
 
 comments:
-  service: Waline
+  service: waline
   waline:
     js: https://unpkg.com/@waline/client@v2/dist/waline.js
     css: https://unpkg.com/@waline/client@v2/dist/waline.css

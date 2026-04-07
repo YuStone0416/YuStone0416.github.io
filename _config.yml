@@ -105,3 +105,16 @@ theme: stellar
 #   type: git
 #   repo: git@github.com:YuStone0416/YuStone0416.github.io.git
 #   branch: gh-pages
+
+# 以 Hugo 配置为例（通常是 config.yaml 或 hugo.yaml）
+params:
+    comments: # 评论系统配置
+        enabled: true  # 启用评论功能
+        provider: waline  # 使用 Waline 作为评论提供者
+
+        waline:  # Waline 配置
+            serverURL: https://waline.yustonerain.top  # !!! 替换为你的 Waline 服务地址 !!!
+            lang: zh-cn
+            # 其他可选配置...
+
+
