@@ -20,7 +20,7 @@
   </url>
   
   <url>
-    <loc>http://yustonerain.top/about/</loc>
+    <loc>http://yustonerain.top/categories/</loc>
     
     <lastmod>2026-04-07</lastmod>
     
@@ -29,7 +29,7 @@
   </url>
   
   <url>
-    <loc>http://yustonerain.top/categories/</loc>
+    <loc>http://yustonerain.top/about/</loc>
     
     <lastmod>2026-04-07</lastmod>
     
@@ -191,14 +191,14 @@
 
   
   <url>
-    <loc>http://yustonerain.top/tags/C/</loc>
+    <loc>http://yustonerain.top/tags/DataStructure/</loc>
     <lastmod>2026-04-07</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
-    <loc>http://yustonerain.top/tags/DataStructure/</loc>
+    <loc>http://yustonerain.top/tags/C/</loc>
     <lastmod>2026-04-07</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
@@ -270,14 +270,14 @@
 
   
   <url>
-    <loc>http://yustonerain.top/categories/C/</loc>
+    <loc>http://yustonerain.top/categories/DataStructure/</loc>
     <lastmod>2026-04-07</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
-    <loc>http://yustonerain.top/categories/DataStructure/</loc>
+    <loc>http://yustonerain.top/categories/C/</loc>
     <lastmod>2026-04-07</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
