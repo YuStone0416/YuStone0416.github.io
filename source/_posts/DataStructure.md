@@ -3087,6 +3087,27 @@ int main()
 
 ## 哈希表
 
+**散列表/哈希表定义：**
+
+**使关键字和其存储位置满足关系：存储位置=f(关键字)，这是一种新的存储技术-散列技术。**
+
+**散列技术是在记录的存储位置和它的关键字之间建立一个确定的对应关系f，使得每个关键字key对应一个存储位置f(key),在查找时，根据这个确定的对应关系找到给定key的映射f(key),如果待查找集合中存在这个记录，则必定在f(key)的位置上。**
+
+**我们把这种对应关系f称为散列函数，又称为哈希函数。采用散列技术把记录存储在一块连续的存储空间中，这块连续的存储空间称为散列表或者哈希表**
+
+**优势：适用于快速的查找，时间复杂度O(1)**
+
+**缺点：占用内存空间比较大，哈希表的空间效率还是不够高。**
+
+**散列函数：**
+
+**设计特点：计算简单，散列地址分布均匀**
+
+**散列冲突处理：**
+
+- **线性探测**
+- **链地址法**
+
 ![22](DataStructure/22.png)
 
 ### 线性探测哈希表实现
@@ -3096,6 +3117,920 @@ int main()
 **代码实现：**
 
 ```c++
+// 线性探测哈希表.cpp : 此文件包含 "main" 函数。程序执行将在此处开始并结束。
+//
 
+#include <iostream>
+
+//桶的状态
+enum State
+{
+    STATE_UNUSE,//从未使用的过的桶
+    STATE_USING,//正在使用的桶
+    STATE_DEL,//元素被删除了的桶
+};
+
+//桶的类型
+struct Bucket
+{
+    Bucket(int key = 0, State state = STATE_UNUSE)
+        :key_(key)
+        , state_(state)
+    {}
+    int key_; //存储的数据
+    State state_; //桶的当前状态
+};
+
+//线性探测哈希表类型
+class HashTable
+{
+public:
+    HashTable(int size=primes_[0],double loadFactor=0.75)
+        :useBucketNum_(0)
+        , loadFactor_(loadFactor)
+        , primeIdx_(0)
+    {
+        //把用户传入的size调整到最近的比较大的素数上
+        if (size != primes_[0])
+        {
+            for (;primeIdx_ < PRIME_SIZE;primeIdx_++)
+            {
+                if (primes_[primeIdx_] >= size)
+                    break;
+            }
+            //用户传入的size值过大，已经超过最后一个素数，调整到最后一个素数
+            if (primeIdx_ == PRIME_SIZE)
+            {
+                primeIdx_--;
+            }
+        }
+        tableSize_ = primes_[primeIdx_];
+        table_ = new Bucket[tableSize_];
+    }
+
+    ~HashTable()
+    {
+        delete[] table_;
+        table_ = nullptr;
+    }
+
+public:
+    //插入元素
+    bool insert(int key)
+    {
+        //考虑扩容
+        double factor = useBucketNum_*1.0 / tableSize_;
+        std::cout << "factor:" << factor << std::endl;
+        if (factor > loadFactor_)
+        {
+            //哈希表开始扩容
+            expand();
+        }
+
+        int idx = key % tableSize_;
+
+        int i = idx;
+        do
+        {
+            if (table_[i].state_ != STATE_USING)
+            {
+                table_[i].state_ = STATE_USING;
+                table_[i].key_ = key;
+                useBucketNum_++;
+                return true;
+            }
+            i = (i + 1) % tableSize_;
+        } while (i != idx);
+
+        throw "没有正常插入元素";
+    }
+
+    //删除元素
+    bool erase(int key)
+    {
+        int idx = key % tableSize_;
+        int i = idx;
+        do
+        {
+            if (table_[i].state_ == STATE_USING && table_[i].key_ == key)
+            {
+                table_[i].state_ = STATE_DEL;
+                useBucketNum_--;
+            }
+            i = (i + 1) % tableSize_;
+        } while (table_[i].state_!=STATE_UNUSE && i != idx);
+
+        return true;
+    }
+
+    //查询
+    bool find(int key)
+    {
+        int idx = key % tableSize_;
+
+        int i = idx;
+        do
+        {
+            if (table_[i].state_ == STATE_USING && table_[i].key_ == key)
+            {
+                return true;
+            }
+            i = (i + 1) % tableSize_;
+        } while (table_[i].state_ != STATE_UNUSE && i != idx);
+
+        return false;
+    }
+private:
+    //扩容操作
+    void expand()
+    {
+        primeIdx_++;
+        if (primeIdx_ == PRIME_SIZE)
+        {
+            throw "HashTable is too large! can not expand anymore";
+        }
+
+        Bucket* newTable = new Bucket[primes_[primeIdx_]];
+        for (int i = 0;i < tableSize_;i++)
+        {
+            if (table_[i].state_ == STATE_USING) //旧表中有效的数据重新哈希放到扩容后的新表
+            {
+                int idx = table_[i].key_ % primes_[primeIdx_];
+
+                int k = idx;
+                do
+                {
+                    if (newTable[k].state_ != STATE_USING)
+                    {
+                        newTable[k].state_ = STATE_USING;
+                        newTable[k].key_ = table_[i].key_;
+                        break;
+                    }
+                    k = (k + 1) % primes_[primeIdx_];
+                } while (k!=idx);
+            }
+        }
+
+        delete[] table_;
+        table_ = newTable;
+        tableSize_ = primes_[primeIdx_];
+    }
+private:
+    Bucket* table_; //指向动态开辟的哈希表
+    int tableSize_; //哈希表当前的长度
+    int useBucketNum_;//已经使用的桶的个数
+    double loadFactor_; //哈希表的装载因子
+    static const int PRIME_SIZE = 10;//素数表的大小
+    static int primes_[PRIME_SIZE]; //素数表
+    int primeIdx_;//当前使用的素数下标
+};
+int HashTable::primes_[PRIME_SIZE] = { 3,7,47,97,251,443,911,1471,42773 };
+
+int main()
+{
+    HashTable htable;
+    htable.insert(21);
+    htable.insert(32);
+    htable.insert(14);
+    htable.insert(15);
+    htable.insert(22);
+    std::cout << htable.find(15) << std::endl;
+    htable.erase(15);
+    std::cout << htable.find(15) << std::endl;
+}
+```
+
+### 链式哈希表实现
+
+![24](DataStructure/24.png)
+
+**代码实现：**
+
+```c++
+// 链式哈希表.cpp : 此文件包含 "main" 函数。程序执行将在此处开始并结束。
+//
+
+#include <iostream>
+#include <vector>
+#include <list>
+#include <algorithm>
+//链式哈希表
+class HashTable
+{
+public:
+    HashTable(int size = primes_[0], double loadFactor = 0.75)
+        :useBucketNum_(0)
+        , loadFactor_(loadFactor)
+        , primeIdx_(0)
+    {
+        if (size != primes_[0])
+        {
+            for (;primeIdx_ < PRIME_SIZE;primeIdx_++)
+            {
+                if (primes_[primeIdx_] >= size)
+                {
+                    break;
+                }
+            }
+            if (primeIdx_ == PRIME_SIZE)
+            {
+                primeIdx_--;
+            }
+        }
+        table_.resize(primes_[primeIdx_]);
+    }
+public:
+    //增加元素 不能重复插入key
+    void insert(int key)
+    {
+        //判断扩容
+        double factor = useBucketNum_ * 1.0 / table_.size();
+        std::cout << "factor:" << factor << std::endl;
+
+        if (factor > loadFactor_)
+        {
+            expand();
+        }
+
+        int idx = key % table_.size();
+        if (table_[idx].empty())
+        {
+            useBucketNum_++;
+            table_[idx].emplace_front(key);
+        }
+        else
+        {
+            //使用全局::find泛型算法去重
+            auto it = std::find(table_[idx].begin(), table_[idx].end(), key);
+            if (it == table_[idx].end())
+            {
+                //key不存在
+                table_[idx].emplace_front(key);
+            }
+        }
+    }
+
+    //删除元素
+    void erase(int key)
+    {
+        int idx = key % table_.size();
+        auto it = std::find(table_[idx].begin(), table_[idx].end(), key);
+        if (it != table_[idx].end())
+        {
+            //找到了
+            table_[idx].erase(it);
+            if (table_[idx].empty())
+            {
+                useBucketNum_;
+            }
+        }
+    }
+
+    //搜索元素
+    bool find(int key)
+    {
+        int idx = key % table_.size();
+        auto it = std::find(table_[idx].begin(), table_[idx].end(), key);
+        return it != table_[idx].end();
+    }
+private:
+    //扩容函数
+    void expand()
+    {
+        if (primeIdx_ + 1 == PRIME_SIZE)
+        {
+            throw "hashtable can not expand anymore!";
+        }
+        primeIdx_++;
+        useBucketNum_ = 0;
+
+        std::vector<std::list<int>> oldTable;
+        //swap会不会效率很低？allocator相同，是很高效的，只是交换了两个容器的成员变量
+        table_.swap(oldTable);
+
+        table_.resize(primes_[primeIdx_]);
+
+        for (auto list : oldTable)
+        {
+            for (auto key : list)
+            {
+                int idx = key % table_.size();
+                if (table_.empty())
+                {
+                    useBucketNum_++;
+                }
+                table_[idx].emplace_front(key);
+            }
+        }
+    }
+private:
+    std::vector<std::list<int>> table_; //哈希表的数据结构
+    int useBucketNum_;//记录桶的个数
+    double loadFactor_;//记录哈希表装载因子
+
+    static const int PRIME_SIZE = 10;//素数表的大小
+    static int primes_[PRIME_SIZE]; //素数表
+    int primeIdx_;//当前使用的素数下标
+};
+int HashTable::primes_[PRIME_SIZE] = { 3,7,47,97,251,443,911,1471,42773 };
+//如果链表节点过长：散列结果比较集中(散列函数有问题！)
+int main()
+{
+    HashTable htable;
+    htable.insert(21);
+    htable.insert(32);
+    htable.insert(14);
+    htable.insert(15);
+    htable.insert(22);
+    htable.insert(67);
+    std::cout << htable.find(15) << std::endl;
+    htable.erase(15);
+    std::cout << htable.find(15) << std::endl;
+}
+```
+
+## 大数据处理
+
+### 查重
+
+- 哈希表
+
+  查重或者统计重复的次数。查询的效率高但是占用内存空间较大。
+
+- 位图
+
+  位图法，就是用一个位(0/1)来存储数据的状态，比较适合状态简单，数据量比较大，要求内存使用率低的问题场景。
+
+  位图法解决问题，首先需要知道待处理数据中的最大值，然后按照size=(maxNumber/32)+1的大小来开辟一个int类型的数组,当需要在位图查找某个元素是否存在的时候，首先需要计算该数字对应的数组中的比特位，然后读取值，0表示不存在，1表示已存在。
+
+  位图法有一个很大的缺点，就是数据没有多少，但是最大值却很大，比如有10个整数，最大值是10亿，那么就得按10亿这个数字计算开辟位图数组的大小，太浪费内存空间。
+
+  ![25](DataStructure/25.png)
+
+- 布隆过滤器
+
+  在内存有所限制的情况下，快速判断一个元素是否在一个集合(容器)当中，还可以使用布隆过滤器。在使用哈希表比较占内存的情况下，它是一种更高级的“位图法”解决方案，它避免了简单位图法的缺陷。
+  
+  Bloom Filter是通过一个位数组+k个哈希函数构成的。
+  
+  Bloom Filter的空间和时间利用率都很高，但是它有一定的错误率。虽然错误率很低，Bloom Filter判断某个元素不在一个集合中，那该元素肯定不在集合中；Bloom Filter判断某个元素在一个集合中，那该元素有可能在，有可能不在集合当中。
+  
+  Bloom Filter的查找错误率，当然和位数组的大小，以及哈希函数的个数有关系，具体的错误率计算有相应的公式
+  
+  Bloom Filter默认只支持add增加和query查询操作，不支持delete删除操作(因为存储的状态位有可能也是其他数据的状态位，删除后导致其他元素查找判断出错)。
+  
+  Bloom Filter增加元素的过程：把元素的值通过k个哈希函数进行计算，得到k个值，然后把值当作位数组的下标，在位数组中把相应k个值修改为1。
+  
+  Bloom Filter查询元素的过程：把元素的值通过k个哈希函数进行计算，得到k个值，然后把值当作位数组的下标，看看相应位数组下标标识的值是否全部是1，如果有一个1为0，表示元素不存在(判断不存在绝对正确)；如果都为1，表示元素存在(判断存在有错误率)。
+  
+  很显然，过小的布隆过滤器很快所有的bit位均为1，那么查询任何值都会返回“可能存在”，起不到过滤的目的。布隆过滤器的长度会直接影响误报率，布隆过滤器越长其误报率越小。另外，哈希函数的个数也需要权衡，个数越多则布隆过滤器bit位置为1的速度越快，且布隆过滤器的效率越低；但是如果太少的话，那误报率就会变高。
+  
+  ![26](DataStructure/26.png)
+
+#### 哈希表应用查重
+
+**代码实现：**
+
+```c++
+// 大数据查重.cpp : 此文件包含 "main" 函数。程序执行将在此处开始并结束。
+//
+
+#include <iostream>
+#include <vector>
+#include <unordered_set>
+#include <unordered_map>
+
+#include <stdlib.h>
+#include <time.h>
+
+#include <string>
+#if 0
+int main()
+{
+    //模拟问题，vector中放原始的数据
+    std::vector<int> vec;
+
+    srand(time(NULL));
+
+    for (int i = 0;i < 10000;i++)
+    {
+        vec.push_back(rand() % 10000);
+    }
+
+    //找第一个出现重复的数字
+    //找所有重复出现的数字
+    std::unordered_set<int> s1;
+    for (auto key : vec)
+    {
+        auto it = s1.find(key);//O(1)
+        if (it == s1.end())
+        {
+            s1.insert(key);
+        }
+        else
+        {
+            std::cout << "第一个重复的key:" << key << std::endl;
+            break;//找所有重复的，去掉break
+        }
+    }
+    
+    //统计重复数字以及出现的次数
+    std::unordered_map<int, int> m1;
+    for (int key : vec)
+    {
+        auto it = m1.find(key);
+        if (it == m1.end())
+        {
+            m1.emplace(key, 1);
+        }
+        else
+        {
+            it->second += 1;
+        }
+    }
+    for (auto pair : m1)
+    {
+        if (pair.second > 1)
+        {
+            std::cout << "key:" << pair.first << "出现的次数：" << pair.second << std::endl;
+        }
+    }
+
+    //一组数据有些数字是重复的，把重复的数字过滤掉，每个数字只出现一次
+    std::unordered_set<int> s2;//unordered_set本身不允许重复
+    for (auto key : vec)
+    {
+        s1.emplace(key);
+    }
+ 
+}
+#endif
+
+int main()
+{
+    std::string src = "jjhfgiyurtytrs";
+    //让你找出第一个没有重复出现过的字符
+    std::unordered_map<char, int> m;
+    for (char ch : src)
+    {
+        m[ch]++;
+    }
+    for (char ch : src)
+    {
+        if (m[ch] == 1)
+        {
+            std::cout << "第一个没有重复出现过的字符是：" << ch << std::endl;
+            return 0;
+        }
+    }
+    std::cout << "所有字符都有重复出现过！" << std::endl;
+    return 0;
+    
+}
+
+/*
+查重的面试相关问题
+
+有两个文件分别是a和b,里面放了很多ip地址(url地址/email地址)，让你找出来两个文件重复的ip,输出出来
+===》把a文件中所有的ip存放在一个哈希表中，然后遍历文件b,每遍历一个ip，在哈希表中查询一下，有则输出，没有则继续遍历
+
+有两个文件分别是a和b，各自存放约1亿条ip地址，每个ip地址是4个字节，限制内存100M,让你找出来两个文件中重复的ip地址并且输出
+===》把两个文件里的ip通过相同的除留余数法放到10个文件中，文件a和文件b分别有10个文件放入，之后把a1文件的ip放入内存哈希表中，依次把
+b1文件里ip拿出查询哈希表，查到即为重复。以此类推a1放哈希表查b1,a2放哈希表查b2...
+*/
+```
+
+#### 位图法应用查重
+
+```c++
+// 大数据查重-位图.cpp : 此文件包含 "main" 函数。程序执行将在此处开始并结束。
+//
+
+#include <iostream>
+#include <vector>
+#include <stdlib.h>
+#include <time.h>
+#include <memory>
+
+/*
+有1亿个整数，最大值不超过1亿，问哪些元素重复了？
+谁是第一个重复的？谁是第一个不重复的？(这个问题单位图处理不了)内存限制100M
+
+1亿=100M
+100M*4个字节=400M
+若用哈希表就要用800M
+
+不用哈希表就可以用位图法
+int bitmap[100000000/32+1] 3.2M*4=13.2M
+
+推荐的数据序列：数据的个数>=序列里面数字的最大值
+*/
+int main()
+{
+    std::vector<int> vec{ 12,78,90,12,123,8,9 };
+
+    //定义位图数组
+    int max = vec[0];
+    for (int i = 1;i < vec.size();i++)
+    {
+        if (vec[i] > max)
+            max = vec[i];
+    }
+    std::cout << max << std::endl;
+    int* bitmap = new int[max / 32 + 1]();
+    std::unique_ptr<int> ptr(bitmap);
+
+    //找第一个重复出现的数字
+    for (auto key : vec)
+    {
+        int index = key / 32;
+        int offset = key % 32;
+
+        //取key对应的位的值
+        if (0 == (bitmap[index] & (1 << offset)))
+        {
+            //表示key没有出现过
+            bitmap[index] |= (1 << offset);
+        }
+        else
+        {
+            std::cout << key << "是第一个重复出现的数字" << std::endl;
+            return 0;//如果找所有重复的数字，这句注释
+        }
+    }
+
+}
+```
+
+#### **布隆过滤器应用查重**
+
+```c++
+// 布隆过滤器.cpp : 此文件包含 "main" 函数。程序执行将在此处开始并结束。
+//
+
+#include <iostream>
+#include <vector>
+#include "stringhash.hpp"
+#include <string>
+
+//布隆过滤器实现
+class BloomFilter
+{
+public:
+    BloomFilter(int bitSize = 1471)
+        :bitSize_(bitSize)
+    {
+        bitMap_.resize(bitSize_ / 32 + 1);
+    }
+public:
+    //添加元素
+    void setBit(const char* str)
+    {
+        //计算k组哈希函数的值
+        int idx1 = BKDRHash(str) % bitSize_;
+        int idx2 = RSHash(str) % bitSize_;
+        int idx3 = APHash(str) % bitSize_;
+
+        //把相应的idx1,idx2,idx3这几个位全部置1
+        int index=0;
+        int offset=0;
+
+        index = idx1 / 32;
+        offset = idx1 % 32;
+        bitMap_[index] |= (1 << offset);
+
+        index = idx2 / 32;
+        offset = idx2 % 32;
+        bitMap_[index] |= (1 << offset);
+
+        index = idx3 / 32;
+        offset = idx3 % 32;
+        bitMap_[index] |= (1 << offset);
+    }
+    //查询元素
+    bool getBit(const char* str)
+    {
+        //计算k组哈希函数的值
+        int idx1 = BKDRHash(str) % bitSize_;
+        int idx2 = RSHash(str) % bitSize_;
+        int idx3 = APHash(str) % bitSize_;
+
+        int index = 0;
+        int offset = 0;
+
+        index = idx1 / 32;
+        offset = idx1 % 32;
+        if (0 == (bitMap_[index] & (1 << offset)))
+        {
+            return false;
+        }
+
+        index = idx2 / 32;
+        offset = idx2 % 32;
+        if (0 == (bitMap_[index] & (1 << offset)))
+        {
+            return false;
+        }
+
+        index = idx3 / 32;
+        offset = idx3 % 32;
+        if (0 == (bitMap_[index] & (1 << offset)))
+        {
+            return false;
+        }
+
+        return true;
+    }
+private:
+    int bitSize_; //位图的长度
+    std::vector<int> bitMap_; //位图数组
+};
+
+//URL黑名单
+class BlackList
+{
+public:
+    void add(std::string url)
+    {
+        blockList_.setBit(url.c_str());
+    }
+    bool query(std::string url)
+    {
+        return blockList_.getBit(url.c_str());
+    }
+private:
+    BloomFilter blockList_;
+};
+int main()
+{
+    BlackList list;
+    list.add("http://www.baidu.com");
+    list.add("http://www.360buy.com");
+    list.add("http://www.tmall.com");
+    list.add("http://www.tencent.com");
+
+    std::string url = "http://www.tmall.com";
+    std::cout << list.query(url) << std::endl;
+    std::string url1 = "http://www.mall.com";
+    std::cout << list.query(url1) << std::endl;
+}
+```
+
+### 求top k问题
+
+- 大/小根堆
+
+  利用大根堆过滤前top k小的数据；小根堆过滤前top k大的数据
+
+- 快排分割
+
+  利用快排分割函数每次返回的基准数的位置，找出前top k大的或者前top k小的数据
+
+#### 大/小根堆求解top k
+
+![27](DataStructure/27.png)
+
+**代码实现**
+
+```c++
+// 大数据top k -大小根堆.cpp : 此文件包含 "main" 函数。程序执行将在此处开始并结束。
+//
+
+#include <iostream>
+#include <time.h>
+#include <stdlib.h>
+#include <vector>
+#include <queue>
+#include <functional>
+#include <unordered_map>
+
+#if 0
+int main()
+{
+    std::vector<int> vec;
+    srand(time(NULL));
+    for (int i = 0;i < 1000;i++)
+    {
+        vec.push_back(rand() % 10000);
+    }
+
+#if 0
+    //求vec中值最小的前5个元素
+    std::priority_queue<int> maxheap;
+    int k = 5;
+
+    //由前k个元素构建一个大根堆
+    for (int i = 0;i < 5;i++)
+    {
+        maxheap.push(vec[i]);
+    }
+
+    //遍历剩余的元素直到最后
+    for (int i = 5;i < vec.size();i++)
+    {
+        if (maxheap.top() > vec[i])
+        {
+            maxheap.pop();
+            maxheap.push(vec[i]);
+        }
+    }
+
+    //输出结果
+    while (!maxheap.empty())
+    {
+        std::cout << maxheap.top() << "　";
+        maxheap.pop();
+    }
+#endif
+
+    //求vec中值最大的前5个元素
+    std::priority_queue<int,std::vector<int>,std::greater<int>> minheap;
+    int k = 5;
+
+    //由前k个元素构建一个大根堆
+    for (int i = 0;i < 5;i++)
+    {
+        minheap.push(vec[i]);
+    }
+
+    //遍历剩余的元素直到最后
+    for (int i = 5;i < vec.size();i++)
+    {
+        if (minheap.top() < vec[i])
+        {
+            minheap.pop();
+            minheap.push(vec[i]);
+        }
+    }
+
+    //输出结果
+    while (!minheap.empty())
+    {
+        std::cout << minheap.top() << "　";
+        minheap.pop();
+    }
+}
+#endif
+
+//查重和top k问题综合起来
+int main()
+{
+    std::vector<int> vec;
+    srand(time(NULL));
+    for (int i = 0;i < 10000;i++)
+    {
+        vec.push_back(rand() % 1000);
+    }
+
+#if 0
+    //统计重复次数最小的前3个数字
+    std::unordered_map<int, int> map;
+    int k = 3;
+    for (auto key : vec)
+    {
+        map[key]++;
+    }
+    //放入大根堆的时候，需要放key-value键值对
+    using Type = std::pair<int, int>;
+    using Comp = std::function<bool(Type&, Type&)>;
+    std::priority_queue<Type, std::vector<Type>, Comp> maxheap([](Type &a,Type &b)->bool
+        {
+            return a.second < b.second;
+        });
+
+    auto it = map.begin();
+    for (int i = 0;i < k;i++,++it)
+    {
+        maxheap.push(*it);
+    }
+
+    for (;it != map.end();++it)
+    {
+        if (maxheap.top().second > it->second)
+        {
+            maxheap.pop();
+            maxheap.push(*it);
+        }
+    }
+
+    while (!maxheap.empty())
+    {
+        std::cout << "key:" << maxheap.top().first << " cnt:" << maxheap.top().second << std::endl;
+        maxheap.pop();
+    }
+#endif
+
+    //统计重复次数最大的前3个数字
+    std::unordered_map<int, int> map;
+    int k = 3;
+    for (auto key : vec)
+    {
+        map[key]++;
+    }
+    //放入大根堆的时候，需要放key-value键值对
+    using Type = std::pair<int, int>;
+    using Comp = std::function<bool(Type&, Type&)>;
+    std::priority_queue<Type, std::vector<Type>, Comp> minheap([](Type& a, Type& b)->bool
+        {
+            return a.second > b.second;
+        });
+
+    auto it = map.begin();
+    for (int i = 0;i < k;i++, ++it)
+    {
+        minheap.push(*it);
+    }
+
+    for (;it != map.end();++it)
+    {
+        if (minheap.top().second < it->second)
+        {
+            minheap.pop();
+            minheap.push(*it);
+        }
+    }
+
+    while (!minheap.empty())
+    {
+        std::cout << "key:" << minheap.top().first << " cnt:" << minheap.top().second << std::endl;
+        minheap.pop();
+    }
+}
+```
+
+#### 快排分割求解top k
+
+![28](DataStructure/28.png)
+
+**代码实现：**
+
+```c++
+// 大数据top k-快排分割.cpp : 此文件包含 "main" 函数。程序执行将在此处开始并结束。
+//
+
+#include <iostream>
+
+//快排分割函数
+int Partation(int arr[], int begin, int end)
+{
+    int val = arr[begin];
+    int i = begin;
+    int j = end;
+    //这里是求top小k个，若求top大k个就是把下面判断条件换为
+    while (i < j)
+    {
+        while (i<j && arr[j] > val)//arr[j]<val
+            j--;
+
+        if (i < j)
+        {
+            arr[i] = arr[j];
+            i++;
+        }
+        while (i < j && arr[i] < val)//arr[i]>val
+            i++;
+        if (i < j)
+        {
+            arr[j] = arr[i];
+            j--;
+        }
+    }
+    arr[i] = val;
+    return i;
+}
+
+
+//求top k的函数
+void SelectTopK(int arr[], int begin, int end, int k)
+{
+    int pos = Partation(arr, begin, end);
+    if (pos == k - 1)
+    {
+        return;
+    }
+    else if (pos > k - 1)
+    {
+        SelectTopK(arr, begin, pos - 1,k);
+    }
+    else
+    {
+        SelectTopK(arr, pos + 1, end, k);
+    }
+}
+int main()
+{
+    int arr[] = { 64,45,52,80,66,68,0,2,18,75 };
+    int size = sizeof(arr) / sizeof(arr[0]);
+
+    //求值最小的前三个元素
+    int k = 3;
+    SelectTopK(arr, 0, size - 1, k);
+
+    for (int i = 0;i < k;i++)
+    {
+        std::cout << arr[i] << " ";
+    }
+    std::cout << std::endl;
+}
 ```
 
