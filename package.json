@@ -12,6 +12,7 @@
     "version": "7.3.0"
   },
   "dependencies": {
+    "@waline/client": "^2.15.8",
     "hexo": "^7.0.0",
     "hexo-asset-image": "github:CodeFalling/hexo-asset-image",
     "hexo-deployer-git": "^4.0.0",
@@ -32,8 +33,5 @@
     "hexo-theme-stellar": "^1.33.1",
     "hexo-theme-yun": "^1.10.11",
     "save": "^2.9.0"
-  },
-  "devDependencies": {
-    "@waline/client": "^3.13.0"
   }
 }
