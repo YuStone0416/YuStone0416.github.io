@@ -114,6 +114,7 @@ params:
 
         waline:  # Waline 配置
             serverURL: https://waline.yustonerain.top  # !!! 替换为你的 Waline 服务地址 !!!
+            jwt: 'a8f9e3d7b1c2XyZ4'
             lang: zh-cn
             # 其他可选配置...
 
