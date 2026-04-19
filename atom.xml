@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <feed xmlns="http://www.w3.org/2005/Atom">
-  <title>YuStone</title>
+  <title>Luminous</title>
   
   
   <link href="http://yustonerain.top/atom.xml" rel="self"/>
@@ -10,7 +10,7 @@
   <id>http://yustonerain.top/</id>
   
   <author>
-    <name>YuStone</name>
+    <name>Luminous</name>
     
   </author>
   
