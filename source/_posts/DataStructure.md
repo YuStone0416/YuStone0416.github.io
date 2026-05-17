@@ -4034,3 +4034,1743 @@ int main()
 }
 ```
 
+## 一致性哈希算法
+
+![29](DataStructure/29.png)
+
+![30](DataStructure/30.png)
+
+**一致性哈希算法代码实现**
+
+需要用到MD5源码文件
+
+```c++
+// 一致性哈希算法.cpp : 此文件包含 "main" 函数。程序执行将在此处开始并结束。
+//
+
+#include <iostream>
+#include <string>
+#include <set>
+#include <list>
+#include <map>
+
+#include "md5.h"
+//一致性哈希环的取值类型
+using uint = unsigned int;
+
+class PhsicalHost;
+//虚拟节点
+class VirtualHost
+{
+public:
+    VirtualHost(std::string ip, PhsicalHost* p)
+        :ip_(ip)
+        ,phsicalHost_(p)
+    {
+        md5_ = ::getMD5(ip_.c_str());
+    }
+
+    //自定义类要重写<,不然set排序不了
+    bool operator<(const VirtualHost &host) const
+    {
+        return md5_ < host.md5_;
+    }
+    //自定义类要重写==,不然set find函数报错了
+    bool operator==(const VirtualHost& host) const
+    {
+        return ip_ == host.ip_;
+    }
+
+    uint getMD5() const
+    {
+        return md5_;
+    }
+    const PhsicalHost* getPhsicalHost() const
+    {
+        return phsicalHost_;
+    }
+private:
+    std::string ip_; //虚拟节点的ip信息
+    uint md5_;       //虚拟节点在一致性哈希环上的位置
+    PhsicalHost* phsicalHost_; //虚拟节点隶属的物理节点
+};
+
+//物理节点
+class PhsicalHost
+{
+public:
+    PhsicalHost(std::string ip, int virtualnumber)
+        :ip_(ip)
+    {
+        for (int i = 0;i < virtualnumber;i++)
+        {
+            //虚拟节点需要一个ip,还需要记录它属于那个物理节点
+            virtualHosts_.emplace_back(
+                ip + "#" + std::to_string(i),
+                this
+            );
+        }
+    }
+    std::string getIP() const
+    {
+        return ip_;
+    }
+    const std::list<VirtualHost>& getVirtualHosts() const
+    {
+        return virtualHosts_;
+    }
+private:
+    std::string ip_; //物理机器的ip地址
+    std::list<VirtualHost> virtualHosts_;//存储虚拟节点列表
+};
+
+//一致性哈希
+class consistentHash
+{
+public:
+    //在一致性哈希环上添加物理主机的虚拟节点
+    void addHost(PhsicalHost& host)
+    {
+        //获取物理主机所有的虚拟节点列表
+        auto list = host.getVirtualHosts();
+        for (auto host : list)
+        {
+            hashCircle_.insert(host);
+        }
+    }
+
+    //在一致性哈希环上删除物理主机的虚拟节点
+    void delHost(PhsicalHost& host)
+    {
+        //获取物理主机所有的虚拟节点列表
+        auto list = host.getVirtualHosts();
+        for (auto host : list)
+        {
+            auto it = hashCircle_.find(host);
+            if (it != hashCircle_.end())
+            {
+                //在一致性哈希环上删除所有物理主机对应的虚拟节点
+                hashCircle_.erase(it);
+            }
+        }
+    }
+
+    //返回负载的真实物理节点的ip信息
+    std::string getHost(std::string clientip) const
+    {
+        uint md5 = getMD5(clientip.c_str());
+        for (auto vhost : hashCircle_)
+        {
+            if (vhost.getMD5() > md5)
+            {
+                return vhost.getPhsicalHost()->getIP();
+            }
+        }
+        //转完一圈还没有返回就返回
+        //从0开始遇见的第一个虚拟节点
+        return hashCircle_.begin()->getPhsicalHost()->getIP();
+    }
+private:
+    std::set<VirtualHost> hashCircle_; //一致性哈希环
+};
+
+void ShowconsistentHash(consistentHash& chash);
+//测试一致性哈希算法的功能
+int main()
+{
+    PhsicalHost host1("10.117.124.10", 150);
+    PhsicalHost host2("10.117.124.20", 150);
+    PhsicalHost host3("10.117.124.30", 150);
+
+    consistentHash chash;
+
+    chash.addHost(host1);
+    chash.addHost(host2);
+    chash.addHost(host3);
+    ShowconsistentHash(chash);
+    
+    //模拟host1有故障
+    chash.delHost(host1);
+
+    ShowconsistentHash(chash);
+}
+
+void ShowconsistentHash(consistentHash& chash)
+{
+    std::list<std::string> iplists
+    {
+        "192.168.1.123",
+        "192.168.1.12",
+        "192.168.1.13",
+        "192.168.1.23",
+        "192.168.1.54",
+        "192.168.1.89",
+        "192.168.1.21",
+        "192.168.1.27"
+    };
+
+    std::map <std::string, std::list<std::string>> logMap;
+
+    for (auto clientip : iplists)
+    {
+        std::string host = chash.getHost(clientip);
+        logMap[host].emplace_back(clientip);
+    }
+
+    for (auto pair : logMap)
+    {
+        std::cout << "物理主机：" << pair.first << std::endl;
+        std::cout << "客户端映射的数量" << pair.second.size() << std::endl;
+
+        for (auto ip : pair.second)
+        {
+            std::cout << ip << std::endl;
+        }
+        std::cout << "--------------------------------" << std::endl;
+    }
+
+}
+//int main()
+//{
+//    std::cout << "Hello World!\n";
+//}
+```
+
+## 二叉树
+
+### BST
+
+BST树称作二叉搜索树(Binary Search Tree)或者二叉排序树(Binary SortTree),他或者是一棵空树；或者是具有下列性质的二叉树：
+
+1. 若左子树不为空，则左子树上所有的节点的值均小于他的根节点的值
+2. 若右子树不为空，则右子树上所有的节点的值均大于他的根节点的值
+3. 左右子树也分别满足二叉搜索树的性质
+
+特点：每一个节点都满足 左子树的值(不为空)<父节点的值<右孩子的值(不为空)
+
+#### BST树插入删除查询节点
+
+![31](DataStructure/31.png)
+
+**代码实现：**
+
+```c++
+// BST树.cpp : 此文件包含 "main" 函数。程序执行将在此处开始并结束。
+//
+
+#include <iostream>
+
+//BST树代码实现
+template<typename T,typename Compare=std::less<T>>
+class BSTree
+{
+public:
+    BSTree()
+        :root_(nullptr)
+    {}
+    ~BSTree() {}
+    //非递归插入操作
+    void n_insert(const T& val)
+    {
+        //树为空，生成根节点
+        if (root_ == nullptr)
+        {
+            root_ = new Node(val);
+            return;
+        }
+        Node* cur = root_;
+        //搜索合适的插入位置，记录父节点的位置
+        Node* parent = nullptr;
+        while (cur != nullptr)
+        {
+            if (cur->data_ == val)
+            {
+                return;
+            }
+            else if (comp_(cur->data_, val))
+            {
+                parent = cur;
+                cur = cur->right_;
+            }
+            else
+            {
+                parent = cur;
+                cur = cur->left_;
+            }
+        }
+        //把新结点插入到parent节点的孩子
+        if (!comp_(parent->data_, val))
+        {
+            parent->left_ = new Node(val);
+        }
+        else
+        {
+            parent->right_ = new Node(val);
+        }
+    }
+    //递归插入操作
+    void insert(const T& val)
+    {
+        root_ = insert(root_, val);
+    }
+
+    //非递归删除操作
+    void n_remove(const T& val)
+    {
+        //树空直接返回
+        if (root_ == nullptr)
+        {
+            return;
+        }
+
+        Node* parent = nullptr;
+        Node* cur = root_;
+        while (cur != nullptr)
+        {
+            if (cur->data_ == val)
+            {
+                break;
+            }
+            else if (comp_(cur->data_, val))
+            {
+                parent = cur;
+                cur = cur->right_;
+            }
+            else
+            {
+                parent = cur;
+                cur = cur->left_;
+            }
+        }
+        //没找到待删除节点
+        if (cur == nullptr)
+        {
+            return;
+        }
+
+        //情况三 =》转换成删除前驱节点(归结成情况1,2)
+        if (cur->left_ != nullptr && cur->right_ != nullptr)
+        {
+            //找前驱节点
+            parent = cur;
+            Node* pre = cur->left_;
+            while (pre->right_ != nullptr)
+            {
+                parent = pre;
+                pre = pre->right_;
+            }
+            cur->data_ = pre->data_;
+            cur = pre;//让cur指向前驱节点，转化成情况1，2
+        }
+        //cur指向删除节点，parent指向其父亲节点。统一处理cur指向的节点，情况1或者2
+        Node* child = cur->left_;
+        if (child == nullptr)
+        {
+            child = cur->right_;
+        }
+
+        
+        if (parent == nullptr) //特殊情况 表示删除的是根节点
+        {
+            root_ = child;
+        }
+        else
+        {
+            //把到删除节点的孩子(nullptr或者不空)写入其父节点相应地址域中
+            if (parent->left_ == cur)
+            {
+                parent->left_ = child;
+            }
+            else
+            {
+                parent->right_ = child;
+            }
+        }
+        delete cur; //删除当前节点
+    }
+    //递归删除操作
+    void remove(const T& val)
+    {
+        root_ = remove(root_, val);
+    }
+    
+    //非递归查询操作
+    bool n_query(const T& val)
+    {
+        Node* cur = root_;
+        while (cur != nullptr)
+        {
+            if(cur->data_==val)
+            {
+                return true;
+            }
+            else if (comp_(cur->data_, val))
+            {
+                cur = cur->right_;
+            }
+            else
+            {
+                cur = cur->left_;
+            }
+        }
+        return false;
+    }
+    //递归查询操作
+    bool query(const T& val)
+    {
+        return nullptr != query(root_, val);
+    }
+private:
+
+
+    //节点定义
+    struct Node
+    {
+        Node(T data = T())
+            :data_(data)
+            , left_(nullptr)
+            , right_(nullptr)
+        {}
+        T data_; //数据域
+        Node* left_; //左孩子域
+        Node* right_; //右孩子域
+    };
+    //递归插入操作实现
+    Node* insert(Node *node,const T& val)
+    {
+        if (node == nullptr)
+        {
+            //递归结束，找到插入val的位置，生成新节点并返回其节点地址
+            return new Node(val);
+        }
+        if (node->data_ == val)
+        {
+            return node;
+        }
+        else if (comp_(node->data_, val))
+        {
+            node->right_=insert(node->right_, val);
+        }
+        else
+        {
+            node->left_ = insert(node->left_, val); 
+        }
+        return node;
+    }
+
+    //递归查询操作实现
+    Node* query(Node* node, const T& val)
+    {
+        if (node == nullptr)
+        {
+            return nullptr;
+        }
+        if (node->data_ == val)
+        {
+            return node;
+        }
+        else if (comp_(node->data_, val))
+        {
+            return query(node->right_, val);
+        }
+        else
+        {
+            return query(node->left_, val);
+        }
+    }
+    //递归删除操作
+    Node * remove(Node *node,const T& val)
+    {
+        if (node == nullptr)
+        {
+            return nullptr;
+        }
+        if (node->data_ == val)//找到待删除节点
+        {
+            //情况三
+            if (node->left_ != nullptr && node->right_ != nullptr)
+            {
+                //找前驱节点
+                Node* pre = node->left_;
+                while (pre->right_ != nullptr)
+                {
+                    pre = pre->right_;
+                }
+                node->data_ = pre->data_;
+                //通过递归直接删除前驱节点
+                node->left_ = remove(node->left_, pre->data_);
+            }
+            else//情况一和情况二
+            {
+                if (node->left_ != nullptr)
+                {
+                    Node* left = node->left_;
+                    delete node;
+                    return left;
+                }
+                else if (node->right_ != nullptr)
+                {
+                    Node* right = node->right_;
+                    delete node;
+                    return right;
+                }
+                else //删除没有孩子的节点 叶子节点
+                {
+                    delete node;
+                    return nullptr;
+                }
+            }
+        }
+        else if (comp_(node->data_, val))
+        {
+            node->right_ = remove(node->right_, val);
+
+        }
+        else
+        {
+            node->left_ = remove(node->left_, val);
+        }
+        return node;
+    }
+
+
+    Node* root_;//指向BST树的根节点
+    Compare comp_;
+};
+int main()
+{
+    int arr[] = { 58,24,67,0,34,62,67,69,5,41,64,78};
+    BSTree<int> bst;
+    for (int v : arr)
+    {
+        //bst.n_insert(v);
+        bst.insert(v);
+    }
+    /*bst.n_insert(12);
+    std::cout << bst.n_query(12) << std::endl;
+    bst.n_remove(12);
+    std::cout << bst.n_query(12) << std::endl;
+    bst.n_remove(34);
+    bst.n_remove(58);*/
+
+    bst.preOrder();
+    bst.inOrder();
+    bst.postOrder();
+    bst.levelOrder();
+    std::cout << bst.high() << std::endl;
+    std::cout << bst.number() << std::endl;
+
+    /*bst.insert(12);
+    std::cout << bst.query(12) << std::endl;
+    bst.n_remove(12);
+    std::cout << bst.query(12) << std::endl;*/
+
+    bst.insert(12);
+    bst.remove(12);
+    bst.remove(34);
+    bst.remove(58);
+    bst.inOrder();
+
+    return 0;
+}
+```
+
+
+
+#### BST树前中后序层序遍历
+
+![32](DataStructure/32.png)
+
+**非递归前中后序遍历都是深度优先，所以都采用栈结构来辅助。**
+
+**非递归层序遍历是广度优先，所以采用队列结构来辅助。**
+
+**代码实现：**
+
+```c++
+// BST树.cpp : 此文件包含 "main" 函数。程序执行将在此处开始并结束。
+//
+
+#include <iostream>
+
+//BST树代码实现
+template<typename T,typename Compare=std::less<T>>
+class BSTree
+{
+public:
+    BSTree()
+        :root_(nullptr)
+    {}
+    ~BSTree() {}
+    //递归前序遍历操作
+    void preOrder()
+    {
+        std::cout << "[递归]前序遍历：";
+        preOrder(root_);
+        std::cout << std::endl;
+    }
+
+    //非递归前序遍历操作
+    void n_preOrder()
+    {
+        std::cout << "[非递归]前序遍历：";
+        if (root_ == nullptr)
+        {
+            return;
+        }
+        std::stack<Node*> s;
+        s.push(root_);
+        while (!s.empty())
+        {
+            Node* top = s.top();
+            s.pop();
+            std::cout << top->data_ << " "; //V
+
+            if (top->right_ != nullptr)
+            {
+                s.push(top->right_); //R
+            }  
+            if (top->left_ != nullptr)
+            {
+                s.push(top->left_); //L
+            }
+        }
+        std::cout << std::endl;
+    }
+
+    //递归中序遍历操作
+    void inOrder()
+    {
+        std::cout << "[递归]中序遍历：";
+        inOrder(root_);
+        std::cout << std::endl;
+    }
+
+    //非递归中序遍历操作
+    void n_inOrder()
+    {
+        std::cout << "[非递归]中序遍历：";
+        if (root_ == nullptr)
+        {
+            return;
+        }
+        std::stack<Node*> s;
+        Node* cur = root_;
+        while (!s.empty() || cur!=nullptr)
+        {
+            if (cur != nullptr)
+            {
+                s.push(cur);
+                cur = cur->left_;
+            }
+            else
+            {
+                Node* top = s.top();
+                s.pop();
+                std::cout << top->data_ << " ";
+                cur = top->right_;
+            }     
+        }
+        std::cout << std::endl;
+    }
+
+    //递归后序遍历操作
+    void postOrder()
+    {
+        std::cout << "[递归]后序遍历：";
+        postOrder(root_);
+        std::cout << std::endl;
+    }
+
+    //非递归后序遍历操作
+    void n_postOrder()
+    {
+        std::cout << "[非递归]后序遍历：";
+        if (root_ == nullptr)
+        {
+            return;
+        }
+        std::stack<Node*> s1;//用VRL把结果输出到s2,然后逆序输出
+        std::stack<Node*> s2;
+        s1.push(root_);
+        while (!s1.empty())
+        {
+            Node* top = s1.top();
+            s1.pop();
+            s2.push(top);
+            if (top->left_ != nullptr)
+            {
+                s1.push(top->left_);
+            }
+            if (top->right_ != nullptr)
+            {
+                s1.push(top->right_);
+            }
+        }
+
+        while (!s2.empty())
+        {
+            std::cout << s2.top()->data_ << " ";
+            s2.pop();
+        }
+        std::cout << std::endl;
+    }
+
+    //递归层序遍历操作
+    void levelOrder()
+    {
+        std::cout << "[递归]层序遍历：";
+        int h = high();
+        for (int i = 0;i < h;++i)
+        {
+            levelOrder(root_, i); //递归调用树的层数次
+        }
+        std::cout << std::endl;
+    }
+
+    //非递归层序遍历操作
+    void n_levelOrder()
+    {
+        std::cout << "[非递归]层序遍历：";
+        if (root_ == nullptr)
+        {
+            return;
+        }
+        std::queue<Node*>que;
+        que.push(root_);
+        while (!que.empty())
+        {
+            Node* front = que.front();
+            que.pop();
+            std::cout << front->data_ << " ";
+            if (front->left_ != nullptr)
+            {
+                que.push(front->left_);
+            }
+            if (front->right_ != nullptr)
+            {
+                que.push(front->right_);
+            }
+
+        }
+        std::cout << std::endl;
+    }
+    //递归求二叉树层数
+    int high()
+    {
+        return high(root_);
+    }
+
+    //递归求二叉树节点个数
+    int number()
+    {
+        return number(root_);
+    }
+private:
+
+
+    //节点定义
+    struct Node
+    {
+        Node(T data = T())
+            :data_(data)
+            , left_(nullptr)
+            , right_(nullptr)
+        {}
+        T data_; //数据域
+        Node* left_; //左孩子域
+        Node* right_; //右孩子域
+    };
+
+    //递归前序遍历的实现 VLR
+    void preOrder(Node* node)
+    {
+        if (node != nullptr)
+        {
+            std::cout << node->data_ << " "; //操作V
+            preOrder(node->left_);//L
+            preOrder(node->right_);//R
+        }
+    }
+
+    //递归中序遍历的实现 LVR
+    void inOrder(Node* node)
+    {
+        if (node != nullptr)
+        {
+            inOrder(node->left_);//L
+            std::cout << node->data_ << " "; //操作V
+            inOrder(node->right_);//R
+        }
+    }
+
+    //递归后序遍历的实现 LRV
+    void postOrder(Node* node)
+    {
+        if (node != nullptr)
+        {
+            postOrder(node->left_);//L
+            postOrder(node->right_);//R
+            std::cout << node->data_ << " "; //操作V
+        }
+    }
+
+    //递归实现求二叉树层数 求以node为根节点的子树的高度返回高度值
+    int high(Node* node)
+    {
+        if (node == nullptr)
+        {
+            return 0;
+        }
+        int left = high(node->left_); //L
+        int right = high(node->right_);//R
+        return left > right ? left + 1 : right + 1;//V
+    }
+
+    //递归求二叉树节点个数的实现 求以node为根节点的树的节点总数，并返回
+    int number(Node *node)
+    {
+        if (node == nullptr)
+        {
+            return 0;
+        }
+        int left = number(node->left_); //L
+        int right = number(node->right_); //R
+        return left + right + 1; //V
+    }
+
+    //递归层序遍历的实现
+    void levelOrder(Node* node, int i)
+    {
+        if (node == nullptr)
+            return;
+        if (i == 0)
+        {
+            std::cout << node->data_ << " ";
+            return;
+        }
+        levelOrder(node->left_,i-1);
+        levelOrder(node->right_,i-1);
+    }
+    
+    Node* root_;//指向BST树的根节点
+    Compare comp_;
+};
+int main()
+{
+    int arr[] = { 58,24,67,0,34,62,67,69,5,41,64,78};
+    BSTree<int> bst;
+    for (int v : arr)
+    {
+        //bst.n_insert(v);
+        bst.insert(v);
+    }
+    /*bst.n_insert(12);
+    std::cout << bst.n_query(12) << std::endl;
+    bst.n_remove(12);
+    std::cout << bst.n_query(12) << std::endl;
+    bst.n_remove(34);
+    bst.n_remove(58);*/
+
+    bst.preOrder();
+    bst.inOrder();
+    bst.postOrder();
+    bst.levelOrder();
+    std::cout << bst.high() << std::endl;
+    std::cout << bst.number() << std::endl;
+
+    /*bst.insert(12);
+    std::cout << bst.query(12) << std::endl;
+    bst.n_remove(12);
+    std::cout << bst.query(12) << std::endl;*/
+
+    bst.insert(12);
+    bst.remove(12);
+    bst.remove(34);
+    bst.remove(58);
+    bst.inOrder();
+
+    return 0;
+}
+```
+
+#### BST树区间元素搜索问题
+
+在二叉搜索树里搜索i到j的值，可以采用前中后层序遍历一个一个比较后输出。但是这样效率较低。所以我们用中序遍历，因为中序遍历出的结果是有序的。所以我们当找到不满足情况的值可以不往下遍历。比区间小的值不用往左遍历，比区间大的值不用往右遍历。
+
+```c++
+//求满足区间的元素值(在二叉搜索树找到i-j之间的数据)
+    void findValues(std::vector<T>& vec, int i, int j)
+    {
+        //可以采用中序遍历，因为中序遍历在二叉搜索树是有序的
+        findValues(root_, vec, i, j);
+    }
+
+ //求满足区间的元素值(在二叉搜索树找到i-j之间的数据)实现
+    void findValues(Node *node,std::vector<T>& vec, int i, int j)
+    {
+        if (node != nullptr)
+        {
+            //在当前节点的左子树搜索
+            if (node->data_ > i)
+            {
+                findValues(node->left_, vec, i, j);
+            }
+            if (node->data_ >= i && node->data_ <= j)
+            {
+                vec.push_back(node->data_);//存储满足条件的值
+            }
+            //在当前节点的右子树搜索
+            if (node->data_ < j)
+            {
+                findValues(node->right_, vec, i, j);
+            }   
+        }
+    }
+```
+
+#### 判断二叉树是否是一颗BST树
+
+```c++
+	//判断二叉树是否为BST树
+    bool isBSTree()
+    {
+        Node* pre = nullptr;
+        return isBSTree(root_, pre);
+    }
+
+	//判断二叉树是否是BST树的实现 利用BST树中序遍历是一个升序的特点
+    //所以在中序遍历时和前驱比较大小，只要不升序就可以确定不是，升序就是。
+    bool isBSTree(Node* node,Node *&pre)
+    {
+        if (node == nullptr)
+        {
+            return true;
+        }
+        if (!isBSTree(node->left_, pre))//L
+        {
+            return false;
+        }
+        //V
+        if (pre != nullptr)
+        {
+            if (comp_(node->data_, pre->data_))
+            {
+                return false;
+            }
+        }
+        pre = node;//更新中序遍历的前驱节点
+
+        return isBSTree(node->right_, pre);//R
+        ////V
+        //if (node->left_ != nullptr && comp_(node->data_, node->left_->data_))
+        //{
+        //    return false;
+        //}
+        //if (node->right_ != nullptr && comp_(node->right_->data_, node->data_))
+        //{
+        //    return false;
+        //}
+        //if (!isBSTree(node->left_))//L 
+        //{
+        //    return false;
+        //}
+        //return isBSTree(node->right_);//R
+        //上述代码是个坑，只靠左<根<右 无法判断一定是BST树
+    }
+```
+
+#### 判断二叉树子树
+
+可以先从原二叉树找到需判断的子树的根节点，找到后做递归查找一一比较。
+
+```c++
+//判断子树问题
+    bool isChildTree(BSTree<T, Compare>& child)
+    {
+        //在当前二叉树找child的根节点
+        if (child.root_ == nullptr)
+        {
+            return true;
+        }
+
+        Node* cur = root_;
+        while (cur != nullptr)
+        {
+            if (cur->data_ == child.root_->data_)
+            {
+                break;
+            }
+            else if (comp_(cur->data_, child.root_->data_))
+            {
+                cur = cur->right_;
+            }
+            else
+            {
+                cur = cur->left_;
+            }
+        }
+
+        if (cur == nullptr)
+        {
+            return false;
+        }
+
+        return isChildTree(cur, child.root_);
+    }
+
+//判断子树问题实现
+    bool isChildTree(Node* father, Node* child)
+    {
+        if (father == nullptr && child == nullptr)
+        {
+            return true;
+        }
+        if (father == nullptr)
+        {
+            return false; //子树里面有的节点，当前二叉树没有了
+        }
+        if (child == nullptr)//子树节点结束，但是当前二叉树还有
+        {
+            return true;
+        }
+        //判断值不相同
+        if (father->data_ != child->data_) //V
+        {
+            return false;
+        }
+
+        return isChildTree(father->left_, child->left_) //L
+            && isChildTree(father->right_, child->right_);//R
+
+    }
+
+
+void test02()//判断子树判断问题
+{
+    int arr[] = { 58,24,67,0,34,62,67,69,5,41,64,78 };
+    BSTree<int> bst;
+    for (int v : arr)
+    {
+        //bst.n_insert(v);
+        bst.insert(v);
+    }
+
+    using Node = BSTree<int>::Node;
+    BSTree<int> bst1;
+    bst1.root_ = new Node(67);
+    Node* node1 = new Node(62);
+    Node* node2 = new Node(69);
+    Node* node3 = new Node(60);
+    bst1.root_->left_ = node1;
+    bst1.root_->right_ = node2;
+    node1->left_ = node3;
+    std::cout << bst.isChildTree(bst1)<< std::endl;
+    
+}
+```
+
+#### 求LCA最近公共祖先节点问题
+
+由于BST树左<根<右的性质，所以两个存在在这颗树的节点的公共祖先节点的值一定是在这两节点的值之间。所以递归遍历节点，如果节点值都大于，往左走。如果节点值都小于，往右走。直到处于之间或者等于即是最近公共祖先。
+
+```c++
+//最近公共祖先节点
+    int getLCA(int val1, int val2)
+    {
+        Node* node = getLCA(root_, val1, val2);
+        if (node == nullptr)
+        {
+            throw "no LCA!";
+        }
+        else
+        {
+            return node->data_;
+        }
+    }
+
+//最近公共祖先节点实现
+    Node* getLCA(Node *node,int val1, int val2)
+    {
+        if (node == nullptr)
+        {
+            return nullptr;
+        }
+        if (comp_(node->data_, val1) && comp_(node->data_, val2))
+        {
+            return getLCA(node->right_, val1, val2);
+        }
+        else if (comp_(val1, node->data_) && comp_(val2, node->data_))
+        {
+            return getLCA(node->left_, val1, val2);
+        }
+        else
+        {
+            return node;
+        }
+    }
+
+//测试LCA问题
+void test03()
+{
+    int arr[] = { 58,24,67,0,34,62,67,69,5,41,64,78 };
+    BSTree<int> bst;
+    for (int v : arr)
+    {
+        //bst.n_insert(v);
+        bst.insert(v);
+    }
+
+    std::cout << bst.getLCA(5, 41) << std::endl;
+    std::cout << bst.getLCA(62, 64) << std::endl;
+}
+```
+
+
+
+#### 二叉树镜像反转
+
+镜像反转，就是整个二叉树反转一遍(照镜子)。可以使用前序遍历，在遍历时，交换两颗子树的根节点。
+
+```c++
+    //镜像反转
+    void mirror01()
+    {
+        mirror01(root_);
+    }
+
+	//镜像反转
+    void mirror01(Node *node)
+    {
+        if (node == nullptr)
+        {
+            return;
+        }
+
+        //V
+        Node* tmp = node->left_;
+        node->left_ = node->right_;
+        node->right_ = tmp;
+
+        mirror01(node->left_);//L
+        mirror01(node->right_);//R
+    }
+
+//测试镜像反转
+void test04()
+{
+    int arr[] = { 58,24,67,0,34,62,67,69,5,41,64,78 };
+    BSTree<int> bst;
+    for (int v : arr)
+    {
+        //bst.n_insert(v);
+        bst.insert(v);
+    }
+
+    //中序遍历升序
+    bst.inOrder();
+    //镜像反转
+    bst.mirror01();
+    //中序遍历就变成降序
+    bst.inOrder();
+}
+```
+
+#### 判断二叉树镜像对称问题
+
+从树的根节点往下画一条线(当镜子)，要求左右树结构对称和数值对称相等。
+
+这样需要在递归时需要两个节点，记录对称位置上的节点。
+
+```c++
+//镜像对称
+    bool mirror02()
+    {
+        if (root_ == nullptr)
+        {
+            return true;
+        }
+        return mirror02(root_->left_, root_->right_);
+    }
+//镜像对称实现
+    bool mirror02(Node *node1,Node *node2)
+    {
+        if (node1 == nullptr && node2 == nullptr)
+        {
+            return true;
+        }
+        if (node1 == nullptr || node2 == nullptr)
+        {
+            return false;
+        }
+        if (node1->data_ != node2->data_)
+        {
+            return false;
+        }
+        return mirror02(node1->left_, node2->right_)
+            && mirror02(node1->right_,node2->left_);
+
+    }
+//测试判断是否镜像对称
+void test05()
+{
+    using Node = BSTree<int>::Node;
+    BSTree<int> bst1;
+    bst1.root_ = new Node(40);
+    Node* node1 = new Node(20);
+    Node* node2 = new Node(20);
+    Node* node3 = new Node(10);
+    Node* node4 = new Node(15);
+    Node* node5 = new Node(15);
+    Node* node6 = new Node(10);
+    bst1.root_->left_ = node1;
+    bst1.root_->right_ = node2;
+    node1->left_ = node3;
+    node1->right_ = node4;
+    node2->left_ = node5;
+    node2->right_ = node6;
+
+    std::cout<<bst1.mirror02() << std::endl;
+
+}
+```
+
+#### 利用前序遍历和中序遍历重建二叉树
+
+![33](DataStructure/33.png)
+
+```c++
+//利用前序中序重建二叉树
+    void rebuild(int pre[], int i, int j, int in[], int m, int n)
+    {
+        root_ = _rebuild(pre, i, j, in, m, n);
+    }
+//利用前序中序重建二叉树实现
+    Node* _rebuild(int pre[], int i, int j, int in[], int m, int n)
+    {
+        if (i > j || m > n)
+        {
+            return nullptr;
+        }
+
+        //创建当前子树的根节点
+        Node* node = new Node(pre[i]);
+        //寻找根节点在中序遍历的位置
+        for (int k = m;k <= n;++k)
+        {
+            if (pre[i] == in[k])
+            {
+                //这里的i,j,m,n形参确定的左子树根节点的左右子树的范围
+                node->left_ = _rebuild(pre, i + 1, i + (k - m), in, m, k - 1);
+                //这里的i,j,m,n形参确定的右子树根节点的左右子树的范围
+                node->right_ = _rebuild(pre, i + (k - m) + 1, j, in, k + 1, n);
+                return node;
+            }
+        }
+        return node;
+    }
+//测试用前序和中序遍历重建二叉树
+void test06()
+{
+    BSTree<int> bst;
+    int pre[] = { 58,24,0,5,34,41,67,62,64,69,78 };
+    int in[] = { 0,5,24,34,41,58,62,64,67,69,78 };
+    bst.rebuild(pre, 0, 10, in, 0, 10);
+    bst.preOrder();
+    bst.inOrder();
+}
+```
+
+#### 判断二叉树是否是平衡树
+
+平衡：任意节点的左右子树高度差不超过1(1,0,-1)
+
+利用后序遍历
+
+```c++
+//判断二叉树是否是平衡树
+    bool isBalance()
+    {
+        int l = 0;
+        bool flag = true;
+        isBalance02(root_,l,flag);
+        return flag;
+    }
+//判断二叉树是否是平衡树实现
+    bool isBalance(Node* node)//效率低 递归中还有递归
+    {
+        if (node == nullptr)
+            return true;
+        if (!isBalance(node->left_))//L
+            return false;
+        if (!isBalance(node->right_))//R
+            return false;
+        int left = high(node->left_);//V
+        int right = high(node->right_);
+        if (abs(left - right) <= 1)
+        {
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+    }
+
+    //判断二叉树是否是平衡树实现 效率高，记录了节点的高度值 返回节点高度值
+    int isBalance02(Node* node, int l, bool& flag)
+    {
+        if (node == nullptr)
+        {
+            return l;
+        }
+        int left=isBalance02(node->left_, l + 1, flag); //L
+        if (!flag)
+        {
+            return left;
+        }
+        int right = isBalance02(node->right_, l + 1, flag); //R
+        if (!flag)
+        {
+            return right;
+        }
+        //V
+        if (abs(left - right) > 1) //节点失衡
+        {
+            flag = false;
+        }
+        return std::max(left, right);
+
+    }
+void test07()
+{
+    int arr[] = { 58,24,67,0,34,62,67,69,5,41,64,78};
+    BSTree<int> bst;
+    for (int v : arr)
+    {
+        //bst.n_insert(v);
+        bst.insert(v);
+    }
+    std::cout << bst.isBalance() << std::endl;
+    bst.insert(12);
+    std::cout << bst.isBalance() << std::endl;
+
+
+}
+```
+
+#### 求BST树中序遍历倒数第K个节点
+
+已知中序遍历是LVR,所以求倒数第K个节点转换为RVL求正数第K个节点。
+
+```c++
+ //求中序遍历倒数第k个节点
+    int getVal(int k)
+    {
+        Node* node = getVal(root_, k);
+        if (node == nullptr)
+        {
+            std::string err = "no No." + k;
+            throw err;
+        }
+        else
+        {
+            return node->data_;
+        }
+    }
+//求中序遍历倒数第k个节点
+    int i = 1;
+    Node* getVal(Node *node,int k)
+    {
+        if (node == nullptr)
+        {
+            return nullptr;
+        }
+        Node *right=getVal(node->right_,k);//R
+        if (right != nullptr)
+        {
+            return right;
+        }
+        //V
+        if (i++ == k)//在RVL的顺序下，找到正数第k个元素
+        {
+            return node;
+        }
+        return getVal(node->left_, k);//L
+    }
+//求中序遍历的倒数第k个节点测试
+void test08()
+{
+    int arr[] = { 58,24,67,0,34,62,67,69,5,41,64,78 };
+    BSTree<int> bst;
+    for (int v : arr)
+    {
+        //bst.n_insert(v);
+        bst.insert(v);
+    }
+    bst.inOrder();
+    std::cout << bst.getVal(2) << std::endl;
+}
+```
+
+#### BST树的构造和析构
+
+```c++
+//初始化根节点和函数对象+lambda表达式
+    BSTree(Compare comp=Compare())
+        :root_(nullptr)
+        ,comp_(comp)
+    {}
+    //层序遍历思想释放BST树所有节点资源
+    ~BSTree() 
+    {
+        if (root_ != nullptr)
+        {
+            std::queue<Node*> s;
+            s.push(root_);
+            while (!s.empty())
+            {
+                Node* front = s.front();
+                s.pop();
+                if (front->left_ != nullptr)
+                {
+                    s.push(front->left_);
+                }
+                if (front->right_ != nullptr)
+                {
+                    s.push(front->right_);
+                }
+                delete front;
+            }
+        }
+    }
+
+//测试BST树的析构和构造函数
+void test09()
+{
+    using Elm = std::pair<int, std::string>;
+    using Functor = std::function<bool(Elm, Elm)>;
+    BSTree<Elm, Functor> bst([](Elm p1, Elm p2)->bool {
+        return p1.first > p2.first;
+        });
+}
+```
+
+### AVL树
+
+#### 节点平衡
+
+![34](DataStructure/34.png)
+
+**代码实现：**
+
+```c++
+#include <iostream>
+#include <cmath>
+
+//AVL树
+template<typename T>
+class AVLTree
+{
+public:
+private:
+    //定义AVL树节点类型
+    struct Node
+    {
+        Node(T data = T())
+            :data_(data)
+            , left_(nullptr)
+            , right_(nullptr)
+            , height_(1)
+        {}
+        T data_;
+        Node* left_;
+        Node* right_;
+        int height_; //记录节点的高度值
+    };
+    //返回节点的高度值
+    int height(Node* node)
+    {
+        return node == nullptr ? 0 : node->height_;
+    }
+
+    //右旋转操作 以参数node为轴做右旋转操作，并把新的根节点返回
+    Node* rightRotate(Node* node)
+    {
+
+        //节点旋转
+        Node* child = node->left_;
+        node->left_ = child->right_;
+        child->right_ = node;
+
+        //高度更新 先更新node再更新child
+
+        node->height_ = std::max(height(node->left_), height(node->right_)) + 1;
+        child->height_ = std::max(height(child->left_), height(child->right_)) + 1;
+
+        //返回旋转后的子树新的根节点
+        return child;
+    }
+
+    //左旋转操作 以参数node为轴做左旋转操作，并把新的根节点返回
+    Node* leftRotate(Node* node)
+    {
+
+        //节点旋转
+        Node* child = node->right_;
+        node->right_ = child->left_;
+        child->left_ = node;
+
+        //高度更新 先更新node再更新child
+
+        node->height_ = std::max(height(node->left_), height(node->right_)) + 1;
+        child->height_ = std::max(height(child->left_), height(child->right_)) + 1;
+
+        //返回旋转后的子树新的根节点
+        return child;
+    }
+
+    //左平衡操作 以参数node为轴做左-右旋转操作，并把新的根节点返回
+    Node* leftBalance(Node* node)
+    {
+        node->left_=leftRotate(node->left_);
+        return rightRotate(node);
+    }
+    //右平衡操作 以参数node为轴做右-左旋转操作，并把新的根节点返回
+    Node* rightBalance(Node* node)
+    {
+        node->right_ = rightRotate(node->right_);
+        return leftRotate(node);
+    }
+
+
+    Node* root_;//指向根节点
+};
+```
+
+#### 节点插入
+
+**代码实现：**
+
+```c++
+//AVL树的插入操作
+    void insert(const T& val)
+    {
+        root_ = insert(root_, val);
+    }
+
+//AVL树的插入操作实现
+    Node* insert(Node* node, const T& val)
+    {
+        if (node == nullptr)//递归结束 找到插入的位置
+        {
+            return new Node(val);
+        }
+        if (node->data_ > val)
+        {
+            //xxxxx 递归时执行的代码
+            node->left_=insert(node->left_, val);
+            //xxxxx 递归回溯时执行的代码
+            //在递归回溯时判断节点是否失衡 node的左子树太高
+            if (height(node->left_) - height(node->right_) > 1)
+            {
+                //节点失衡，由于左孩子的左子树太高
+                if (height(node->left_->left_) >= height(node->left_->right_))
+                {
+                    node= rightRotate(node);
+                }
+                //节点失衡，由于左孩子的右子树太高
+                else
+                {
+                    node = leftBalance(node);
+                }
+            }
+        }
+        else if (node->data_ < val)
+        {
+            node->right_ = insert(node->right_, val);
+            //xxxxx 递归回溯时执行的代码
+            //在递归回溯时判断节点是否失衡 node的右子树太高
+            if (height(node->right_) - height(node->left_) > 1)
+            {
+                //节点失衡，由于右孩子的右子树太高
+                if (height(node->right_->right_) >= height(node->right_->left_))
+                {
+                    node = leftRotate(node);
+                }
+                //节点失衡，由于右孩子的左子树太高
+                else
+                {
+                    node = rightBalance(node);
+                }
+            }
+        }
+        else
+        {
+            //找到相同节点，不用往下递归，直接往上回溯
+        }
+
+        //因为子树中添加了新的节点，在递归的回溯时检测更新节点高度
+        node->height_ = std::max(height(node->left_), height(node->right_)) + 1;
+
+        return node;
+    }
+
+//测试AVL树插入元素
+void test01()
+{
+    AVLTree<int> avl;
+    for (int i = 1;i <=10;++i)
+    {
+        avl.insert(i);
+    }
+
+}
+```
+
+#### 节点删除
+
+```c++
+ //删除操作
+    void remove(const T& val)
+    {
+        root_ = remove(root_, val);
+    }
+
+//删除操作实现
+    Node * remove(Node* node, const T& val)
+    {
+        if (node == nullptr)
+        {
+            return nullptr;
+        }
+        if (node->data_ > val)
+        {
+            node->left_ = remove(node->left_, val);
+
+            //左子树删除节点，可能造成右子树太高
+            if (height(node->right_) - height(node->left_) > 1)
+            {
+                if (height(node->right_->right_) >= height(node->right_->left_))
+                {
+                    //右孩子的右孩子太高
+                    node=leftRotate(node);
+                }
+                else
+                {
+                    //右孩子的左子树太高
+                    node = rightBalance(node);
+                }
+            }
+        }
+        else if (node->data_ < val)
+        {
+            node->right_ = remove(node->right_, val);
+            //右子树删除节点，可能导致左子树太高
+            if (height(node->left_) - height(node->right_) > 1)
+            {
+                if (height(node->left_->left_) >= height(node->left_->right_))
+                {
+                    //左孩子的左子树太高
+                    node = rightRotate(node);
+                }
+                else
+                {
+                    //左孩子的右子树太高
+                    node = leftBalance(node);
+                }
+            }
+        }
+        else
+        {
+            //找到了 先处理有两个孩子的节点删除
+            if (node->left_ != nullptr && node->right_ != nullptr)
+            {
+                //为了避免删除前驱/后继节点造成的节点失衡，谁高删除谁
+                if (height(node->left_) >= height(node->right_))
+                {
+                    //删前驱
+                    Node* pre = node->left_;
+                    while (pre->right_ != nullptr)
+                    {
+                        pre = pre->right_;
+                    }
+                    node->data_ = pre->data_;
+                    node->left_ = remove(node->left_, pre->data_);
+                }
+                else
+                {
+                    //删后继
+                    Node* post = node->right_;
+                    while (post->left_ != nullptr)
+                    {
+                        post = post->left_;
+                    }
+                    node->data_ = post->data_;
+                    node->right_ = remove(node->right_, post->data_);
+                }
+            }
+            else //删除节点，最多有一个孩子
+            {
+                if (node->left_ != nullptr)
+                {
+                    Node* left = node->left_;
+                    delete node;
+                    return left;
+                }
+                else if (node->right_ != nullptr)
+                {
+                    Node* right = node->left_;
+                    delete node;
+                    return right;
+                }
+                else
+                {
+                    delete node;
+                    return nullptr;
+                }
+            }
+
+        }
+        //更新节点高度
+        node->height_ = std::max(height(node->left_), height(node->right_)) + 1;
+        return node;//递归回溯过程中，把当前节点给父节点返回
+    }
+//测试AVL树删除元素
+void test02()
+{
+    AVLTree<int> avl;
+    for (int i = 1;i <=10;++i)
+    {
+        avl.insert(i);
+    }
+    avl.remove(9);
+    avl.remove(10);
+    avl.remove(6);
+    avl.remove(1);
+    avl.remove(2);
+    avl.remove(3);
+
+}
+```
+
+### 红黑树
+
+**不是一颗平衡树，节点的左右子树高度差，长的不超过短的2倍**
+
+**五个性质(必须保证)：**
+
+1. 树的每一个节点都有颜色，不是黑色就是红色。
+2. nullptr是黑色
+3. root是黑色
+4. 不能出现连续的红色节点
+5. root根节点到每一个叶子节点的路径上，黑色节点的数量是相同的。
+
+| 操作               | AVL     | 红黑树  |
+| ------------------ | ------- | ------- |
+| 平衡树             | 是      | 否      |
+| 增删查时间复杂度   | O(logn) | O(logn) |
+| insert最多旋转次数 | 2       | 2       |
+| remove最多旋转次数 | O(logn) | 3       |
+
+总体差别不大。但如果插入和查询多可以用AVL,删除和查询多可以用红黑树。

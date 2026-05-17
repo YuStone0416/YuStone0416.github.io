@@ -3,7 +3,7 @@
 ## Source: https://github.com/hexojs/hexo/
 
 # Site
-title: Luminous
+title: Luminousblog
 #subtitle: 'the world'
 description: ''
 keywords: Luminousblog 
@@ -14,7 +14,7 @@ avatar: /images/avatar.jpg
 favicon: /favicon1.ico
 # URL
 ## Set your site url here. For example, if you use GitHub Page, set url as 'https://username.github.io/project'
-url: http://yustonerain.top
+url: http://blog.yustonerain.top
 permalink: :title/
 permalink_defaults:
 pretty_urls:
