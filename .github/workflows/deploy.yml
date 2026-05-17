@@ -61,7 +61,7 @@ jobs:
       - name: Create SSH key file
         run: |
           mkdir -p ~/.ssh
-          echo "${{ secrets.VPS_KEY }}" > ~/.ssh/id_rsa
+          printf "%s\n" "${{ secrets.VPS_KEY }}" > ~/.ssh/id_rsa
           chmod 600 ~/.ssh/id_rsa
 
       - name: debug ssh key size
