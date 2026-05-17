@@ -61,13 +61,15 @@ jobs:
       - name: debug ssh key size
         run: echo "${{ secrets.VPS_KEY }}" | wc -c
 
-      - name: debug ssh connection
-        run: ssh -v -i <(echo "${{ secrets.VPS_KEY }}") ${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }} "echo ok"
+      
 
       - name: add known hosts
         run: |
           mkdir -p ~/.ssh
           ssh-keyscan -H ${{ secrets.VPS_HOST }} >> ~/.ssh/known_hosts
+
+      - name: debug ssh connection
+        run: ssh -v -i <(echo "${{ secrets.VPS_KEY }}") ${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }} "echo ok"
 
       - name: Deploy to VPS
         uses: appleboy/scp-action@v0.1.7
