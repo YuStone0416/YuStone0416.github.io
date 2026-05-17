@@ -58,6 +58,11 @@ jobs:
       - name: Generate static files
         run: npx hexo generate
 
+      - name: debug ssh key size
+        run: echo "${{ secrets.VPS_KEY }}" | wc -c
+
+
+
       - name: Deploy to VPS
         uses: appleboy/scp-action@v0.1.7
         with:
