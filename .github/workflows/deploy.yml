@@ -71,11 +71,16 @@ jobs:
       - name: debug ssh connection
         run: ssh -v -i <(echo "${{ secrets.VPS_KEY }}") ${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }} "echo ok"
 
+      - name: upload files
+        uses: appleboy/scp-action@v0.1.7
+
       - name: Deploy to VPS
-        uses: appleboy/scp-action@v0.1.9
+        #uses: appleboy/scp-action@v0.1.7
+        uses: appleboy/ssh-action@v1.0.3
         with:
           host: ${{ secrets.VPS_HOST }}
           username: ${{ secrets.VPS_USER }}
           key: ${{ secrets.VPS_KEY }}
           source: "public/*"
           target: "/home/cen/blog"
+
