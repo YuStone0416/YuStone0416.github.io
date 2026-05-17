@@ -68,16 +68,24 @@ jobs:
           mkdir -p ~/.ssh
           ssh-keyscan -H ${{ secrets.VPS_HOST }} >> ~/.ssh/known_hosts
 
-      - name: debug ssh connection
-        run: ssh -v -i <(echo "${{ secrets.VPS_KEY }}") ${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }} "echo ok"
+      # - name: debug ssh connection
+      #   run: ssh -v -i <(echo "${{ secrets.VPS_KEY }}") ${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }} "echo ok"
 
-      - name: Deploy to VPS
-        #uses: appleboy/scp-action@v0.1.7
-        uses: appleboy/ssh-action@v1.0.3
+      - name: Upload files
+        uses: appleboy/scp-action@v0.1.7
         with:
           host: ${{ secrets.VPS_HOST }}
           username: ${{ secrets.VPS_USER }}
           key: ${{ secrets.VPS_KEY }}
           source: "public/*"
           target: "/home/cen/blog"
+
+      - name: Deploy on server
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USER }}
+          key: ${{ secrets.VPS_KEY }}
+          script: |
+            echo "deploy done"
 
