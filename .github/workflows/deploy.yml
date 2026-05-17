@@ -68,8 +68,8 @@ jobs:
           mkdir -p ~/.ssh
           ssh-keyscan -H ${{ secrets.VPS_HOST }} >> ~/.ssh/known_hosts
 
-      # - name: debug ssh connection
-      #   run: ssh -v -i <(echo "${{ secrets.VPS_KEY }}") ${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }} "echo ok"
+      - name: debug ssh connection
+        run: ssh -v -i <(echo "${{ secrets.VPS_KEY }}") ${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }} "echo ok"
 
       - name: Upload files
         uses: appleboy/scp-action@v0.1.7
