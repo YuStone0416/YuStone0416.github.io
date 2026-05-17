@@ -58,6 +58,12 @@ jobs:
       - name: Generate static files
         run: npx hexo generate
 
+      - name: Create SSH key file
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.VPS_KEY }}" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+
       - name: debug ssh key size
         run: echo "${{ secrets.VPS_KEY }}" | wc -c
 
@@ -76,7 +82,7 @@ jobs:
         with:
           host: ${{ secrets.VPS_HOST }}
           username: ${{ secrets.VPS_USER }}
-          key: ${{ secrets.VPS_KEY }}
+          key_path: ~/.ssh/id_rsa
           source: "public/*"
           target: "/home/cen/blog"
 
@@ -85,7 +91,7 @@ jobs:
         with:
           host: ${{ secrets.VPS_HOST }}
           username: ${{ secrets.VPS_USER }}
-          key: ${{ secrets.VPS_KEY }}
+          key_path: ~/.ssh/id_rsa
           script: |
             echo "deploy done"
 
