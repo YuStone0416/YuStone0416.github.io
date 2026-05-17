@@ -31,6 +31,7 @@
     "hexo-server": "^3.0.0",
     "hexo-theme-landscape": "^1.0.0",
     "hexo-theme-yun": "^1.10.11",
+    "probe-image-size": "^7.3.0",
     "save": "^2.9.0"
   }
 }
