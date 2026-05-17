@@ -30,7 +30,6 @@
     "hexo-renderer-stylus": "^3.0.1",
     "hexo-server": "^3.0.0",
     "hexo-theme-landscape": "^1.0.0",
-    "hexo-theme-stellar": "^1.33.1",
     "hexo-theme-yun": "^1.10.11",
     "save": "^2.9.0"
   }
