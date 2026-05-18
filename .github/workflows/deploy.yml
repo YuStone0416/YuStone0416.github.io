@@ -32,7 +32,66 @@
 #           publish_branch: gh-pages
 
 
-name: Deploy Hexo site to VPS
+# name: Deploy Hexo site to VPS
+
+# on:
+#   push:
+#     branches:
+#       - main
+
+# jobs:
+#   build-deploy:
+#     runs-on: ubuntu-latest
+
+#     steps:
+#       - name: Checkout source code
+#         uses: actions/checkout@v3
+
+#       - name: Set up Node.js
+#         uses: actions/setup-node@v3
+#         with:
+#           node-version: 22
+
+#       - name: Install dependencies
+#         run: npm install
+
+#       - name: Generate static files
+#         run: npx hexo generate
+
+
+
+#       - name: debug ssh key size
+#         run: echo "${{ secrets.VPS_KEY }}" | wc -c
+
+      
+
+#       - name: add known hosts
+#         run: |
+#           mkdir -p ~/.ssh
+#           ssh-keyscan -H ${{ secrets.VPS_HOST }} >> ~/.ssh/known_hosts
+
+#       # - name: debug ssh connection
+#       #   run: ssh -v -i <(echo "${{ secrets.VPS_KEY }}") ${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }} "echo ok"
+
+#       - name: Upload files
+#         uses: appleboy/scp-action@v0.1.7
+#         with:
+#           host: ${{ secrets.VPS_HOST }}
+#           username: ${{ secrets.VPS_USER }}
+#           key_path: ${{ secrets.VPS_KEY }}
+#           source: "public/*"
+#           target: "/home/cen/blog"
+
+#       - name: Deploy on server
+#         uses: appleboy/ssh-action@v1.0.3
+#         with:
+#           host: ${{ secrets.VPS_HOST }}
+#           username: ${{ secrets.VPS_USER }}
+#           key_path: ${{ secrets.VPS_KEY }}
+#           script: |
+#             echo "deploy done"
+
+name: Deploy Hexo to VPS
 
 on:
   push:
@@ -40,58 +99,17 @@ on:
       - main
 
 jobs:
-  build-deploy:
+  deploy:
     runs-on: ubuntu-latest
-
     steps:
-      - name: Checkout source code
-        uses: actions/checkout@v3
-
-      - name: Set up Node.js
-        uses: actions/setup-node@v3
-        with:
-          node-version: 22
-
-      - name: Install dependencies
-        run: npm install
-
-      - name: Generate static files
-        run: npx hexo generate
-
-      - name: Create SSH key file
-        run: |
-          mkdir -p ~/.ssh
-          printf "%s\n" "${{ secrets.VPS_KEY }}" > ~/.ssh/id_rsa
-          chmod 600 ~/.ssh/id_rsa
-
-      - name: debug ssh key size
-        run: echo "${{ secrets.VPS_KEY }}" | wc -c
-
-      
-
-      - name: add known hosts
-        run: |
-          mkdir -p ~/.ssh
-          ssh-keyscan -H ${{ secrets.VPS_HOST }} >> ~/.ssh/known_hosts
-
-      # - name: debug ssh connection
-      #   run: ssh -v -i <(echo "${{ secrets.VPS_KEY }}") ${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }} "echo ok"
-
-      - name: Upload files
-        uses: appleboy/scp-action@v0.1.7
+      - name: Deploy via SSH
+        uses: appleboy/ssh-action@v1
         with:
           host: ${{ secrets.VPS_HOST }}
           username: ${{ secrets.VPS_USER }}
-          key_path: ~/.ssh/id_rsa
-          source: "public/*"
-          target: "/home/cen/blog"
-
-      - name: Deploy on server
-        uses: appleboy/ssh-action@v1.0.3
-        with:
-          host: ${{ secrets.VPS_HOST }}
-          username: ${{ secrets.VPS_USER }}
-          key_path: ~/.ssh/id_rsa
+          key: ${{ secrets.VPS_KEY }}
           script: |
-            echo "deploy done"
-
+            cd /home/cen/blog
+            git reset --hard
+            git pull origin main
+            docker compose run --rm hexo sh -c "npx hexo clean && npx hexo generate"
