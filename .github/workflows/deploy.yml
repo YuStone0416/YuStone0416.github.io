@@ -110,6 +110,12 @@ jobs:
           key: ${{ secrets.VPS_KEY }}
           script: |
             cd /home/cen/blog
+            # 拉取最新代码
             git reset --hard
             git pull origin main
-            docker compose run --rm hexo sh -c "npx hexo clean && npx hexo generate"
+
+            # Docker Compose 生成 Hexo
+            docker compose build hexo
+            docker compose up -d hexo
+            docker compose exec hexo sh -c "npx hexo clean && npx hexo generate"
+            docker compose down
