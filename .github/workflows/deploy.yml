@@ -115,7 +115,7 @@ jobs:
             git pull origin main
 
             # Docker Compose 生成 Hexo
-            docker compose build hexo
-            docker compose up -d hexo
-            docker compose exec hexo sh -c "npx hexo clean && npx hexo generate"
-            docker compose down
+            docker-compose build hexo
+            docker-compose up -d hexo
+            docker-compose exec hexo sh -c "npx hexo clean && npx hexo generate"
+            docker-compose down
